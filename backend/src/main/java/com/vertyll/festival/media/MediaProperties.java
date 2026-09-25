@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.unit.DataSize;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +23,8 @@ record MediaProperties(
         message = "must be an http(s) URL without a trailing slash"
     ) String publicBaseUrl,
     @NotNull DataSize maxFileSize,
-    @NotNull @Positive Integer maxFilesPerUpload
+    @NotNull @Positive Integer maxFilesPerUpload,
+    @Nullable String sslBundle
 ) {
 
     String publicUrl(String key) {
