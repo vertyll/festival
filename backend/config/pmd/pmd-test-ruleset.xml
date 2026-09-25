@@ -16,7 +16,7 @@
     <!-- org.bson.Document is the MongoDB driver's document type, used to seed raw test data -->
     <rule ref="category/java/bestpractices.xml/LooseCoupling">
         <properties>
-            <property name="allowedTypes" value="java.util.Properties|org.bson.Document"/>
+            <property name="allowedTypes" value="java.util.Properties,org.bson.Document"/>
         </properties>
     </rule>
 
