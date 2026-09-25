@@ -15,8 +15,6 @@ import com.vertyll.festival.common.MessageKeys;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import static com.vertyll.festival.TestTexts.values;
-
 class ProductDocumentTest {
 
     private static final ProductDocument T_SHIRT = new ProductDocument(
@@ -27,8 +25,8 @@ class ProductDocumentTest {
         null,
         List.of(),
         List.of(
-            new ProductOption("size", TestTexts.text("Rozmiar"), values("s", "m")),
-            new ProductOption("color", TestTexts.text("Kolor"), values("black"))
+            new ProductOption("size", TestTexts.text("Rozmiar"), TestTexts.values("s", "m")),
+            new ProductOption("color", TestTexts.text("Kolor"), TestTexts.values("black"))
         ),
         List.of(new ProductVariant(List.of("s", "black"), 2), new ProductVariant(List.of("m", "black"), 5)),
         Instant.EPOCH,

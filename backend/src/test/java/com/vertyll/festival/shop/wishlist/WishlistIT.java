@@ -4,13 +4,17 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
 import com.vertyll.festival.IntegrationTest;
 
 import com.jayway.jsonpath.JsonPath;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -65,13 +69,20 @@ class WishlistIT {
             .andExpect(jsonPath("$.city").value("Gdańsk"));
     }
 
-    private String createProduct() throws Exception {
-        String json = mvc.perform(
-            post("/api/admin/products").with(admin()).with(csrf()).contentType(MediaType.APPLICATION_JSON).content("""
-                    {"name": {"pl": "Kubek", "en": "Mug"}, "description": null, "price": 19.99, "categoryId": null,
-                     "images": [], "options": [], "variants": [{"valueCodes": [], "stock": 5}]}
-                    """)
-        ).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
-        return JsonPath.read(json, "$.id");
+    private String createProduct() {
+        MvcTestResult result = MockMvcTester.create(mvc)
+            .perform(
+                post("/api/admin/products").with(admin())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        """
+                                {"name": {"pl": "Kubek", "en": "Mug"}, "description": null, "price": 19.99, "categoryId": null,
+                                 "images": [], "options": [], "variants": [{"valueCodes": [], "stock": 5}]}
+                                """
+                    )
+            );
+        assertThat(result).hasStatus(HttpStatus.CREATED);
+        return JsonPath.read(new String(result.getResponse().getContentAsByteArray(), StandardCharsets.UTF_8), "$.id");
     }
 }

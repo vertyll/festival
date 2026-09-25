@@ -11,13 +11,12 @@ import com.vertyll.festival.common.MessageKeys;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import static com.vertyll.festival.TestTexts.values;
-
 class ProductVariantsTest {
 
-    private static final ProductOption SIZE = new ProductOption("size", TestTexts.text("Rozmiar"), values("s", "m"));
+    private static final ProductOption SIZE =
+            new ProductOption("size", TestTexts.text("Rozmiar"), TestTexts.values("s", "m"));
     private static final ProductOption COLOR =
-            new ProductOption("color", TestTexts.text("Kolor"), values("black", "white"));
+            new ProductOption("color", TestTexts.text("Kolor"), TestTexts.values("black", "white"));
 
     @Test
     void productWithoutOptionsHasExactlyOneVariant() {
@@ -81,25 +80,41 @@ class ProductVariantsTest {
     @Test
     void duplicatedOptionCodeIsRejected() {
         assertThatThrownBy(
-            () -> ProductVariants
-                .validate(List.of(SIZE, new ProductOption("size", TestTexts.text("Rozmiar"), values("l"))), List.of())
+            () -> ProductVariants.validate(
+                List.of(SIZE, new ProductOption("size", TestTexts.text("Rozmiar"), TestTexts.values("l"))),
+                List.of()
+            )
         ).isInstanceOf(InvalidRequestException.class).hasMessage(MessageKeys.PRODUCT_OPTION_DUPLICATED);
     }
 
     @Test
     void duplicatedValueCodeIsRejected() {
         assertThatThrownBy(
-            () -> ProductVariants
-                .validate(List.of(new ProductOption("size", TestTexts.text("Rozmiar"), values("s", "s"))), List.of())
+            () -> ProductVariants.validate(
+                List.of(new ProductOption("size", TestTexts.text("Rozmiar"), TestTexts.values("s", "s"))),
+                List.of()
+            )
         ).isInstanceOf(InvalidRequestException.class).hasMessage(MessageKeys.OPTION_VALUE_DUPLICATED);
     }
 
     @Test
     void combinationLimitProtectsAgainstHugeProducts() {
         List<ProductOption> options = List.of(
-            new ProductOption("a", TestTexts.text("A"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")),
-            new ProductOption("b", TestTexts.text("B"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")),
-            new ProductOption("c", TestTexts.text("C"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
+            new ProductOption(
+                "a",
+                TestTexts.text("A"),
+                TestTexts.values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+            ),
+            new ProductOption(
+                "b",
+                TestTexts.text("B"),
+                TestTexts.values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+            ),
+            new ProductOption(
+                "c",
+                TestTexts.text("C"),
+                TestTexts.values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+            )
         );
 
         assertThatThrownBy(() -> ProductVariants.combinations(options)).isInstanceOf(InvalidRequestException.class)
