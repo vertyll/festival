@@ -5,8 +5,11 @@ import java.nio.charset.StandardCharsets;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import com.vertyll.festival.IntegrationTest;
@@ -14,6 +17,7 @@ import com.vertyll.festival.common.MessageKeys;
 
 import com.jayway.jsonpath.JsonPath;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -49,13 +53,10 @@ class LineupIT {
         mvc.perform(get("/api/artists/" + artist)).andExpect(status().isOk());
     }
 
-    private String createdId(MockHttpServletRequestBuilder request, String body) throws Exception {
-        String json = mvc.perform(asAdmin(request).content(body))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse()
-            .getContentAsString(StandardCharsets.UTF_8);
-        return JsonPath.read(json, "$.id");
+    private String createdId(MockHttpServletRequestBuilder request, String body) {
+        MvcTestResult result = MockMvcTester.create(mvc).perform(asAdmin(request).content(body));
+        assertThat(result).hasStatus(HttpStatus.CREATED);
+        return JsonPath.read(new String(result.getResponse().getContentAsByteArray(), StandardCharsets.UTF_8), "$.id");
     }
 
     private static String artist(String stageId) {

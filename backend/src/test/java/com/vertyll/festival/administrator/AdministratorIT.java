@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import com.vertyll.festival.IntegrationTest;
@@ -16,6 +18,7 @@ import com.vertyll.festival.common.MessageKeys;
 
 import com.jayway.jsonpath.JsonPath;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -68,12 +71,10 @@ class AdministratorIT {
             .andExpect(jsonPath("$[?(@.email == '%s')]".formatted(email)).isEmpty());
     }
 
-    private String idOf(String email) throws Exception {
-        String json = mvc.perform(asAdmin(get("/api/admin/administrators")))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString(StandardCharsets.UTF_8);
+    private String idOf(String email) {
+        MvcTestResult result = MockMvcTester.create(mvc).perform(asAdmin(get("/api/admin/administrators")));
+        assertThat(result).hasStatusOk();
+        String json = new String(result.getResponse().getContentAsByteArray(), StandardCharsets.UTF_8);
         List<String> ids = JsonPath.read(json, "$[?(@.email == '%s')].id".formatted(email));
         return ids.getFirst();
     }
