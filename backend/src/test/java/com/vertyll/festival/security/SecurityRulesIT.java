@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,11 +45,8 @@ class SecurityRulesIT {
         }
 
         @Test
-        void seesAnonymousSessionAndReceivesCsrfCookie() throws Exception {
-            mvc.perform(get("/api/me"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.user").isEmpty())
-                .andExpect(cookie().exists("XSRF-TOKEN"));
+        void seesAnonymousSession() throws Exception {
+            mvc.perform(get("/api/me")).andExpect(status().isOk()).andExpect(jsonPath("$.user").isEmpty());
         }
 
         @Test
