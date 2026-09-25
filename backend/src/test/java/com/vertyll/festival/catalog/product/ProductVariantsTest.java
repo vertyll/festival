@@ -16,7 +16,8 @@ import static com.vertyll.festival.TestTexts.values;
 class ProductVariantsTest {
 
     private static final ProductOption SIZE = new ProductOption("size", TestTexts.text("Rozmiar"), values("s", "m"));
-    private static final ProductOption COLOR = new ProductOption("color", TestTexts.text("Kolor"), values("black", "white"));
+    private static final ProductOption COLOR =
+            new ProductOption("color", TestTexts.text("Kolor"), values("black", "white"));
 
     @Test
     void productWithoutOptionsHasExactlyOneVariant() {

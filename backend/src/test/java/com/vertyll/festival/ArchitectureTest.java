@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.mapstruct.Mapper;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
