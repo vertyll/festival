@@ -1,0 +1,27 @@
+{
+  "name": "@festival/admin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sunset Festival – admin panel",
+  "scripts": {
+    "dev": "next dev -p 3001 -H 127.0.0.1",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@festival/shared": "*",
+    "@tailwindcss/postcss": "4.3.3",
+    "next": "16.3.6",
+    "postcss": "8.5.28",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-sortablejs": "6.1.4",
+    "sortablejs": "1.15.7",
+    "tailwindcss": "4.3.3",
+    "use-intl": "4.14.6"
+  },
+  "devDependencies": {
+    "@types/sortablejs": "1.15.9"
+  }
+}

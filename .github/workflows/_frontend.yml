@@ -1,0 +1,81 @@
+# Wspólny proces front-endów (workspace npm w katalogu frontend/). Każda aplikacja ma własny workflow, który wywołuje
+# ten plik - budowane są osobno, ale z tymi samymi krokami.
+name: Frontend (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        description: Nazwa aplikacji w workspace (page albo admin)
+        required: true
+        type: string
+      image-name:
+        description: Nazwa obrazu w rejestrze
+        required: true
+        type: string
+      tag-prefix:
+        description: Prefiks tagu git, który publikuje obraz (np. page-v)
+        required: true
+        type: string
+    secrets:
+      ZOT_USERNAME:
+        required: false
+      ZOT_PASSWORD:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Prettier, ESLint, TypeScript, translations, build
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --workspace=@festival/${{ inputs.app }} --include-workspace-root --no-audit --no-fund
+
+      - name: Check formatting
+        run: npx prettier --check apps/${{ inputs.app }} packages
+
+      - name: Lint
+        run: npx eslint --max-warnings 0 apps/${{ inputs.app }} packages
+
+      - name: Type check
+        run: npm run typecheck --workspace=@festival/${{ inputs.app }} --workspace=@festival/shared
+
+      - name: Check translations
+        run: npm run check:translations
+
+      - name: Build
+        run: npm run build --workspace=@festival/${{ inputs.app }}
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          # Tylko do wygenerowania rewrites w buildzie CI; obraz dostaje adres jako argument budowania.
+          BACKEND_INTERNAL_URL: http://backend:8080
+
+  image:
+    needs: quality
+    if: github.event_name != 'push' || github.ref_type == 'tag'
+    uses: ./.github/workflows/_image.yml
+    with:
+      context: frontend
+      image-name: ${{ inputs.image-name }}
+      tag-prefix: ${{ inputs.tag-prefix }}
+      # Adres back-endu w sieci kontenerów jest wpiekany w rewrites Next.js podczas budowania.
+      build-args: |
+        APP=${{ inputs.app }}
+        BACKEND_INTERNAL_URL=${{ vars.BACKEND_INTERNAL_URL || 'http://festival-backend:8080' }}
+    secrets: inherit

@@ -1,0 +1,45 @@
+name: Frontend - panel
+
+on:
+  push:
+    branches: [main]
+    tags: ["admin-v*"]
+    paths:
+      - "frontend/apps/admin/**"
+      - "frontend/packages/**"
+      - "frontend/*"
+      - "frontend/scripts/**"
+      - "backend/src/main/resources/i18n/**"
+      - "backend/src/main/java/com/vertyll/festival/common/MessageKeys.java"
+      - ".github/workflows/frontend-admin.yml"
+      - ".github/workflows/_frontend.yml"
+      - ".github/workflows/_image.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "frontend/apps/admin/**"
+      - "frontend/packages/**"
+      - "frontend/*"
+      - "frontend/scripts/**"
+      - "backend/src/main/resources/i18n/**"
+      - "backend/src/main/java/com/vertyll/festival/common/MessageKeys.java"
+      - ".github/workflows/frontend-admin.yml"
+      - ".github/workflows/_frontend.yml"
+      - ".github/workflows/_image.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-admin-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    uses: ./.github/workflows/_frontend.yml
+    with:
+      app: admin
+      image-name: vertyll/festival-admin
+      tag-prefix: admin-v
+    secrets: inherit

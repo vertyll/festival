@@ -1,0 +1,33 @@
+{
+  "name": "festival-frontend",
+  "private": true,
+  "description": "Sunset Festival – front-end",
+  "author": "Mikołaj Gawron gawrmiko@gmail.com",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev:page": "npm run dev -w @festival/page",
+    "dev:admin": "npm run dev -w @festival/admin",
+    "lint": "eslint --max-warnings 0 .",
+    "typecheck": "npm run typecheck --workspaces",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:translations": "node scripts/check-translations.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.6",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.9.9",
+    "typescript": "6.0.3",
+    "use-intl": "4.14.6"
+  }
+}

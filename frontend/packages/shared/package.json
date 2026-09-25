@@ -1,0 +1,22 @@
+{
+  "name": "@festival/shared",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared front-end code",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./*": "./src/*.ts",
+    "./auth/session": "./src/auth/session.tsx",
+    "./react/LoadState": "./src/react/LoadState.tsx",
+    "./i18n/IntlSetup": "./src/i18n/IntlSetup.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "use-intl": "4.14.6",
+    "next": "^16.0.0"
+  }
+}
