@@ -64,7 +64,7 @@ export function WishlistProvider({ children }: Readonly<{ children: ReactNode }>
 export function useWishlist(): WishlistContextValue {
   const value = useContext(WishlistContext);
   if (!value) {
-    throw new Error("useWishlist() wymaga <WishlistProvider> w drzewie komponentów");
+    throw new Error("useWishlist() must be used within <WishlistProvider>");
   }
   return value;
 }

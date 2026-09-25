@@ -33,7 +33,7 @@ const StyledLink = styled(Link)<{ $bold?: boolean }>`
       &:hover {
         filter: brightness(0.85);
       }
-    `}
+    `};
 
   @media (max-width: 768px) {
     display: block;

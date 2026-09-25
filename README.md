@@ -1,90 +1,142 @@
-## Założenia projektu
+# Sunset Festival
 
-Aplikacja internetowa wymyślonego festiwalu muzycznego – Sunset Festival. Jest to strona e-commerce, na której można
-również przeglądać informacje o festiwalu muzycznym. Wszystkim zarządza dedykowany do strony panel administracyjny,
-który również znajduje się w repozytorium na platformie GitHub.
+Strona festiwalu muzycznego ze sklepem i panel administracyjny.
 
-## Link: https://festival-page.vertyll.dev
+## Struktura repozytorium
 
-## Stos technologiczny
+| Katalog                     | Opis                                                                               |
+|-----------------------------|------------------------------------------------------------------------------------|
+| `backend/`                  | Spring Boot 4.1, Java 25 - API                                                     |
+| `frontend/packages/shared/` | `@festival/shared`: typy modeli API, klient HTTP z CSRF, sesja, walidacja, formaty |
+| `frontend/apps/page/`       | Strona festiwalu i sklep                                                           |
+| `frontend/apps/admin/`      | Panel administracyjny                                                              |
+| `frontend/Dockerfile`       | Wieloetapowy obraz dla obu front-endów (`--build-arg APP=page\|admin`)             |
+| `compose.yaml`, `infra/`    | Lokalnie: MongoDB + Garage, opcjonalnie cały system (profil `app`)                 |
+| `.github/workflows/`        | CI/CD                                                                              |
 
-### Front-end:
+## Back-end
+
+### Stos technologiczny
+
+- Spring Boot.
+- Java.
+- Maven.
+- MongoDB.
+- JUnit.
+- Mockito.
+- Lombok.
+- Spring Security.
+- Spring Data MongoDB.
+- Spring Web.
+
+### Budowanie i jakość
+
+```bash
+cd backend
+./mvnw spotless:apply   # formatowanie
+./mvnw verify           # kompilacja z Error Prone/NullAway, testy, Spotless, PMD, SpotBugs
+```
+
+> [!IMPORTANT]
+>
+> Polecenie `verify` wymaga środowiska skonteneryzowanego dla Testcontainers.
+
+### Moduły
+
+| Pakiet                                 | Odpowiedzialność                                               |
+|----------------------------------------|----------------------------------------------------------------|
+| `security`                             | Spring Security, logowanie Google (OIDC), CSRF, `/api/me`      |
+| `administrator`                        | Lista administratorów panelu                                   |
+| `catalog.{product,category,attribute}` | Produkty z opcjami i wariantami, kategorie, atrybuty           |
+| `lineup.{artist,stage}`                | Artyści i sceny                                                |
+| `content.{news,sponsor}`               | Newsy i sponsorzy                                              |
+| `settings`                             | Ustawienia sklepu                                              |
+| `shop.{address,wishlist,order}`        | Adres dostawy, lista życzeń, zamówienia                        |
+| `media`                                | Upload zdjęć do Garage                                         |
+| `i18n`                                 | Tłumaczenia interfejsu w MongoDB (ICU), edycja w panelu        |
+| `common`, `config`                     | Błędy (RFC 9457), walidacja, konfiguracja Mongo/Jackson/zegara |
+
+### Profile i konfiguracja
+
+Profil jest obowiązkowy (`SPRING_PROFILES_ACTIVE=local` albo `prod`).
+
+| Plik                           | Zawartość                                                            |
+|--------------------------------|----------------------------------------------------------------------|
+| `application.properties`       | wspólna konfiguracja, bez zmiennych środowiskowych                   |
+| `application-local.properties` | pełna konfiguracja lokalna (MongoDB i Garage z `compose.yaml`)       |
+| `application-prod.properties`  | same odwołania `${...}` do zmiennych środowiskowych (tabela poniżej) |
+
+Wyjątkiem w profilu `local` są dane klientów Google OAuth – ustawia się je zmiennymi `GOOGLE_*` w konfiguracji 
+uruchomieniowej (bez nich aplikacja wstaje, ale logowanie nie działa). Klienci OAuth muszą mieć dozwolone adresy 
+przekierowania:
+- `http://localhost:3000/login/oauth2/code/page`
+- `http://127.0.0.1:3001/login/oauth2/code/admin`
+
+Administratora panelu dopisuje się lokalnie w `festival.security.bootstrap-admins`.
+
+Zmienne środowiskowe profilu `prod`:
+
+| Zmienna                                                | Opis                                                         |
+|--------------------------------------------------------|--------------------------------------------------------------|
+| `MONGODB_URI`                                          | np. `mongodb://localhost:27017/festival`                     |
+| `FESTIVAL_PAGE_URL`, `FESTIVAL_ADMIN_URL`              | publiczne adresy front-endów (redirect URI logowania)        |
+| `GOOGLE_PAGE_CLIENT_ID`, `GOOGLE_PAGE_CLIENT_SECRET`   | klient OAuth strony festiwalu                                |
+| `GOOGLE_ADMIN_CLIENT_ID`, `GOOGLE_ADMIN_CLIENT_SECRET` | klient OAuth panelu                                          |
+| `FESTIVAL_BOOTSTRAP_ADMINS`                            | e-maile administratorów dopisywane przy starcie              |
+| `FESTIVAL_CHECKOUT_ENABLED`                            | czy można składać zamówienia (`true`/`false`)                |
+| `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`                | Garage: API S3, region (`s3_region` z `garage.toml`), bucket |
+| `S3_ACCESS_KEY`, `S3_SECRET_ACCESS_KEY`                | klucz Garage z uprawnieniem zapisu do bucketa                |
+| `S3_PUBLIC_BASE_URL`                                   | publiczny adres bucketa (web endpoint Garage)                |
+
+## Front-endy
+
+### Stos technologiczny
 
 - Next.js.
 - React.
-- Axios.
-- Styled-components do szybkiego stylowania komponentów.
-- Framer-motion do efektownego wyświetlania treści podczas przewijania strony.
-
-### Back-end:
-
 - Node.js.
-- Next-auth do uwierzytelniania użytkowników.
-- MongoDB jako baza danych NoSQL za pomocą Mongoose.
-- Axios do wykonywania żądań HTTP do serwera.
+- Tailwind CSS.
+- styled-components.
 
-### Uwierzytelnianie:
+### Budowanie i jakość
 
-- uwierzytelnianie za pomocą OAuth 2.0.
+```bash
+cd frontend
+npm ci
+npm run dev:page        # http://localhost:3000
+npm run dev:admin       # http://127.0.0.1:3001
+npm run lint && npm run typecheck && npm run format:check && npm run check:translations
+```
 
-### Inne:
+> [!NOTE]
+>
+> Adres back-endu dla `next dev` znajduje się w `apps/*/.env.development` (`BACKEND_INTERNAL_URL=http://localhost:8080`).
 
-- ESLint i Prettier do statycznej analizy kodu i utrzymania jednolitej jakości kodu.
-- Lodash do efektywnego zarządzania danymi i manipulacji nimi.
-- Lottie-web do renderowania animacji wektorowych w formacie JSON.
-- mime-types do obsługi typów MIME.
+## Uruchomienie lokalne
 
-## Usługi chmurowe użyte w projekcie
+> [!IMPORTANT]
+>
+> Wymagania: 
+> - Docker, 
+> - Java 25,
+> - Node.js 24.
 
-### MongoDB Cloud Services
+```bash
+docker compose up -d     # MongoDB :27017, Garage :3900 (S3) i :3902 (publiczny odczyt)
 
-Do przechowywania danych w bazie danych została użyta platforma MongoDB Atlas.
+export GOOGLE_PAGE_CLIENT_ID=... GOOGLE_PAGE_CLIENT_SECRET=... GOOGLE_ADMIN_CLIENT_ID=... GOOGLE_ADMIN_CLIENT_SECRET=...
+cd backend && SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run   # :8080
+cd frontend && npm ci && npm run dev:page                           # http://localhost:3000
+cd frontend && npm run dev:admin                                    # http://127.0.0.1:3001
+```
 
-### Amazon AWS S3 Service:
+Albo cały system w kontenerach: `docker compose --profile app up -d --build` (zmienne `GOOGLE_*` są przekazywane
+z powłoki, jeśli są ustawione).
 
-Do przechowywania zdjęć wrzucanych za pomocą panelu administracyjnego został użyty Amazon AWS S3 Service.
+## Zrzuty ekranu
 
-### Google Cloud Platform:
-
-Kolejną usługą chmurową wykorzystaną w projekcie jest Google Cloud Platform. W kontekście autoryzacji została użyta
-usługa Google Cloud Console, umożliwiająca zarządzanie tożsamościami i uprawnieniami. Logowanie zostało rozdzielone na
-dwa projekty, panel administracyjny i stronę festiwalu ze sklepem wykorzystując identyfikatory klienta OAuth 2.0.
-
-Dzięki wykorzystaniu tych usług chmurowych projekt zyskał skalowalność, niezawodność oraz zaawansowane funkcje
-bezpieczeństwa, co znacznie zwiększyło jego funkcjonalność i atrakcyjność dla użytkowników.
-
-## Zdjęcia poglądowe
-
-![Widok projektu](https://raw.githubusercontent.com/vertyll/festival-page/main/screenshots/1.png)
-![Widok projektu](https://raw.githubusercontent.com/vertyll/festival-page/main/screenshots/2.png)
-![Widok projektu](https://raw.githubusercontent.com/vertyll/festival-page/main/screenshots/3.png)
-![Widok projektu](https://raw.githubusercontent.com/vertyll/festival-page/main/screenshots/4.png)
-![Widok projektu](https://raw.githubusercontent.com/vertyll/festival-page/main/screenshots/5.png)
-![Widok projektu](https://raw.githubusercontent.com/vertyll/festival-page/main/screenshots/6.png)
-
-## Informacje dodatkowe
-
-Aplikacja łączy się z panelem administracyjnym festiwalu, który również jest dostępny w repozytorium na GitHub.
-
-## Instrukcja instalacji projektu
-
-1. Pobieramy projekt na lokalne środowisko.
-2. Tworzymy plik `.env` i kopiujemy do niego zawartość `.env.example`, po czym definiujemy swoje własne klucze API i
-   dane konfiguracyjne.
-3. Instalujemy pakiety npm za pomocą komendy:
-   ```bash
-   npm install
-   ```
-4. Uruchamiamy aplikacje na lokalnym środowisku:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   # or
-   bun dev
-   ```
-
-Domyślnie, jeżeli użyjemy jednej z powyższej komendy, aplikacja powinna być dostępna pod adresem
-[http://localhost:3000](http://localhost:3000).
+| Strona                                   | Panel                                     |
+|------------------------------------------|-------------------------------------------|
+| ![](docs/screenshots/page/1.png)         | ![](docs/screenshots/admin/1.png)         |
+| ![](docs/screenshots/page/2.png)         | ![](docs/screenshots/admin/2.png)         |
+| ![](docs/screenshots/page/3.png)         | ![](docs/screenshots/admin/3.png)         |

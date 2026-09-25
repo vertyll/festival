@@ -116,7 +116,7 @@ export function useConfirmedRemoval(): (label: string, remove: () => Promise<voi
 export function useDialogs(): Dialogs {
   const value = useContext(DialogsContext);
   if (!value) {
-    throw new Error("useDialogs() wymaga <DialogProvider> w drzewie komponentów");
+    throw new Error("useDialogs() must be used within <DialogProvider>");
   }
   return value;
 }

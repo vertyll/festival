@@ -10,7 +10,7 @@ const workspaceRoot = fileURLToPath(new URL(".", import.meta.url));
 function requiredEnv(name) {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`Brak zmiennej środowiskowej ${name} (adres back-endu w sieci wewnętrznej)`);
+    throw new Error(`Missing environment variable ${name} (internal back-end URL)`);
   }
   return value;
 }

@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 import jakarta.validation.Constraint;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -30,20 +32,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConstraintMessagesTest {
 
     @Test
-    void everyConstraintMessageIsTranslationKey() throws IOException, ReflectiveOperationException {
+    void everyConstraintMessageIsTranslationKey() throws IOException {
         Set<String> messages = new TreeSet<>();
         for (JavaClass javaClass : new ClassFileImporter().withImportOption(new ImportOption.DoNotIncludeTests())
             .importPackages("com.vertyll.festival")) {
+            if (isConfigurationProperties(javaClass)) {
+                continue;
+            }
             for (Field field : javaClass.reflect().getDeclaredFields()) {
                 for (Annotation annotation : annotations(field).toList()) {
                     if (annotation.annotationType().isAnnotationPresent(Constraint.class)) {
-                        messages.add((String) annotation.annotationType().getMethod("message").invoke(annotation));
+                        messages.add((String) AnnotationUtils.getValue(annotation, "message"));
                     }
                 }
             }
         }
 
         assertThat(messages).contains(MessageKeys.REQUIRED).isSubsetOf(translationKeys());
+    }
+
+    private static boolean isConfigurationProperties(JavaClass javaClass) {
+        return javaClass.isAnnotatedWith(ConfigurationProperties.class)
+                || javaClass.getEnclosingClass().map(ConstraintMessagesTest::isConfigurationProperties).orElse(false);
     }
 
     private static Stream<Annotation> annotations(Field field) {

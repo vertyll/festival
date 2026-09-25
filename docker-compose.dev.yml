@@ -1,0 +1,129 @@
+name: festival
+
+services:
+  mongo:
+    image: docker.io/library/mongo:8.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  garage:
+    image: docker.io/dxflrs/garage:v2.4.1
+    restart: unless-stopped
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    environment:
+      GARAGE_RPC_SECRET: 0000000000000000000000000000000000000000000000000000000000000000
+      GARAGE_DEFAULT_ACCESS_KEY: GK000000000000000000000000
+      GARAGE_DEFAULT_SECRET_KEY: 0000000000000000000000000000000000000000000000000000000000000000
+      GARAGE_DEFAULT_BUCKET: festival-media
+    ports:
+      - "127.0.0.1:3900:3900" # S3 API
+      - "127.0.0.1:3902:3902" # public read
+    volumes:
+      - ./infra/garage/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+
+  garage-init:
+    image: docker.io/amazon/aws-cli:2.37.1
+    depends_on:
+      - garage
+    restart: on-failure
+    environment:
+      AWS_ACCESS_KEY_ID: GK000000000000000000000000
+      AWS_SECRET_ACCESS_KEY: 0000000000000000000000000000000000000000000000000000000000000000
+      AWS_DEFAULT_REGION: garage
+      S3_BUCKET: festival-media
+    entrypoint: ["sh", "-c"]
+    command:
+      - >-
+        for attempt in 1 2 3 4 5 6 7 8 9 10; do
+        aws --endpoint-url http://garage:3900 s3api put-bucket-website --bucket "$$S3_BUCKET"
+        --website-configuration '{"IndexDocument":{"Suffix":"index.html"}}' && exit 0;
+        sleep 3;
+        done; exit 1
+
+  # Local stand-in for Google login (OIDC). Log in with any username, e.g. "admin" -> admin@festival.local.
+  # "$$" escapes compose interpolation, the server receives "${subject}" / "${clientId}" templates.
+  google-mock:
+    image: ghcr.io/navikt/mock-oauth2-server:6.0.3
+    restart: unless-stopped
+    environment:
+      JSON_CONFIG: >-
+        {
+          "interactiveLogin": true,
+          "tokenCallbacks": [{
+            "issuerId": "google",
+            "requestMappings": [{
+              "requestParam": "subject",
+              "match": "*",
+              "claims": {
+                "sub": "$${subject}",
+                "aud": ["$${clientId}"],
+                "email": "$${subject}@festival.local",
+                "email_verified": true,
+                "name": "$${subject}"
+              }
+            }]
+          }]
+        }
+    ports:
+      - "127.0.0.1:8090:8080"
+
+  backend:
+    profiles: [app]
+    build:
+      context: backend
+    depends_on:
+      mongo:
+        condition: service_healthy
+      garage-init:
+        condition: service_completed_successfully
+      google-mock:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_MONGODB_URI: mongodb://mongo:27017/festival
+      FESTIVAL_MEDIA_ENDPOINT: http://garage:3900
+      # Server-to-server calls go through the container network; the browser still uses localhost:8090.
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MOCK_TOKEN_URI: http://google-mock:8080/google/token
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MOCK_JWK_SET_URI: http://google-mock:8080/google/jwks
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MOCK_USER_INFO_URI: http://google-mock:8080/google/userinfo
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  page:
+    profiles: [app]
+    build:
+      context: frontend
+      args:
+        APP: page
+        BACKEND_INTERNAL_URL: http://backend:8080
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  admin:
+    profiles: [app]
+    build:
+      context: frontend
+      args:
+        APP: admin
+        BACKEND_INTERNAL_URL: http://backend:8080
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3001:3000"
+
+volumes:
+  mongo-data:
+  garage-meta:
+  garage-data:

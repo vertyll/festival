@@ -42,8 +42,6 @@ jobs:
           cache: maven
           cache-dependency-path: backend/pom.xml
 
-      # verify = kompilacja z Error Prone/NullAway, testy jednostkowe i integracyjne (Testcontainers: MongoDB),
-      # ArchUnit, Spotless, PMD i SpotBugs (+ FindSecBugs).
       - name: Verify
         run: ./mvnw -B -ntp verify
 
@@ -62,7 +60,6 @@ jobs:
 
   image:
     needs: verify
-    # Obraz budujemy dla PR-ów (bez publikacji) i publikujemy dla tagów.
     if: github.event_name != 'push' || github.ref_type == 'tag'
     uses: ./.github/workflows/_image.yml
     with:

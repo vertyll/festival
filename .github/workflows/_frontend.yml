@@ -1,5 +1,3 @@
-# Wspólny proces front-endów (workspace npm w katalogu frontend/). Każda aplikacja ma własny workflow, który wywołuje
-# ten plik - budowane są osobno, ale z tymi samymi krokami.
 name: Frontend (reusable)
 
 on:
@@ -63,7 +61,6 @@ jobs:
         run: npm run build --workspace=@festival/${{ inputs.app }}
         env:
           NEXT_TELEMETRY_DISABLED: 1
-          # Tylko do wygenerowania rewrites w buildzie CI; obraz dostaje adres jako argument budowania.
           BACKEND_INTERNAL_URL: http://backend:8080
 
   image:
@@ -74,7 +71,6 @@ jobs:
       context: frontend
       image-name: ${{ inputs.image-name }}
       tag-prefix: ${{ inputs.tag-prefix }}
-      # Adres back-endu w sieci kontenerów jest wpiekany w rewrites Next.js podczas budowania.
       build-args: |
         APP=${{ inputs.app }}
         BACKEND_INTERNAL_URL=${{ vars.BACKEND_INTERNAL_URL || 'http://festival-backend:8080' }}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import styled from "styled-components";
 import { useTranslations } from "use-intl";
 import type { Message } from "@festival/shared/api/types";
@@ -46,7 +46,7 @@ export default function Newsletter() {
   const [error, setError] = useState<Message | null>(null);
   const [alert, setAlert] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const validationError = validateEmail(email);
     setError(validationError);

@@ -56,23 +56,27 @@ export function createHttpClient(baseUrl: string): HttpClient {
 
   return {
     async get<T>(path: string, query?: Query) {
-      return (await execute("GET", path + toQueryString(query))).json() as Promise<T>;
+      const response = await execute("GET", path + toQueryString(query));
+      return (await response.json()) as T;
     },
     async getOptional<T>(path: string) {
       const response = await execute("GET", path);
       return response.status === 204 ? null : ((await response.json()) as T);
     },
     async post<T>(path: string, body: unknown) {
-      return (await execute("POST", path, json(body), "application/json")).json() as Promise<T>;
+      const response = await execute("POST", path, json(body), "application/json");
+      return (await response.json()) as T;
     },
     async put<T>(path: string, body: unknown) {
-      return (await execute("PUT", path, json(body), "application/json")).json() as Promise<T>;
+      const response = await execute("PUT", path, json(body), "application/json");
+      return (await response.json()) as T;
     },
     async send(method: "POST" | "PUT" | "DELETE", path: string) {
       await execute(method, path);
     },
     async upload<T>(path: string, form: FormData) {
-      return (await execute("POST", path, form)).json() as Promise<T>;
+      const response = await execute("POST", path, form);
+      return (await response.json()) as T;
     },
   };
 }
@@ -107,7 +111,7 @@ async function csrfToken(): Promise<string> {
   await fetch("/api/me", { credentials: "same-origin" });
   const token = getCookie(CSRF_COOKIE);
   if (!token) {
-    throw new Error("Back-end nie ustawił ciasteczka CSRF");
+    throw new Error("Back-end did not set the CSRF cookie");
   }
   return token;
 }

@@ -48,7 +48,7 @@ export function SessionProvider({ children }: Readonly<{ children: ReactNode }>)
 export function useSession(): SessionContextValue {
   const value = useContext(SessionContext);
   if (!value) {
-    throw new Error("useSession() wymaga <SessionProvider> w drzewie komponentów");
+    throw new Error("useSession() must be used within <SessionProvider>");
   }
   return value;
 }

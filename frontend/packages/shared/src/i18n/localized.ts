@@ -3,7 +3,7 @@ import { LANGUAGES, type Language, type LocalizedText, type MessageArgs } from "
 export function toLanguage(locale: string | undefined): Language {
   const language = LANGUAGES.find((candidate) => candidate === locale);
   if (!language) {
-    throw new Error(`Nieobsługiwany język: ${locale}`);
+    throw new Error(`Unsupported locale: ${locale}`);
   }
   return language;
 }

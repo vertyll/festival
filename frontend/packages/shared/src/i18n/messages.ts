@@ -10,13 +10,13 @@ export function nestMessages(flat: FlatMessages): AbstractIntlMessages {
     const path = key.split(".");
     const leaf = path.pop();
     if (leaf === undefined) {
-      throw new Error("Pusty klucz tłumaczenia");
+      throw new Error("Empty translation key");
     }
     let node = root;
     for (const segment of path) {
       const next = node[segment] ?? {};
       if (typeof next === "string") {
-        throw new TypeError(`Klucz tłumaczenia ${key} koliduje z innym kluczem`);
+        throw new TypeError(`Translation key ${key} collides with another key`);
       }
       node[segment] = next;
       node = next as Record<string, AbstractIntlMessages | string>;

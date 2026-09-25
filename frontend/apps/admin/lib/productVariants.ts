@@ -30,7 +30,7 @@ export function variantSelection(options: readonly ProductOption[], valueCodes: 
   return options.map((option, index) => {
     const value = option.values.find((candidate) => candidate.code === valueCodes[index]);
     if (!value) {
-      throw new Error(`Opcja ${option.code} nie ma wartości ${valueCodes[index]}`);
+      throw new Error(`Option ${option.code} has no value ${valueCodes[index]}`);
     }
     return { option: option.name, value: value.label };
   });

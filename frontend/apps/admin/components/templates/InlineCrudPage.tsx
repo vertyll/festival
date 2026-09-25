@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useState, type ReactNode, type SubmitEvent } from "react";
 import { useTranslations } from "use-intl";
 import type { Id } from "@festival/shared/api/types";
 import { useLoader } from "@festival/shared/react/useLoader";
@@ -50,7 +50,7 @@ export default function InlineCrudPage<T extends { id: Id }, R extends object>({
     form.reset(item ? toRequest(item) : emptyRequest);
   }
 
-  async function save(event: FormEvent<HTMLFormElement>) {
+  async function save(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const saved = await form.submit((request) => (edited ? api.update(edited.id, request) : api.create(request)));
     if (saved) {

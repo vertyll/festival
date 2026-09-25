@@ -4,9 +4,12 @@ import { api } from "./api";
 
 const ShopSettingsContext = createContext<ShopSettings | null>(null);
 
-export function ShopSettingsProvider({ initial, children }: Readonly<{
+export function ShopSettingsProvider({
+  initial,
+  children,
+}: Readonly<{
   initial: ShopSettings | null;
-  children: ReactNode
+  children: ReactNode;
 }>) {
   const [settings, setSettings] = useState<ShopSettings | null>(initial);
 

@@ -9,6 +9,10 @@ const backend = path.resolve(frontend, "../backend");
 const translationsDir = path.join(backend, "src/main/resources/i18n");
 const sourceRoots = ["apps/page", "apps/admin", "packages/shared/src"].map((root) => path.join(frontend, root));
 
+/**
+ * @param {string} directory
+ * @returns {string[]}
+ */
 function sourceFiles(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const file = path.join(directory, entry.name);
@@ -140,7 +144,7 @@ for (const [locale, messages] of Object.entries(catalogs)) {
 
 for (const { pattern, location } of exact) {
   if (!keys.has(pattern.replace(/\\(.)/g, "$1"))) {
-    problems.push(`${location}: brak klucza ${pattern.replace(/\\(.)/g, "$1")}`);
+    problems.push(`${location}: missing key ${pattern.replace(/\\(.)/g, "$1")}`);
   }
 }
 const matchers = [...exact, ...patterns].map(({ pattern, location }) => ({
@@ -149,12 +153,12 @@ const matchers = [...exact, ...patterns].map(({ pattern, location }) => ({
 }));
 for (const { regex, location } of matchers) {
   if (regex.source.includes("[^.]+") && ![...keys].some((key) => regex.test(key))) {
-    problems.push(`${location}: żaden klucz nie pasuje do ${regex.source}`);
+    problems.push(`${location}: no key matches ${regex.source}`);
   }
 }
 for (const key of keys) {
   if (!matchers.some(({ regex }) => regex.test(key))) {
-    problems.push(`nieużywany klucz ${key}`);
+    problems.push(`unused key ${key}`);
   }
 }
 
@@ -162,4 +166,4 @@ if (problems.length > 0) {
   console.error(problems.join("\n"));
   process.exit(1);
 }
-console.log(`Tłumaczenia kompletne: ${keys.size} kluczy`);
+console.log(`Translations complete: ${keys.size} keys`);

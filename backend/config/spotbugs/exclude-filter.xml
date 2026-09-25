@@ -11,6 +11,12 @@
         <Bug pattern="SE_BAD_FIELD,SE_NO_SERIALVERSIONID"/>
     </Match>
 
+    <!-- Tests build JSON request bodies from text blocks with String.formatted -->
+    <Match>
+        <Class name="~.*(Test|IT)"/>
+        <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
+    </Match>
+
     <!-- Exclude MapStruct generated implementations -->
     <Match>
         <Class name="~.*MapperImpl"/>

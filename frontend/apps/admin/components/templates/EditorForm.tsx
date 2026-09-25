@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import type { FormEvent, ReactNode } from "react";
+import type { ReactNode, SubmitEvent } from "react";
 import { useTranslations } from "use-intl";
 import Button from "../atoms/Button";
 
@@ -14,7 +14,7 @@ export default function EditorForm({ onSave, listPath, submitting, children }: R
   const t = useTranslations("admin.actions");
   const router = useRouter();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (await onSave()) {
       await router.push(listPath);

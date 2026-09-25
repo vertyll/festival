@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -45,7 +46,7 @@ class CheckoutIT {
     MongoTemplate mongo;
 
     @Test
-    void concurrentOrdersNeverOversell() throws Exception {
+    void concurrentOrdersNeverOversell() throws InterruptedException, ExecutionException {
         ObjectId mug = insertProduct("Kubek", "19.99", List.of(), List.of(variant(List.of(), 5)));
         CountDownLatch start = new CountDownLatch(1);
         List<Callable<Boolean>> attempts = new ArrayList<>();

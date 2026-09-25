@@ -12,6 +12,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
 }
 
-export default function Button({ variant = "primary", type = "button", className = "", ...props }: Readonly<ButtonProps>) {
+export default function Button({
+  variant = "primary",
+  type = "button",
+  className = "",
+  ...props
+}: Readonly<ButtonProps>) {
   return <button type={type} className={`${VARIANTS[variant]} ${className}`} {...props} />;
 }

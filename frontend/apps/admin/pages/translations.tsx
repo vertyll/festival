@@ -79,9 +79,12 @@ function TranslationEditor({ translation, onSaved }: Readonly<{ translation: Tra
 
 const PAGE_SIZE = 25;
 
-function TranslationList({ translations, reload }: Readonly<{
+function TranslationList({
+  translations,
+  reload,
+}: Readonly<{
   translations: readonly Translation[];
-  reload: () => void
+  reload: () => void;
 }>) {
   const t = useTranslations("admin.translations");
   const [filter, setFilter] = useState("");

@@ -1,5 +1,3 @@
-# Wspólne budowanie obrazu Docker (linux/arm64). Dla pull requestów obraz jest tylko budowany, dla tagów - publikowany
-# w rejestrze Zot z wersją z tagu (np. backend-v1.2.0 -> 1.2.0) i jako `latest`.
 name: Image (reusable)
 
 on:

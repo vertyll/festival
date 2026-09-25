@@ -21,7 +21,7 @@ export async function findOrNull<T>(load: () => Promise<T>): Promise<T | null> {
 export function routeParam(params: ParsedUrlQuery | undefined, name: string): string {
   const value = params?.[name];
   if (typeof value !== "string") {
-    throw new TypeError(`Brak parametru trasy "${name}"`);
+    throw new TypeError(`Route parameter "${name}" is missing or not a single value`);
   }
   return value;
 }

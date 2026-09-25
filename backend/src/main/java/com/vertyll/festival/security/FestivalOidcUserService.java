@@ -1,6 +1,7 @@
 package com.vertyll.festival.security;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +27,7 @@ class FestivalOidcUserService implements OAuth2UserService<OidcUserRequest, Oidc
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) {
-        OidcUser user = delegate.loadUser(userRequest);
+        OidcUser user = Objects.requireNonNull(delegate.loadUser(userRequest));
         String email = user.getEmail();
         if (email == null || !Boolean.TRUE.equals(user.getEmailVerified())) {
             throw new OAuth2AuthenticationException(

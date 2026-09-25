@@ -3,6 +3,7 @@ package com.vertyll.festival.i18n;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import tools.jackson.databind.ObjectMapper;
 
 final class DefaultTranslations {
 
-    private static final Pattern KEY_PATTERN = Pattern.compile("[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*");
+    private static final Pattern KEY_SEGMENT = Pattern.compile("\\w+");
     private static final TypeReference<Map<String, String>> MESSAGES = new TypeReference<>() {
     };
 
@@ -76,8 +77,12 @@ final class DefaultTranslations {
         return onlyFirst;
     }
 
+    private static boolean isValidKey(String key) {
+        return Arrays.stream(key.split("\\.", -1)).allMatch(segment -> KEY_SEGMENT.matcher(segment).matches());
+    }
+
     private static void requireValidKeys(Set<String> keys) {
-        List<String> malformed = keys.stream().filter(key -> !KEY_PATTERN.matcher(key).matches()).toList();
+        List<String> malformed = keys.stream().filter(key -> !isValidKey(key)).toList();
         if (!malformed.isEmpty()) {
             throw new IllegalStateException("Malformed translation keys: " + malformed);
         }
