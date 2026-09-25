@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.mapstruct.Mapper;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +53,14 @@ final class ArchitectureTest {
     @ArchTest
     static final ArchRule REPOSITORIES_ARE_PACKAGE_PRIVATE =
             classes().that().areAssignableTo(Repository.class).should().notHaveModifier(JavaModifier.PUBLIC);
+
+    @ArchTest
+    static final ArchRule DOCUMENTS_ARE_PACKAGE_PRIVATE =
+            classes().that().areAnnotatedWith(Document.class).should().notHaveModifier(JavaModifier.PUBLIC);
+
+    @ArchTest
+    static final ArchRule MAPPERS_ARE_PACKAGE_PRIVATE =
+            classes().that().areAnnotatedWith(Mapper.class).should().notHaveModifier(JavaModifier.PUBLIC);
 
     @ArchTest
     static final ArchRule CONTROLLERS_DO_NOT_TALK_TO_REPOSITORIES = noClasses().that()

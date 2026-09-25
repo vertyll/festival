@@ -2,6 +2,7 @@ package com.vertyll.festival.media;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
@@ -54,7 +55,7 @@ class ImageUploadService {
         byte[] content = read(file);
         ImageType type = ImageType.detect(content)
             .orElseThrow(() -> new InvalidRequestException(MessageKeys.MEDIA_UNSUPPORTED_TYPE));
-        return new ValidatedImage(content, type);
+        return new ValidatedImage(ByteBuffer.wrap(content).asReadOnlyBuffer(), type);
     }
 
     private String store(ValidatedImage image) {
@@ -64,10 +65,10 @@ class ImageUploadService {
                 .bucket(properties.bucket())
                 .key(key)
                 .contentType(image.type().mediaType())
-                .contentLength((long) image.content().length)
+                .contentLength((long) image.content().remaining())
                 .cacheControl(CACHE_CONTROL)
                 .build(),
-            RequestBody.fromBytes(image.content())
+            RequestBody.fromByteBuffer(image.content())
         );
         return properties.publicUrl(key);
     }
@@ -92,6 +93,6 @@ class ImageUploadService {
         }
     }
 
-    private record ValidatedImage(byte[] content, ImageType type) {
+    private record ValidatedImage(ByteBuffer content, ImageType type) {
     }
 }

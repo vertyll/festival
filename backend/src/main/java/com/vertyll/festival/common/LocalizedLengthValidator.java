@@ -5,7 +5,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import org.jspecify.annotations.Nullable;
 
-public final class LocalizedLengthValidator implements ConstraintValidator<LocalizedLength, LocalizedText> {
+final class LocalizedLengthValidator implements ConstraintValidator<LocalizedLength, LocalizedText> {
 
     private int max;
 

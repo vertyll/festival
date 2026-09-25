@@ -8,27 +8,27 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 
+import com.vertyll.festival.TestTexts;
 import com.vertyll.festival.common.InvalidRequestException;
 import com.vertyll.festival.common.MessageKeys;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import static com.vertyll.festival.TestTexts.text;
 import static com.vertyll.festival.TestTexts.values;
 
 class ProductDocumentTest {
 
     private static final ProductDocument T_SHIRT = new ProductDocument(
         new ObjectId(),
-        text("Koszulka"),
+        TestTexts.text("Koszulka"),
         null,
         new BigDecimal("49.99"),
         null,
         List.of(),
         List.of(
-            new ProductOption("size", text("Rozmiar"), values("s", "m")),
-            new ProductOption("color", text("Kolor"), values("black"))
+            new ProductOption("size", TestTexts.text("Rozmiar"), values("s", "m")),
+            new ProductOption("color", TestTexts.text("Kolor"), values("black"))
         ),
         List.of(new ProductVariant(List.of("s", "black"), 2), new ProductVariant(List.of("m", "black"), 5)),
         Instant.EPOCH,
@@ -56,8 +56,8 @@ class ProductDocumentTest {
     @Test
     void selectionIsDescribedWithLocalizedLabels() {
         assertThat(T_SHIRT.describe(List.of("m", "black"))).containsExactly(
-            new SelectedOption(text("Rozmiar"), text("m")),
-            new SelectedOption(text("Kolor"), text("black"))
+            new SelectedOption(TestTexts.text("Rozmiar"), TestTexts.text("m")),
+            new SelectedOption(TestTexts.text("Kolor"), TestTexts.text("black"))
         );
     }
 

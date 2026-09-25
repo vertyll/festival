@@ -10,7 +10,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import org.jspecify.annotations.Nullable;
 
-public final class HttpUrlValidator implements ConstraintValidator<HttpUrl, String> {
+final class HttpUrlValidator implements ConstraintValidator<HttpUrl, String> {
 
     private static final Set<String> ALLOWED_SCHEMES = Set.of("http", "https");
 

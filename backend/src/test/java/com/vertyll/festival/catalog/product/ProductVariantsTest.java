@@ -4,19 +4,19 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.vertyll.festival.TestTexts;
 import com.vertyll.festival.common.InvalidRequestException;
 import com.vertyll.festival.common.MessageKeys;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import static com.vertyll.festival.TestTexts.text;
 import static com.vertyll.festival.TestTexts.values;
 
 class ProductVariantsTest {
 
-    private static final ProductOption SIZE = new ProductOption("size", text("Rozmiar"), values("s", "m"));
-    private static final ProductOption COLOR = new ProductOption("color", text("Kolor"), values("black", "white"));
+    private static final ProductOption SIZE = new ProductOption("size", TestTexts.text("Rozmiar"), values("s", "m"));
+    private static final ProductOption COLOR = new ProductOption("color", TestTexts.text("Kolor"), values("black", "white"));
 
     @Test
     void productWithoutOptionsHasExactlyOneVariant() {
@@ -81,7 +81,7 @@ class ProductVariantsTest {
     void duplicatedOptionCodeIsRejected() {
         assertThatThrownBy(
             () -> ProductVariants
-                .validate(List.of(SIZE, new ProductOption("size", text("Rozmiar"), values("l"))), List.of())
+                .validate(List.of(SIZE, new ProductOption("size", TestTexts.text("Rozmiar"), values("l"))), List.of())
         ).isInstanceOf(InvalidRequestException.class).hasMessage(MessageKeys.PRODUCT_OPTION_DUPLICATED);
     }
 
@@ -89,16 +89,16 @@ class ProductVariantsTest {
     void duplicatedValueCodeIsRejected() {
         assertThatThrownBy(
             () -> ProductVariants
-                .validate(List.of(new ProductOption("size", text("Rozmiar"), values("s", "s"))), List.of())
+                .validate(List.of(new ProductOption("size", TestTexts.text("Rozmiar"), values("s", "s"))), List.of())
         ).isInstanceOf(InvalidRequestException.class).hasMessage(MessageKeys.OPTION_VALUE_DUPLICATED);
     }
 
     @Test
     void combinationLimitProtectsAgainstHugeProducts() {
         List<ProductOption> options = List.of(
-            new ProductOption("a", text("A"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")),
-            new ProductOption("b", text("B"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")),
-            new ProductOption("c", text("C"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
+            new ProductOption("a", TestTexts.text("A"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")),
+            new ProductOption("b", TestTexts.text("B"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")),
+            new ProductOption("c", TestTexts.text("C"), values("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
         );
 
         assertThatThrownBy(() -> ProductVariants.combinations(options)).isInstanceOf(InvalidRequestException.class)
