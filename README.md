@@ -87,6 +87,7 @@ Zmienne środowiskowe profilu `prod`:
 | `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`                | Garage: API S3, region (`s3_region` z `garage.toml`), bucket |
 | `S3_ACCESS_KEY`, `S3_SECRET_ACCESS_KEY`                | klucz Garage z uprawnieniem zapisu do bucketa                |
 | `S3_PUBLIC_BASE_URL`                                   | publiczny adres bucketa (web endpoint Garage)                |
+| `INTERNAL_CA_CERT`                                     | CA klastra (TLS do MongoDB i Garage): `file:/tls/ca.crt`     |
 
 ## Front-endy
 
