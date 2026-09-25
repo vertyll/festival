@@ -23,7 +23,9 @@ RUN npm run build --workspace=@festival/${APP}
 
 FROM ${NODE_IMAGE} AS runtime
 ARG APP
+ARG BACKEND_INTERNAL_URL
 ENV NODE_ENV=production \
+    BACKEND_INTERNAL_URL=${BACKEND_INTERNAL_URL} \
     NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
     PORT=3000
