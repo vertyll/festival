@@ -22,7 +22,7 @@ export function createNextConfig(appConfig = {}) {
     outputFileTracingRoot: workspaceRoot,
     transpilePackages: ["@festival/shared"],
     images: { unoptimized: true },
-    i18n: { locales: LANGUAGES, defaultLocale: DEFAULT_LANGUAGE },
+    i18n: { locales: LANGUAGES, defaultLocale: DEFAULT_LANGUAGE, localeDetection: false },
     async rewrites() {
       const backendUrl = requiredEnv("BACKEND_INTERNAL_URL");
       return BACKEND_PATHS.map((path) => ({ source: path, destination: `${backendUrl}${path}` }));

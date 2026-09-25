@@ -60,7 +60,7 @@ export default function App({ Component, pageProps, router, messages }: Readonly
 App.getInitialProps = async (context: AppContext) => {
   const [appProps, messages] = await Promise.all([
     NextApp.getInitialProps(context),
-    loadMessages(toLanguage(context.router.locale)),
+    loadMessages(toLanguage(context.ctx.locale ?? context.router.locale)),
   ]);
   return { ...appProps, messages };
 };
