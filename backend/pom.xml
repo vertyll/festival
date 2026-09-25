@@ -24,20 +24,24 @@
 
         <lombok.version>1.18.48</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <aws-sdk.version>2.55.4</aws-sdk.version>
-        <archunit.version>1.5.0</archunit.version>
+        <aws-sdk.version>2.55.6</aws-sdk.version>
+        <archunit.version>1.5.1</archunit.version>
         <icu4j.version>78.3</icu4j.version>
         <poi.version>5.5.1</poi.version>
 
         <error-prone.version>2.50.0</error-prone.version>
-        <nullaway.version>0.14.1</nullaway.version>
+        <nullaway.version>0.14.2</nullaway.version>
         <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
-        <pmd.version>7.27.0</pmd.version>
+        <pmd.version>7.28.0</pmd.version>
         <spotbugs-maven-plugin.version>4.10.4.1</spotbugs-maven-plugin.version>
         <spotbugs.version>4.10.4</spotbugs.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
-        <spotless-maven-plugin.version>3.10.2</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>3.10.3</spotless-maven-plugin.version>
         <eclipse-jdt.version>4.40</eclipse-jdt.version>
+
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
 
         <error-prone.common-flags>-XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/target/generated-(test-)?sources/.*</error-prone.common-flags>
 

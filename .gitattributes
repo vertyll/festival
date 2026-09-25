@@ -1,6 +1,12 @@
 * text=auto eol=lf
+
+/mvnw text eol=lf
 *.cmd text eol=crlf
-mvnw text eol=lf
+
+/gradlew text eol=lf
+*.bat text eol=crlf
+*.jar binary
+
 *.png binary
 *.webp binary
 *.ico binary
