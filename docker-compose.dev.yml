@@ -92,7 +92,6 @@ services:
       SPRING_PROFILES_ACTIVE: local
       SPRING_MONGODB_URI: mongodb://mongo:27017/festival
       FESTIVAL_MEDIA_ENDPOINT: http://garage:3900
-      # Server-to-server calls go through the container network; the browser still uses localhost:8090.
       SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MOCK_TOKEN_URI: http://google-mock:8080/google/token
       SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MOCK_JWK_SET_URI: http://google-mock:8080/google/jwks
       SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MOCK_USER_INFO_URI: http://google-mock:8080/google/userinfo
