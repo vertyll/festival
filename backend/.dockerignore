@@ -31,7 +31,6 @@ LICENSE
 
 ### Cache & Package Managers ###
 **/.gradle/
-**/.mvn/
 **/.m2/
 **/node_modules/
 
