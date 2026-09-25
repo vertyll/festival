@@ -4,15 +4,15 @@ Strona festiwalu muzycznego ze sklepem i panel administracyjny.
 
 ## Struktura repozytorium
 
-| Katalog                     | Opis                                                                               |
-|-----------------------------|------------------------------------------------------------------------------------|
-| `backend/`                  | Spring Boot 4.1, Java 25 - API                                                     |
-| `frontend/packages/shared/` | `@festival/shared`: typy modeli API, klient HTTP z CSRF, sesja, walidacja, formaty |
-| `frontend/apps/page/`       | Strona festiwalu i sklep                                                           |
-| `frontend/apps/admin/`      | Panel administracyjny                                                              |
-| `frontend/Dockerfile`       | Wieloetapowy obraz dla obu front-endów (`--build-arg APP=page\|admin`)             |
-| `compose.yaml`, `infra/`    | Lokalnie: MongoDB + Garage, opcjonalnie cały system (profil `app`)                 |
-| `.github/workflows/`        | CI/CD                                                                              |
+| Katalog                            | Opis                                                                                       |
+|------------------------------------|--------------------------------------------------------------------------------------------|
+| `backend/`                         | Spring Boot 4.1, Java 25 - API                                                             |
+| `frontend/packages/shared/`        | `@festival/shared`: typy modeli API, klient HTTP z CSRF, sesja, walidacja, formaty         |
+| `frontend/apps/page/`              | Strona festiwalu i sklep                                                                   |
+| `frontend/apps/admin/`             | Panel administracyjny                                                                      |
+| `frontend/Dockerfile`              | Wieloetapowy obraz dla obu front-endów (`--build-arg APP=page\|admin`)                     |
+| `docker-compose.dev.yml`, `infra/` | Lokalnie: MongoDB + Garage + mock logowania Google, opcjonalnie cały system (profil `app`) |
+| `.github/workflows/`               | CI/CD                                                                                      |
 
 ## Back-end
 
@@ -63,16 +63,16 @@ Profil jest obowiązkowy (`SPRING_PROFILES_ACTIVE=local` albo `prod`).
 | Plik                           | Zawartość                                                            |
 |--------------------------------|----------------------------------------------------------------------|
 | `application.properties`       | wspólna konfiguracja, bez zmiennych środowiskowych                   |
-| `application-local.properties` | pełna konfiguracja lokalna (MongoDB i Garage z `compose.yaml`)       |
+| `application-local.properties` | pełna konfiguracja lokalna (usługi z `docker-compose.dev.yml`)       |
 | `application-prod.properties`  | same odwołania `${...}` do zmiennych środowiskowych (tabela poniżej) |
 
-Wyjątkiem w profilu `local` są dane klientów Google OAuth – ustawia się je zmiennymi `GOOGLE_*` w konfiguracji 
-uruchomieniowej (bez nich aplikacja wstaje, ale logowanie nie działa). Klienci OAuth muszą mieć dozwolone adresy 
-przekierowania:
-- `http://localhost:3000/login/oauth2/code/page`
-- `http://127.0.0.1:3001/login/oauth2/code/admin`
+W profilu `local` logowanie Google zastępuje [mock-oauth2-server](https://github.com/navikt/mock-oauth2-server)
+(serwis `google-mock`, :8090) - nie są potrzebne żadne dane klientów Google. Na ekranie logowania wpisuje się dowolną
+nazwę użytkownika, np. `admin`, a mock wystawia token z adresem `<nazwa>@festival.local` (potwierdzonym).
+`admin@festival.local` jest administratorem panelu (`festival.security.bootstrap-admins`).
 
-Administratora panelu dopisuje się lokalnie w `festival.security.bootstrap-admins`.
+Na produkcji (profil `prod`) klienci Google OAuth muszą mieć dozwolone adresy przekierowania
+`${FESTIVAL_PAGE_URL}/login/oauth2/code/page` i `${FESTIVAL_ADMIN_URL}/login/oauth2/code/admin`.
 
 Zmienne środowiskowe profilu `prod`:
 
@@ -122,16 +122,14 @@ npm run lint && npm run typecheck && npm run format:check && npm run check:trans
 > - Node.js 24.
 
 ```bash
-docker compose up -d     # MongoDB :27017, Garage :3900 (S3) i :3902 (publiczny odczyt)
+docker compose -f docker-compose.dev.yml up -d   # MongoDB :27017, Garage :3900 (S3) i :3902 (publiczny odczyt), mock Google :8090
 
-export GOOGLE_PAGE_CLIENT_ID=... GOOGLE_PAGE_CLIENT_SECRET=... GOOGLE_ADMIN_CLIENT_ID=... GOOGLE_ADMIN_CLIENT_SECRET=...
 cd backend && SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run   # :8080
 cd frontend && npm ci && npm run dev:page                           # http://localhost:3000
 cd frontend && npm run dev:admin                                    # http://127.0.0.1:3001
 ```
 
-Albo cały system w kontenerach: `docker compose --profile app up -d --build` (zmienne `GOOGLE_*` są przekazywane
-z powłoki, jeśli są ustawione).
+Albo cały system w kontenerach: `docker compose -f docker-compose.dev.yml --profile app up -d --build`.
 
 ## Zrzuty ekranu
 
