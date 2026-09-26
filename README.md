@@ -2,6 +2,8 @@
 
 Strona festiwalu muzycznego ze sklepem i panel administracyjny.
 
+Link: https://festival-page.vertyll.dev
+
 ## Struktura repozytorium
 
 | Katalog                            | Opis                                                                                       |
