@@ -13,7 +13,8 @@
         <exclude name="UnitTestShouldIncludeAssert"/>
         <exclude name="LooseCoupling"/>
     </rule>
-    <!-- org.bson.Document is the MongoDB driver's document type, used to seed raw test data -->
+
+    <!-- Best Practices: allow MongoDB's org.bson.Document for raw test data -->
     <rule ref="category/java/bestpractices.xml/LooseCoupling">
         <properties>
             <property name="allowedTypes" value="java.util.Properties,org.bson.Document"/>

@@ -18,10 +18,6 @@ import com.vertyll.festival.MongoTestContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Exercises the CSRF flow of the front-ends over real HTTP. MockMvc cannot check it: spring-security-test's
- * {@code csrf()} post-processor replaces the cookie repository of the shared filter chain.
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Import(MongoTestContainer.class)

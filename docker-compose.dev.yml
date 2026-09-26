@@ -50,8 +50,6 @@ services:
         sleep 3;
         done; exit 1
 
-  # Local stand-in for Google login (OIDC). Log in with any username, e.g. "admin" -> admin@festival.local.
-  # "$$" escapes compose interpolation, the server receives "${subject}" / "${clientId}" templates.
   google-mock:
     image: ghcr.io/navikt/mock-oauth2-server:6.0.3
     restart: unless-stopped
