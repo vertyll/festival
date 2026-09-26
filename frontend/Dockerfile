@@ -2,7 +2,7 @@ ARG NODE_IMAGE=node:24-alpine
 
 FROM ${NODE_IMAGE} AS deps
 ARG APP
-RUN test -n "$APP" || (echo "Podaj --build-arg APP=page albo APP=admin" >&2 && exit 1)
+RUN test -n "$APP" || (echo "Pass --build-arg APP=page or APP=admin" >&2 && exit 1)
 WORKDIR /workspace
 COPY package.json package-lock.json ./
 COPY packages/shared/package.json packages/shared/

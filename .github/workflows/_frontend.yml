@@ -4,15 +4,15 @@ on:
   workflow_call:
     inputs:
       app:
-        description: Nazwa aplikacji w workspace (page albo admin)
+        description: Workspace application name (page or admin)
         required: true
         type: string
       image-name:
-        description: Nazwa obrazu w rejestrze
+        description: Image name in the registry
         required: true
         type: string
       tag-prefix:
-        description: Prefiks tagu git, który publikuje obraz (np. page-v)
+        description: Git tag prefix that publishes the image (e.g. page-v)
         required: true
         type: string
     secrets:

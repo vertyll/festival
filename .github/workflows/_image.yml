@@ -4,19 +4,19 @@ on:
   workflow_call:
     inputs:
       context:
-        description: Kontekst budowania (katalog w repozytorium)
+        description: Build context (repository directory)
         required: true
         type: string
       image-name:
-        description: Nazwa obrazu w rejestrze
+        description: Image name in the registry
         required: true
         type: string
       tag-prefix:
-        description: Prefiks tagu git, który publikuje obraz (np. backend-v)
+        description: Git tag prefix that publishes the image (e.g. backend-v)
         required: true
         type: string
       build-args:
-        description: Argumenty budowania (KLUCZ=wartość, jeden w wierszu)
+        description: Build arguments (KEY=value, one per line)
         required: false
         type: string
         default: ""
