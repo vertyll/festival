@@ -146,7 +146,7 @@
   "admin.translations.default": "Domyślne",
   "admin.translations.empty": "Brak pasujących tłumaczeń",
   "admin.translations.filter": "Szukaj klucza lub tekstu",
-  "admin.translations.hint": "Komunikaty w formacie ICU: parametry w nawiasach klamrowych, np. '{count, plural, one {# sztuka} other {# sztuk}}'. Nie można dodawać parametrów, których nie ma w oryginale.",
+  "admin.translations.hint": "Komunikaty w formacie ICU: parametry w nawiasach klamrowych, np. '{count, plural, one {# sztuka} few {# sztuki} many {# sztuk} other {# sztuki}}'. Nie można dodawać parametrów, których nie ma w oryginale.",
   "admin.translations.messages": "Treść",
   "admin.translations.onlyCustomized": "Tylko zmienione",
   "admin.translations.reset": "Przywróć domyślne",
