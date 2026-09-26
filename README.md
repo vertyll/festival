@@ -66,13 +66,13 @@ Profil jest obowiązkowy (`SPRING_PROFILES_ACTIVE=local` albo `prod`).
 | `application-local.properties` | pełna konfiguracja lokalna (usługi z `docker-compose.dev.yml`)       |
 | `application-prod.properties`  | same odwołania `${...}` do zmiennych środowiskowych (tabela poniżej) |
 
-W profilu `local` logowanie Google zastępuje [mock-oauth2-server](https://github.com/navikt/mock-oauth2-server)
-(serwis `google-mock`, :8090) - nie są potrzebne żadne dane klientów Google. Na ekranie logowania wpisuje się dowolną
-nazwę użytkownika, np. `admin`, a mock wystawia token z adresem `<nazwa>@festival.local` (potwierdzonym).
-`admin@festival.local` jest administratorem panelu (`festival.security.bootstrap-admins`).
+W profilu `local` logowanie Google zastępuje [mock-oauth2-server](https://github.com/navikt/mock-oauth2-server). 
+Na ekranie logowania wpisuje się dowolną nazwę użytkownika, np. `admin`, a mock wystawia token z adresem `<nazwa>@festival.local`.
+Użytkownik `admin@festival.local` jest administratorem panelu (`festival.security.bootstrap-admins`).
 
-Na produkcji (profil `prod`) klienci Google OAuth muszą mieć dozwolone adresy przekierowania
-`${FESTIVAL_PAGE_URL}/login/oauth2/code/page` i `${FESTIVAL_ADMIN_URL}/login/oauth2/code/admin`.
+Na produkcji klienci Google OAuth muszą mieć dozwolone adresy przekierowania:
+- `${FESTIVAL_PAGE_URL}/login/oauth2/code/page`
+- `${FESTIVAL_ADMIN_URL}/login/oauth2/code/admin`
 
 Zmienne środowiskowe profilu `prod`:
 
@@ -117,10 +117,7 @@ npm run lint && npm run typecheck && npm run format:check && npm run check:trans
 
 > [!IMPORTANT]
 >
-> Wymagania: 
-> - Docker, 
-> - Java 25,
-> - Node.js 24.
+> **Wymagania**: Docker, Java 25, Node.js 24.
 
 ```bash
 docker compose -f docker-compose.dev.yml up -d   # MongoDB :27017, Garage :3900 (S3) i :3902 (publiczny odczyt), mock Google :8090
