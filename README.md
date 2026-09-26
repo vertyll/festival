@@ -113,7 +113,7 @@ npm run lint && npm run typecheck && npm run format:check && npm run check:trans
 
 > [!NOTE]
 >
-> Adres back-endu dla `next dev` znajduje się w `apps/*/.env.development` (`BACKEND_INTERNAL_URL=http://localhost:8080`).
+> Adres back-endu dla `next dev` znajduje się w `apps/*/.env.development`.
 
 ## Uruchomienie lokalne
 
