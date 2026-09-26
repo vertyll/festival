@@ -30,9 +30,8 @@ export function FestivalIntlProvider({ language, messages, children }: Readonly<
       locale={language}
       messages={nested}
       timeZone={TIME_ZONE}
-      onError={(error) => {
-        throw error;
-      }}
+      onError={(error) => console.error(error)}
+      getMessageFallback={({ namespace, key }) => (namespace ? `${namespace}.${key}` : key)}
     >
       <PreferredLanguageRedirect />
       {children}
