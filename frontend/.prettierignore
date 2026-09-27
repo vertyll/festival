@@ -1,6 +1,7 @@
 node_modules
 .next
 out
-package-lock.json
+pnpm-lock.yaml
 next-env.d.ts
 public/lottie
+.turbo

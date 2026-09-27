@@ -1,25 +1,26 @@
 ARG NODE_IMAGE=node:24-alpine
 
-FROM ${NODE_IMAGE} AS deps
+FROM ${NODE_IMAGE} AS base
+RUN corepack enable
+WORKDIR /workspace
+
+FROM base AS prune
 ARG APP
 RUN test -n "$APP" || (echo "Pass --build-arg APP=page or APP=admin" >&2 && exit 1)
-WORKDIR /workspace
-COPY package.json package-lock.json ./
-COPY packages/shared/package.json packages/shared/
-COPY apps/page/package.json apps/page/
-COPY apps/admin/package.json apps/admin/
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci --workspace=@festival/${APP} --include-workspace-root --no-audit --no-fund
+COPY . .
+RUN pnpm dlx turbo@2.11.4 prune @festival/${APP} --docker
 
-FROM deps AS build
+FROM base AS build
 ARG APP
 ARG BACKEND_INTERNAL_URL
 ENV NEXT_TELEMETRY_DISABLED=1 \
     BACKEND_INTERNAL_URL=${BACKEND_INTERNAL_URL}
+COPY --from=prune /workspace/out/json/ ./
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+COPY --from=prune /workspace/out/full/ ./
 COPY tsconfig.base.json next.config.base.mjs ./
-COPY packages/shared/ packages/shared/
-COPY apps/${APP}/ apps/${APP}/
-RUN npm run build --workspace=@festival/${APP}
+RUN pnpm turbo build --filter=@festival/${APP}
 
 FROM ${NODE_IMAGE} AS runtime
 ARG APP

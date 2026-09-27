@@ -103,12 +103,15 @@ Zmienne środowiskowe profilu `prod`:
 
 ### Budowanie i jakość
 
+Oba front-endy i kod współdzielony (`packages/shared`) to monorepo pnpm zarządzane przez Turborepo.
+
 ```bash
 cd frontend
-npm ci
-npm run dev:page        # http://localhost:3000
-npm run dev:admin       # http://127.0.0.1:3001
-npm run lint && npm run typecheck && npm run format:check && npm run check:translations
+pnpm install
+pnpm dev:page           # http://localhost:3000
+pnpm dev:admin          # http://127.0.0.1:3001
+pnpm build              # turbo build obu aplikacji
+pnpm lint && pnpm typecheck && pnpm format:check && pnpm check:translations
 ```
 
 > [!NOTE]
@@ -119,14 +122,14 @@ npm run lint && npm run typecheck && npm run format:check && npm run check:trans
 
 > [!IMPORTANT]
 >
-> **Wymagania**: Docker, Java 25, Node.js 24.
+> **Wymagania**: Docker, Java 25, Node.js 24 (pnpm przez Corepack).
 
 ```bash
 docker compose -f docker-compose.local.yml up -d   # MongoDB :27017, Garage :3900 (S3) i :3902 (publiczny odczyt), mock Google :8090
 
 cd backend && SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run   # :8080
-cd frontend && npm ci && npm run dev:page                           # http://localhost:3000
-cd frontend && npm run dev:admin                                    # http://127.0.0.1:3001
+cd frontend && pnpm install && pnpm dev:page                         # http://localhost:3000
+cd frontend && pnpm dev:admin                                       # http://127.0.0.1:3001
 ```
 
 Albo cały system w kontenerach: `docker compose -f docker-compose.local.yml --profile app up -d --build`.
