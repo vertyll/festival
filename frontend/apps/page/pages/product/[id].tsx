@@ -105,7 +105,9 @@ export default function ProductPage({ product }: Readonly<ProductPageProps>) {
   const describeMessage = useMessage();
   const [alert, setAlert] = useState<{ text: string; type: AlertType } | null>(null);
   const variant = selectedVariant(product, selected);
-  const variantStocks = product.variants.filter((item) => item.stock !== null);
+  const variantStocks = product.variants.filter(
+    (item): item is (typeof product.variants)[number] & { stock: number } => item.stock !== null
+  );
   const name = localized(product.name);
 
   function addToCart(valueCodes: readonly string[]) {
@@ -162,7 +164,7 @@ export default function ProductPage({ product }: Readonly<ProductPageProps>) {
                   <div key={item.valueCodes.join("|")}>
                     {t.rich("variantStock", {
                       variant: describeSelection(variantSelection(product, item.valueCodes)),
-                      stock: item.stock ?? 0,
+                      stock: item.stock,
                       amount: stockAmount(item.available),
                     })}
                   </div>
