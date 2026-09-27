@@ -172,7 +172,7 @@ export default function ProductPage({ product }: Readonly<ProductPageProps>) {
                   {t.rich("totalStock", {
                     stock: product.totalStock,
                     strong,
-                    amount: stockAmount((product.totalStock ?? 0) > 0),
+                    amount: stockAmount(product.totalStock > 0),
                   })}
                 </div>
               )}
