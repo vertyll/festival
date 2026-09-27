@@ -22,7 +22,7 @@ public class ShopSettingsService implements SmartInitializingSingleton {
     private final Clock clock;
 
     public ShopSettings current() {
-        return repository.findById(ShopSettingsDocument.ID)
+        return repository.findById(ShopSettingsDocument.SINGLETON_ID)
             .map(ShopSettingsDocument::toSettings)
             .orElseThrow(
                 () -> new IllegalStateException("Shop settings document is missing from the settings collection")
@@ -36,7 +36,7 @@ public class ShopSettingsService implements SmartInitializingSingleton {
     ShopSettingsResponse update(ShopSettingsRequest request) {
         repository.save(
             new ShopSettingsDocument(
-                ShopSettingsDocument.ID,
+                ShopSettingsDocument.SINGLETON_ID,
                 request.shippingPrice(),
                 request.stockVisible(),
                 request.variantStockVisible(),
@@ -50,7 +50,7 @@ public class ShopSettingsService implements SmartInitializingSingleton {
     public void afterSingletonsInstantiated() {
         ShopProperties.InitialSettings initial = properties.initialSettings();
         mongo.upsert(
-            query(where("id").is(ShopSettingsDocument.ID)),
+            query(where("id").is(ShopSettingsDocument.SINGLETON_ID)),
             new Update().setOnInsert("shippingPrice", initial.shippingPrice())
                 .setOnInsert("stockVisible", initial.stockVisible())
                 .setOnInsert("variantStockVisible", initial.variantStockVisible())

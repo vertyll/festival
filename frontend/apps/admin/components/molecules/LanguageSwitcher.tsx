@@ -5,7 +5,7 @@ export default function LanguageSwitcher({ className = "" }: Readonly<{ classNam
   const t = useTranslations("common.language");
   const { current, languages, switchTo } = useLanguageSwitch();
   return (
-    <div role="group" aria-label={t("label")} className={`flex gap-1 ${className}`}>
+    <fieldset aria-label={t("label")} className={`flex gap-1 border-0 p-0 m-0 min-w-0 ${className}`}>
       {languages.map((language) => (
         <button
           key={language}
@@ -19,6 +19,6 @@ export default function LanguageSwitcher({ className = "" }: Readonly<{ classNam
           {t(`short.${language}`)}
         </button>
       ))}
-    </div>
+    </fieldset>
   );
 }

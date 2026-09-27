@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { useTranslations } from "use-intl";
 import type { ShopSettings } from "@festival/shared/api/types";
 import { LoadState } from "@festival/shared/react/LoadState";
@@ -12,6 +11,7 @@ import Layout from "@/components/templates/Layout";
 import { admin } from "@/lib/api";
 import { useDialogs } from "@/lib/dialogs";
 import { useForm } from "@/lib/useForm";
+import { bold } from "@festival/shared/i18n/richText";
 
 interface SettingsFormValues {
   shippingPrice: string;
@@ -74,7 +74,7 @@ function SettingsForm({ settings }: Readonly<{ settings: ShopSettings }>) {
       </label>
       <p className="text-sm text-neutral-500 my-2">
         {t.rich("checkout", {
-          b: (chunks: ReactNode) => <b>{chunks}</b>,
+          b: bold,
           enabled: String(settings.checkoutEnabled),
         })}
       </p>

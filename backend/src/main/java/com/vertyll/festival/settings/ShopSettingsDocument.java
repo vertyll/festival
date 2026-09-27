@@ -15,7 +15,7 @@ record ShopSettingsDocument(
     Instant updatedAt
 ) {
 
-    static final String ID = "shop";
+    static final String SINGLETON_ID = "shop";
 
     ShopSettings toSettings() {
         return new ShopSettings(shippingPrice, stockVisible, variantStockVisible);

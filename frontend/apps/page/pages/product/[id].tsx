@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { GetServerSideProps } from "next";
 import { useState } from "react";
 import { useTranslations } from "use-intl";
@@ -18,6 +19,7 @@ import { cart } from "@/lib/cart";
 import { findOrNull, routeParam, serverApi } from "@/lib/serverApi";
 import type { WithShopSettings } from "@/lib/shopSettings";
 import { isSelectable, selectedVariant, variantSelection } from "@/lib/variants";
+import { bold, strong } from "@festival/shared/i18n/richText";
 
 const ColWrapper = styled.div`
   display: grid;
@@ -81,6 +83,12 @@ const Stock = styled.span<{ $available: boolean }>`
   color: ${(props) => (props.$available ? "green" : "red")};
 `;
 
+function stockAmount(available: boolean) {
+  return function StockAmount(chunks: ReactNode) {
+    return <Stock $available={available}>{chunks}</Stock>;
+  };
+}
+
 const Title = styled.h1`
   font-size: 2em;
 `;
@@ -123,7 +131,7 @@ export default function ProductPage({ product }: Readonly<ProductPageProps>) {
               <Title>{name}</Title>
               <div>
                 {t.rich("category", {
-                  b: (chunks) => <b>{chunks}</b>,
+                  b: bold,
                   path:
                     product.categoryPath.length > 0
                       ? product.categoryPath.map((category) => localized(category.name)).join(" / ")
@@ -155,7 +163,7 @@ export default function ProductPage({ product }: Readonly<ProductPageProps>) {
                     {t.rich("variantStock", {
                       variant: describeSelection(variantSelection(product, item.valueCodes)),
                       stock: item.stock ?? 0,
-                      amount: (chunks) => <Stock $available={item.available}>{chunks}</Stock>,
+                      amount: stockAmount(item.available),
                     })}
                   </div>
                 ))}
@@ -163,13 +171,13 @@ export default function ProductPage({ product }: Readonly<ProductPageProps>) {
                 <div>
                   {t.rich("totalStock", {
                     stock: product.totalStock,
-                    strong: (chunks) => <strong>{chunks}</strong>,
-                    amount: (chunks) => <Stock $available={(product.totalStock ?? 0) > 0}>{chunks}</Stock>,
+                    strong,
+                    amount: stockAmount((product.totalStock ?? 0) > 0),
                   })}
                 </div>
               )}
               <PriceText>
-                {t.rich("price", { b: (chunks) => <b>{chunks}</b> })} <Price amount={product.price} />
+                {t.rich("price", { b: bold })} <Price amount={product.price} />
               </PriceText>
               <Button
                 onClick={() => variant && addToCart(variant.valueCodes)}

@@ -26,8 +26,10 @@ function slug(text: string): string {
 function uniqueCode(label: LocalizedText, taken: readonly string[]): string {
   const base = slug(label.en) || slug(label.pl) || "value";
   let code = base;
-  for (let suffix = 2; taken.includes(code); suffix++) {
+  let suffix = 2;
+  while (taken.includes(code)) {
     code = `${base}-${suffix}`;
+    suffix++;
   }
   return code;
 }
@@ -85,12 +87,10 @@ export default function ValueListEditor({ values, onChange, error }: Readonly<Va
 
   return (
     <>
-      <div
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            commit();
-          }
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          commit();
         }}
       >
         <LocalizedTextField
@@ -100,8 +100,8 @@ export default function ValueListEditor({ values, onChange, error }: Readonly<Va
           onChange={setDraft}
           errors={draftErrors}
         />
-      </div>
-      <Button onClick={commit}>{editedCode === null ? t("addValue") : t("updateValue")}</Button>
+        <Button type="submit">{editedCode === null ? t("addValue") : t("updateValue")}</Button>
+      </form>
       <ErrorMessage message={error} />
       {values.length > 0 && (
         <table className="primary-table mt-3">

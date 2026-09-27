@@ -54,7 +54,7 @@ export function isValidationError(error: unknown): error is ApiError {
   return error instanceof ApiError && error.status === 400 && hasErrors(error.fieldErrors);
 }
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 
 export const required = (): Rule<string> => (value) => (value.trim() ? null : message("validation.required"));
 

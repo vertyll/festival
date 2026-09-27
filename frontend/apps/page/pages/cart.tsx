@@ -23,6 +23,7 @@ import { account, api } from "@/lib/api";
 import { canIncrease, cart, cartItemKey, useCartItems, type CartItem } from "@/lib/cart";
 import { shippingErrorsOf, useShippingForm } from "@/lib/shipping";
 import { useShopSettings } from "@/lib/shopSettings";
+import { bold } from "@festival/shared/i18n/richText";
 
 const Wrapper = styled.div`
   display: grid;
@@ -175,7 +176,7 @@ export default function CartPage() {
           <h1>{t("thanks")}</h1>
           <p>
             {t.rich("toPay", {
-              b: (chunks) => <b>{chunks}</b>,
+              b: bold,
               total: format.number(placedOrder.total, { style: "currency", currency: placedOrder.currency }),
             })}
           </p>

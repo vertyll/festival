@@ -2,6 +2,7 @@ import { useTranslations } from "use-intl";
 import Link from "next/link";
 import styled from "styled-components";
 import Navbar from "../molecules/Navbar";
+import { bold } from "@festival/shared/i18n/richText";
 
 const StyledHeader = styled.header`
   margin: 0 10px;
@@ -42,7 +43,7 @@ export default function Header() {
       <Wrapper>
         <LogoWrapper>
           <Logo href="/">{t("logo")}</Logo>
-          <span>{t.rich("dates", { b: (chunks) => <b>{chunks}</b> })}</span>
+          <span>{t.rich("dates", { b: bold })}</span>
           <Place>{t("venue")}</Place>
         </LogoWrapper>
         <Navbar />

@@ -37,27 +37,35 @@ function keyPattern(node) {
   return null;
 }
 
+function translatorNamespace(statement, name) {
+  if (!ts.isVariableStatement(statement)) {
+    return undefined;
+  }
+  for (const declaration of statement.declarationList.declarations) {
+    const init = declaration.initializer;
+    const isTranslator =
+      ts.isIdentifier(declaration.name) &&
+      declaration.name.text === name &&
+      init &&
+      ts.isCallExpression(init) &&
+      init.expression.getText() === "useTranslations";
+    if (isTranslator) {
+      const [namespace] = init.arguments;
+      return namespace && ts.isStringLiteral(namespace) ? namespace.text : "";
+    }
+  }
+  return undefined;
+}
+
 function namespaceOf(identifier) {
   for (let scope = identifier.parent; scope; scope = scope.parent) {
     if (!ts.isBlock(scope) && !ts.isSourceFile(scope)) {
       continue;
     }
     for (const statement of scope.statements) {
-      if (!ts.isVariableStatement(statement)) {
-        continue;
-      }
-      for (const declaration of statement.declarationList.declarations) {
-        const init = declaration.initializer;
-        if (
-          ts.isIdentifier(declaration.name) &&
-          declaration.name.text === identifier.text &&
-          init &&
-          ts.isCallExpression(init) &&
-          init.expression.getText() === "useTranslations"
-        ) {
-          const [namespace] = init.arguments;
-          return namespace && ts.isStringLiteral(namespace) ? namespace.text : "";
-        }
+      const namespace = translatorNamespace(statement, identifier.text);
+      if (namespace !== undefined) {
+        return namespace;
       }
     }
   }
@@ -71,30 +79,37 @@ function recordUsage(pattern, location) {
   (pattern.includes("[^.]+") || pattern.endsWith(".") ? patterns : exact).push({ pattern, location });
 }
 
+function recordCall(node, source, file) {
+  const callee = node.expression;
+  const target = ts.isPropertyAccessExpression(callee) && callee.name.text === "rich" ? callee.expression : callee;
+  if (!ts.isIdentifier(target)) {
+    return;
+  }
+  const location = `${path.relative(frontend, file)}:${source.getLineAndCharacterOfPosition(node.getStart()).line + 1}`;
+  const key = keyPattern(node.arguments[0]);
+  if (target.text === "message") {
+    if (key !== null) {
+      recordUsage(key, location);
+    }
+    return;
+  }
+  const namespace = namespaceOf(target);
+  if (namespace === undefined) {
+    return;
+  }
+  const prefix = namespace ? String.raw`${escape(namespace)}\.` : "";
+  if (key !== null) {
+    recordUsage(prefix + key, location);
+  } else if (namespace) {
+    recordUsage(prefix, location);
+  }
+}
+
 for (const file of sourceRoots.flatMap(sourceFiles)) {
   const source = ts.createSourceFile(file, fs.readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true);
   const visit = (node) => {
     if (ts.isCallExpression(node) && node.arguments.length > 0) {
-      const callee = node.expression;
-      const target = ts.isPropertyAccessExpression(callee) && callee.name.text === "rich" ? callee.expression : callee;
-      const location = `${path.relative(frontend, file)}:${source.getLineAndCharacterOfPosition(node.getStart()).line + 1}`;
-      if (ts.isIdentifier(target) && target.text === "message") {
-        const key = keyPattern(node.arguments[0]);
-        if (key !== null) {
-          recordUsage(key, location);
-        }
-      } else if (ts.isIdentifier(target)) {
-        const namespace = namespaceOf(target);
-        if (namespace !== undefined) {
-          const prefix = namespace ? String.raw`${escape(namespace)}\.` : "";
-          const key = keyPattern(node.arguments[0]);
-          if (key !== null) {
-            recordUsage(prefix + key, location);
-          } else if (namespace) {
-            recordUsage(prefix, location);
-          }
-        }
-      }
+      recordCall(node, source, file);
     }
     ts.forEachChild(node, visit);
   };
