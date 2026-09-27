@@ -7,6 +7,7 @@ import { SessionProvider } from "@festival/shared/auth/session";
 import { FestivalIntlProvider } from "@festival/shared/i18n/IntlSetup";
 import { toLanguage } from "@festival/shared/i18n/localized";
 import { loadMessages } from "@festival/shared/i18n/messages";
+import AdminGate from "@/components/templates/AdminGate";
 import { DialogProvider } from "@/lib/dialogs";
 
 interface AdminAppProps extends AppProps {
@@ -29,9 +30,11 @@ export default function App({ Component, pageProps, router, messages }: Readonly
     <FestivalIntlProvider language={toLanguage(router.locale)} messages={messages}>
       <AppHead />
       <SessionProvider>
-        <DialogProvider>
-          <Component {...pageProps} />
-        </DialogProvider>
+        <AdminGate>
+          <DialogProvider>
+            <Component {...pageProps} />
+          </DialogProvider>
+        </AdminGate>
       </SessionProvider>
     </FestivalIntlProvider>
   );

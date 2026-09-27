@@ -67,6 +67,7 @@
   "admin.layout.menu": "Menu",
   "admin.layout.notAdministrator": "Jesteś zalogowany jako <b>{email}</b> na stronie festiwalu. Wyloguj się i zaloguj przez panel.",
   "admin.layout.sessionFailed": "Nie udało się połączyć z serwerem. Odśwież stronę.",
+  "admin.layout.signIn": "Logowanie",
   "admin.layout.title": "{page} - Sunset Festival - administracja",
   "admin.logo": "Sunset Festival",
   "admin.nav.administrators": "Administratorzy",
