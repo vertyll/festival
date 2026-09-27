@@ -6,15 +6,15 @@ Link: https://festival-page.vertyll.dev
 
 ## Struktura repozytorium
 
-| Katalog                            | Opis                                                                                       |
-|------------------------------------|--------------------------------------------------------------------------------------------|
-| `backend/`                         | Spring Boot 4.1, Java 25 - API                                                             |
-| `frontend/packages/shared/`        | `@festival/shared`: typy modeli API, klient HTTP z CSRF, sesja, walidacja, formaty         |
-| `frontend/apps/page/`              | Strona festiwalu i sklep                                                                   |
-| `frontend/apps/admin/`             | Panel administracyjny                                                                      |
-| `frontend/Dockerfile`              | Wieloetapowy obraz dla obu front-endów (`--build-arg APP=page\|admin`)                     |
-| `docker-compose.dev.yml`, `infra/` | Lokalnie: MongoDB + Garage + mock logowania Google, opcjonalnie cały system (profil `app`) |
-| `.github/workflows/`               | CI/CD                                                                                      |
+| Katalog                              | Opis                                                                                       |
+|--------------------------------------|--------------------------------------------------------------------------------------------|
+| `backend/`                           | Spring Boot 4.1, Java 25 - API                                                             |
+| `frontend/packages/shared/`          | `@festival/shared`: typy modeli API, klient HTTP z CSRF, sesja, walidacja, formaty         |
+| `frontend/apps/page/`                | Strona festiwalu i sklep                                                                   |
+| `frontend/apps/admin/`               | Panel administracyjny                                                                      |
+| `frontend/Dockerfile`                | Wieloetapowy obraz dla obu front-endów (`--build-arg APP=page\|admin`)                     |
+| `docker-compose.local.yml`, `infra/` | Lokalnie: MongoDB + Garage + mock logowania Google, opcjonalnie cały system (profil `app`) |
+| `.github/workflows/`                 | CI/CD                                                                                      |
 
 ## Back-end
 
@@ -65,7 +65,7 @@ Profil jest obowiązkowy (`SPRING_PROFILES_ACTIVE=local` albo `prod`).
 | Plik                           | Zawartość                                                            |
 |--------------------------------|----------------------------------------------------------------------|
 | `application.properties`       | wspólna konfiguracja, bez zmiennych środowiskowych                   |
-| `application-local.properties` | pełna konfiguracja lokalna (usługi z `docker-compose.dev.yml`)       |
+| `application-local.properties` | pełna konfiguracja lokalna (usługi z `docker-compose.local.yml`)       |
 | `application-prod.properties`  | same odwołania `${...}` do zmiennych środowiskowych (tabela poniżej) |
 
 W profilu `local` logowanie Google zastępuje [mock-oauth2-server](https://github.com/navikt/mock-oauth2-server). 
@@ -122,14 +122,14 @@ npm run lint && npm run typecheck && npm run format:check && npm run check:trans
 > **Wymagania**: Docker, Java 25, Node.js 24.
 
 ```bash
-docker compose -f docker-compose.dev.yml up -d   # MongoDB :27017, Garage :3900 (S3) i :3902 (publiczny odczyt), mock Google :8090
+docker compose -f docker-compose.local.yml up -d   # MongoDB :27017, Garage :3900 (S3) i :3902 (publiczny odczyt), mock Google :8090
 
 cd backend && SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run   # :8080
 cd frontend && npm ci && npm run dev:page                           # http://localhost:3000
 cd frontend && npm run dev:admin                                    # http://127.0.0.1:3001
 ```
 
-Albo cały system w kontenerach: `docker compose -f docker-compose.dev.yml --profile app up -d --build`.
+Albo cały system w kontenerach: `docker compose -f docker-compose.local.yml --profile app up -d --build`.
 
 ## Zrzuty ekranu
 

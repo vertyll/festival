@@ -1,21 +1,16 @@
-# .env files are allowed only in front-end apps (frontend/apps/*/.env.development, no secrets)
-.env
-.env.*
-!frontend/apps/*/.env.development
-
-# IDE / system
+### IDE ###
 .idea/
 .vscode/
 *.iml
+
+### OS ###
 .DS_Store
+Thumbs.db
 
-# Java
-backend/target/
+### Environment ###
+.env
+.env.*
+!.env.example
 
-# Node / Next.js
-node_modules/
-.next/
-out/
-*.tsbuildinfo
-next-env.d.ts
-npm-debug.log*
+### Front-end development env files (no secrets) ###
+!frontend/apps/*/.env.development
