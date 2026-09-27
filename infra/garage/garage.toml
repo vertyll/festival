@@ -14,3 +14,7 @@ root_domain = ".s3.localhost"
 [s3_web]
 bind_addr = "[::]:3902"
 root_domain = ".web.localhost"
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token = "festival-local-admin-token"

@@ -30,12 +30,19 @@ services:
       - ./infra/garage/garage.toml:/etc/garage.toml:ro
       - garage-meta:/var/lib/garage/meta
       - garage-data:/var/lib/garage/data
+    healthcheck:
+      test: ["CMD", "/garage", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
   garage-init:
     image: docker.io/amazon/aws-cli:2.37.4
     depends_on:
-      - garage
-    restart: on-failure
+      garage:
+        condition: service_healthy
+    restart: "no"
     environment:
       AWS_ACCESS_KEY_ID: "GK0000000000000000000000de"
       AWS_SECRET_ACCESS_KEY: "feedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeedfeed"
@@ -44,11 +51,23 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - >-
-        for attempt in 1 2 3 4 5 6 7 8 9 10; do
         aws --endpoint-url http://garage:3900 s3api put-bucket-website --bucket "$$S3_BUCKET"
-        --website-configuration '{"IndexDocument":{"Suffix":"index.html"}}' && exit 0;
-        sleep 3;
-        done; exit 1
+        --website-configuration '{"IndexDocument":{"Suffix":"index.html"}}'
+
+  garage-ui:
+    image: docker.io/noooste/garage-ui:v0.13.0
+    restart: unless-stopped
+    depends_on:
+      garage:
+        condition: service_healthy
+    volumes:
+      - ./infra/garage/garage.toml:/etc/garage.toml:ro
+    environment:
+      GARAGE_UI_GARAGE_TOML: /etc/garage.toml
+      GARAGE_UI_GARAGE_ENDPOINT: http://garage:3900
+      GARAGE_UI_GARAGE_ADMIN_ENDPOINT: http://garage:3903
+    ports:
+      - "127.0.0.1:3909:8080"
 
   google-mock:
     image: ghcr.io/navikt/mock-oauth2-server:6.0.3
