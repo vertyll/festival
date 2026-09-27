@@ -60,12 +60,12 @@ cd backend
 
 ### Profile i konfiguracja
 
-Profil jest obowiązkowy (`SPRING_PROFILES_ACTIVE=local` albo `prod`).
+Domyślny profil to `local`; obraz Dockera ustawia `prod` (`SPRING_PROFILES_ACTIVE=prod`).
 
 | Plik                           | Zawartość                                                            |
 |--------------------------------|----------------------------------------------------------------------|
 | `application.properties`       | wspólna konfiguracja, bez zmiennych środowiskowych                   |
-| `application-local.properties` | pełna konfiguracja lokalna (usługi z `docker-compose.local.yml`)       |
+| `application-local.properties` | pełna konfiguracja lokalna (usługi z `docker-compose.local.yml`)     |
 | `application-prod.properties`  | same odwołania `${...}` do zmiennych środowiskowych (tabela poniżej) |
 
 W profilu `local` logowanie Google zastępuje [mock-oauth2-server](https://github.com/navikt/mock-oauth2-server). 
@@ -127,7 +127,7 @@ pnpm lint && pnpm typecheck && pnpm format:check && pnpm check:translations
 ```bash
 docker compose -f docker-compose.local.yml up -d   # MongoDB :27017, Garage :3900 (S3) i :3902 (publiczny odczyt), mock Google :8090
 
-cd backend && SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run   # :8080
+cd backend && ./mvnw spring-boot:run                                # :8080
 cd frontend && pnpm install && pnpm dev:page                         # http://localhost:3000
 cd frontend && pnpm dev:admin                                       # http://127.0.0.1:3001
 ```
