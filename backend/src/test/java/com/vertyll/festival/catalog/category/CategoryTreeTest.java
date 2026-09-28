@@ -38,7 +38,9 @@ class CategoryTreeTest {
 
     @Test
     void parentMustExist() {
-        assertThatThrownBy(() -> TREE.validateParent(T_SHIRTS, new ObjectId()))
+        ObjectId missingParent = new ObjectId();
+
+        assertThatThrownBy(() -> TREE.validateParent(T_SHIRTS, missingParent))
             .isInstanceOf(InvalidRequestException.class);
     }
 

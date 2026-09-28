@@ -40,14 +40,17 @@ class ProductDocumentTest {
 
     @Test
     void incompleteSelectionIsRejected() {
-        assertThatThrownBy(() -> T_SHIRT.valueCodesFor(Map.of("size", "m"))).isInstanceOf(InvalidRequestException.class)
+        Map<String, String> selection = Map.of("size", "m");
+
+        assertThatThrownBy(() -> T_SHIRT.valueCodesFor(selection)).isInstanceOf(InvalidRequestException.class)
             .hasMessage(MessageKeys.PRODUCT_OPTIONS_INCOMPLETE);
     }
 
     @Test
     void valueOutsideOptionIsRejected() {
-        assertThatThrownBy(() -> T_SHIRT.valueCodesFor(Map.of("size", "xl", "color", "black")))
-            .isInstanceOf(InvalidRequestException.class)
+        Map<String, String> selection = Map.of("size", "xl", "color", "black");
+
+        assertThatThrownBy(() -> T_SHIRT.valueCodesFor(selection)).isInstanceOf(InvalidRequestException.class)
             .hasMessage(MessageKeys.PRODUCT_OPTION_VALUE_INVALID);
     }
 

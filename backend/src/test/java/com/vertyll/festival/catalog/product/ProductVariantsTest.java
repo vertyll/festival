@@ -44,57 +44,61 @@ class ProductVariantsTest {
 
     @Test
     void missingCombinationIsRejected() {
-        assertThatThrownBy(() -> ProductVariants.validate(List.of(SIZE), List.of(new ProductVariant(List.of("s"), 1))))
+        List<ProductOption> options = List.of(SIZE);
+        List<ProductVariant> variants = List.of(new ProductVariant(List.of("s"), 1));
+
+        assertThatThrownBy(() -> ProductVariants.validate(options, variants))
             .isInstanceOf(InvalidRequestException.class)
             .hasMessage(MessageKeys.PRODUCT_VARIANTS_MISMATCH);
     }
 
     @Test
     void unknownCombinationIsRejected() {
-        assertThatThrownBy(
-            () -> ProductVariants.validate(
-                List.of(SIZE),
-                List.of(
-                    new ProductVariant(List.of("s"), 1),
-                    new ProductVariant(List.of("m"), 1),
-                    new ProductVariant(List.of("xl"), 1)
-                )
-            )
-        ).isInstanceOf(InvalidRequestException.class);
+        List<ProductOption> options = List.of(SIZE);
+        List<ProductVariant> variants = List.of(
+            new ProductVariant(List.of("s"), 1),
+            new ProductVariant(List.of("m"), 1),
+            new ProductVariant(List.of("xl"), 1)
+        );
+
+        assertThatThrownBy(() -> ProductVariants.validate(options, variants))
+            .isInstanceOf(InvalidRequestException.class);
     }
 
     @Test
     void duplicatedCombinationIsRejected() {
-        assertThatThrownBy(
-            () -> ProductVariants.validate(
-                List.of(SIZE),
-                List.of(
-                    new ProductVariant(List.of("s"), 1),
-                    new ProductVariant(List.of("s"), 2),
-                    new ProductVariant(List.of("m"), 1)
-                )
-            )
-        ).isInstanceOf(InvalidRequestException.class).hasMessage(MessageKeys.PRODUCT_VARIANT_DUPLICATED);
+        List<ProductOption> options = List.of(SIZE);
+        List<ProductVariant> variants = List.of(
+            new ProductVariant(List.of("s"), 1),
+            new ProductVariant(List.of("s"), 2),
+            new ProductVariant(List.of("m"), 1)
+        );
+
+        assertThatThrownBy(() -> ProductVariants.validate(options, variants))
+            .isInstanceOf(InvalidRequestException.class)
+            .hasMessage(MessageKeys.PRODUCT_VARIANT_DUPLICATED);
     }
 
     @Test
     void duplicatedOptionCodeIsRejected() {
-        assertThatThrownBy(
-            () -> ProductVariants.validate(
-                List.of(SIZE, new ProductOption("size", TestTexts.text("Rozmiar"), TestTexts.values("l"))),
-                List.of()
-            )
-        ).isInstanceOf(InvalidRequestException.class).hasMessage(MessageKeys.PRODUCT_OPTION_DUPLICATED);
+        List<ProductOption> options =
+                List.of(SIZE, new ProductOption("size", TestTexts.text("Rozmiar"), TestTexts.values("l")));
+        List<ProductVariant> variants = List.of();
+
+        assertThatThrownBy(() -> ProductVariants.validate(options, variants))
+            .isInstanceOf(InvalidRequestException.class)
+            .hasMessage(MessageKeys.PRODUCT_OPTION_DUPLICATED);
     }
 
     @Test
     void duplicatedValueCodeIsRejected() {
-        assertThatThrownBy(
-            () -> ProductVariants.validate(
-                List.of(new ProductOption("size", TestTexts.text("Rozmiar"), TestTexts.values("s", "s"))),
-                List.of()
-            )
-        ).isInstanceOf(InvalidRequestException.class).hasMessage(MessageKeys.OPTION_VALUE_DUPLICATED);
+        List<ProductOption> options =
+                List.of(new ProductOption("size", TestTexts.text("Rozmiar"), TestTexts.values("s", "s")));
+        List<ProductVariant> variants = List.of();
+
+        assertThatThrownBy(() -> ProductVariants.validate(options, variants))
+            .isInstanceOf(InvalidRequestException.class)
+            .hasMessage(MessageKeys.OPTION_VALUE_DUPLICATED);
     }
 
     @Test
