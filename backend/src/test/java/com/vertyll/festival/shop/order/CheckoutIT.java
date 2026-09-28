@@ -57,7 +57,7 @@ class CheckoutIT {
                 try {
                     orders.place(customerId, orderOf(mug, Map.of(), 1));
                     return true;
-                } catch (InsufficientStockException e) {
+                } catch (InsufficientStockException _) {
                     return false;
                 }
             });
