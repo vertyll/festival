@@ -81,6 +81,7 @@ class SecurityConfig {
         return login.loginPage("/login");
     }
 
+    @SuppressWarnings("java:S3330")
     private static CookieCsrfTokenRepository csrfTokenRepository(boolean secureCookies) {
         CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         repository.setCookieCustomizer(cookie -> cookie.secure(secureCookies).sameSite("Lax"));

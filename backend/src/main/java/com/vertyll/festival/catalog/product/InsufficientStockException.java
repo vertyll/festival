@@ -7,6 +7,7 @@ import com.vertyll.festival.common.ConflictException;
 import com.vertyll.festival.common.LocalizedText;
 import com.vertyll.festival.common.MessageKeys;
 
+@SuppressWarnings("java:S110")
 public final class InsufficientStockException extends ConflictException {
 
     @Serial
