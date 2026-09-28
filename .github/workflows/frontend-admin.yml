@@ -1,4 +1,4 @@
-name: Frontend - admin
+name: Admin
 
 on:
   push:
@@ -37,6 +37,7 @@ concurrency:
 
 jobs:
   frontend:
+    name: Frontend
     uses: ./.github/workflows/_frontend.yml
     with:
       app: admin

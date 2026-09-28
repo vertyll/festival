@@ -1,4 +1,4 @@
-name: Frontend (reusable)
+name: Frontend
 
 on:
   workflow_call:
@@ -25,8 +25,8 @@ permissions:
   contents: read
 
 jobs:
-  quality:
-    name: Prettier, ESLint, TypeScript, translations, build
+  lint:
+    name: Lint
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -62,6 +62,31 @@ jobs:
       - name: Check translations
         run: pnpm run check:translations
 
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          package_json_file: frontend/package.json
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --filter "@festival/${{ inputs.app }}..." --filter festival-frontend
+
       - name: Build
         run: pnpm turbo build --filter="@festival/${{ inputs.app }}"
         env:
@@ -69,7 +94,8 @@ jobs:
           BACKEND_INTERNAL_URL: http://backend:8080
 
   image:
-    needs: quality
+    name: Image
+    needs: [lint, build]
     if: github.event_name != 'push' || github.ref_type == 'tag'
     uses: ./.github/workflows/_image.yml
     with:
