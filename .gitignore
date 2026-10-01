@@ -14,3 +14,6 @@ Thumbs.db
 
 ### Front-end development env files (no secrets) ###
 !frontend/apps/*/.env.development
+
+### SonarQube ###
+.scannerwork/
