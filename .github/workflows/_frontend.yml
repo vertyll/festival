@@ -20,6 +20,8 @@ on:
         required: false
       ZOT_PASSWORD:
         required: false
+      SONAR_TOKEN:
+        required: false
 
 permissions:
   contents: read
