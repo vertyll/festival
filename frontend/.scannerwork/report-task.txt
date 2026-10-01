@@ -1,0 +1,6 @@
+projectKey=festival-frontend
+serverUrl=http://127.0.0.1:9500
+serverVersion=26.9.0.129388
+dashboardUrl=http://127.0.0.1:9500/dashboard?id=festival-frontend
+ceTaskId=5eba4ae1-3a3a-4b29-931d-afdd50429311
+ceTaskUrl=http://127.0.0.1:9500/api/ce/task?id=5eba4ae1-3a3a-4b29-931d-afdd50429311
