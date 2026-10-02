@@ -21,6 +21,8 @@ const StyledLink = styled(Link)<{ $bold?: boolean }>`
   text-decoration: none;
   cursor: pointer;
   svg {
+    flex-shrink: 0;
+    width: 24px;
     height: 24px;
   }
 
@@ -36,7 +38,6 @@ const StyledLink = styled(Link)<{ $bold?: boolean }>`
     `};
 
   @media (max-width: 768px) {
-    display: block;
     padding: 10px 20px;
   }
 `;
