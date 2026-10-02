@@ -76,15 +76,14 @@ Rejestracją, logowaniem, weryfikacją e-maila, resetem hasła, 2FA i akceptacj�
 code z PKCE; back-end trzyma tokeny w sesji i daje przeglądarce tylko ciasteczko `FESTIVAL_SESSION`. Język wybrany na
 stronie (`NEXT_LOCALE`) trafia na strony Keycloaka jako `ui_locales`.
 
-Role są rolami realmu, jak w VEDS: każde konto dostaje `USER`, a `ADMIN` nadaje się w konsoli Keycloaka
+Role są rolami realmu: każde konto dostaje `USER`, a `ADMIN` nadaje się w konsoli Keycloaka
 (*Users → konto → Role mapping*). Do panelu wchodzi tylko konto z `ADMIN`. Każde żądanie do `/api/admin/**` sprawdza
 rolę w aktualnym tokenie dostępu, odświeżanym w razie potrzeby, więc odebranie roli albo zakończenie sesji w Keycloaku
 odcina dostęp najpóźniej po wygaśnięciu tokenu, bez czekania na koniec sesji panelu. Wylogowanie
 (`POST /logout`) kończy też sesję w Keycloaku.
 
 Lokalny realm (`keycloak/realm-export.json`) ma dwa konta z hasłem `festival`: `admin@festival.local` (`ADMIN`) i
-`klient@festival.local`. Realm produkcyjny utrzymuje [`k8s-infra`](https://github.com/vertyll/k8s-infra)
-(`apps/keycloak-realms/festival.json`).
+`klient@festival.local`.
 
 Zmienne środowiskowe profilu `prod`:
 
