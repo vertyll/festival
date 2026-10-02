@@ -60,7 +60,7 @@ export default function AdminGate({ children }: Readonly<{ children: ReactNode }
       <FullScreen>
         {query.loginError !== undefined && <p className="mb-4">{t("loginError")}</p>}
         <Button variant="login" className="text-black" onClick={() => signIn("admin")}>
-          {t.rich("googleLogin", { b: bold })}
+          {t("login")}
         </Button>
       </FullScreen>
     );
@@ -69,7 +69,7 @@ export default function AdminGate({ children }: Readonly<{ children: ReactNode }
     return (
       <FullScreen>
         <p className="mb-4">{t.rich("notAdministrator", { b: bold, email: session.user.email })}</p>
-        <Button variant="login" className="text-black" onClick={() => void signOut("/")}>
+        <Button variant="login" className="text-black" onClick={() => void signOut()}>
           {t("logout")}
         </Button>
       </FullScreen>

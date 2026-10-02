@@ -1,8 +1,6 @@
 import type { HttpClient } from "./http";
 import type {
   AdminProduct,
-  Administrator,
-  AdministratorRequest,
   Artist,
   ArtistRequest,
   Attribute,
@@ -48,7 +46,6 @@ export function adminApi(http: HttpClient) {
     categories: collection<Category, CategoryRequest>(http, "/api/admin/categories"),
     attributes: collection<Attribute, AttributeRequest>(http, "/api/admin/attributes"),
     products: editableCollection<AdminProduct, ProductRequest>(http, "/api/admin/products"),
-    administrators: collection<Administrator, AdministratorRequest>(http, "/api/admin/administrators"),
     orders: { list: () => http.get<Order[]>("/api/admin/orders") },
     settings: {
       get: () => http.get<ShopSettings>("/api/admin/settings"),

@@ -8,15 +8,19 @@ enum LoginClient {
     ADMIN("admin", true);
 
     private final String registrationId;
-    private final boolean grantsAdministrator;
+    private final boolean requiresAdministrator;
 
-    LoginClient(String registrationId, boolean grantsAdministrator) {
+    LoginClient(String registrationId, boolean requiresAdministrator) {
         this.registrationId = registrationId;
-        this.grantsAdministrator = grantsAdministrator;
+        this.requiresAdministrator = requiresAdministrator;
     }
 
-    boolean grantsAdministrator() {
-        return grantsAdministrator;
+    String registrationId() {
+        return registrationId;
+    }
+
+    boolean requiresAdministrator() {
+        return requiresAdministrator;
     }
 
     static Optional<LoginClient> find(String registrationId) {

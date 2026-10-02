@@ -42,4 +42,10 @@
     <Match>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
+    <!-- FindSecBugs: the NEXT_LOCALE cookie only picks ui_locales, and Language.fromCode accepts nothing but pl or en -->
+    <Match>
+        <Class name="com.vertyll.festival.security.LocalizedAuthorizationRequestResolver"/>
+        <Bug pattern="COOKIE_USAGE"/>
+    </Match>
+
 </FindBugsFilter>

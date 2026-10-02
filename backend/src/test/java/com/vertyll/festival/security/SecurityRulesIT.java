@@ -1,5 +1,7 @@
 package com.vertyll.festival.security;
 
+import jakarta.servlet.http.Cookie;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +11,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.vertyll.festival.IntegrationTest;
 import com.vertyll.festival.common.MessageKeys;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,6 +29,8 @@ import static com.vertyll.festival.TestUsers.removedAdmin;
 
 @IntegrationTest
 class SecurityRulesIT {
+
+    private static final String KEYCLOAK = "http://localhost:8181/realms/festival/protocol/openid-connect";
 
     private static final String STAGE = "{\"name\":{\"pl\":\"Scena główna\",\"en\":\"Main stage\"}}";
 
@@ -85,6 +93,60 @@ class SecurityRulesIT {
     }
 
     @Nested
+    class SignIn {
+
+        @Test
+        void pageSignsInThroughKeycloakWithPkceInTheChosenLanguage() throws Exception {
+            mvc.perform(get("/oauth2/authorization/page").cookie(new Cookie("NEXT_LOCALE", "en")))
+                .andExpect(status().isFound())
+                .andExpect(
+                    header().string(
+                        "Location",
+                        allOf(
+                            startsWith(KEYCLOAK + "/auth?"),
+                            containsString("client_id=festival-page"),
+                            containsString("code_challenge_method=S256"),
+                            containsString("ui_locales=en"),
+                            containsString("redirect_uri=http://localhost:3000/login/oauth2/code/page")
+                        )
+                    )
+                );
+        }
+
+        @Test
+        void adminPanelSignsInWithItsOwnClient() throws Exception {
+            mvc.perform(get("/oauth2/authorization/admin"))
+                .andExpect(
+                    header().string(
+                        "Location",
+                        allOf(
+                            containsString("client_id=festival-admin"),
+                            containsString("ui_locales=pl"),
+                            containsString("redirect_uri=http://127.0.0.1:3001/login/oauth2/code/admin")
+                        )
+                    )
+                );
+        }
+
+        @Test
+        void signOutEndsTheKeycloakSessionAndReturnsToTheSameFrontEnd() throws Exception {
+            mvc.perform(post("/logout").with(admin()).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(
+                    jsonPath(
+                        "$.logoutUrl",
+                        allOf(
+                            startsWith(KEYCLOAK + "/logout?"),
+                            containsString("client_id=festival-admin"),
+                            containsString("id_token_hint="),
+                            containsString("post_logout_redirect_uri=http://127.0.0.1:3001/")
+                        )
+                    )
+                );
+        }
+    }
+
+    @Nested
     class Customer {
 
         @Test
@@ -104,7 +166,6 @@ class SecurityRulesIT {
         @Test
         void cannotUseAdminApi() throws Exception {
             mvc.perform(get("/api/admin/orders").with(customer())).andExpect(status().isForbidden());
-            mvc.perform(get("/api/admin/administrators").with(customer())).andExpect(status().isForbidden());
             mvc.perform(
                 post("/api/admin/stages").with(customer())
                     .with(csrf())
@@ -191,7 +252,7 @@ class SecurityRulesIT {
         }
 
         @Test
-        void loseAccessAsSoonAsTheyAreRemovedFromAdministrators() throws Exception {
+        void loseAccessOnceKeycloakNoLongerGrantsTheRole() throws Exception {
             mvc.perform(get("/api/admin/orders").with(removedAdmin())).andExpect(status().isForbidden());
             mvc.perform(get("/api/me").with(removedAdmin()))
                 .andExpect(status().isOk())

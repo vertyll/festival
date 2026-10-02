@@ -38,7 +38,7 @@ class LoginRedirectHandler implements AuthenticationSuccessHandler, Authenticati
             throw new IllegalStateException("Expected OAuth2 authentication, got " + authentication.getClass());
         }
         LoginClient client = LoginClient.of(token.getAuthorizedClientRegistrationId());
-        redirectStrategy.sendRedirect(request, response, properties.redirects(client).successPath());
+        redirectStrategy.sendRedirect(request, response, properties.client(client).successPath());
     }
 
     @Override
@@ -53,7 +53,7 @@ class LoginRedirectHandler implements AuthenticationSuccessHandler, Authenticati
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        redirectStrategy.sendRedirect(request, response, properties.redirects(client.get()).failurePath());
+        redirectStrategy.sendRedirect(request, response, properties.client(client.get()).failurePath());
     }
 
     private static Optional<LoginClient> callbackClient(HttpServletRequest request) {

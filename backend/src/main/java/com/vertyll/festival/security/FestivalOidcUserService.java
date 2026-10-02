@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -23,34 +24,27 @@ import lombok.RequiredArgsConstructor;
 class FestivalOidcUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
 
     private final OidcUserService delegate = new OidcUserService();
-    private final AdministratorDirectory administrators;
+    private final JwtDecoder accessTokens;
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) {
         OidcUser user = Objects.requireNonNull(delegate.loadUser(userRequest));
-        String email = user.getEmail();
-        if (email == null || !Boolean.TRUE.equals(user.getEmailVerified())) {
-            throw new OAuth2AuthenticationException(
-                new OAuth2Error(
-                    OAuth2ErrorCodes.ACCESS_DENIED,
-                    "The Google account must have a verified e-mail address.",
-                    null
-                )
-            );
+        if (user.getEmail() == null || !Boolean.TRUE.equals(user.getEmailVerified())) {
+            throw denied("The account must have a verified e-mail address.");
         }
+        boolean administrator =
+                Roles.isAdministrator(accessTokens.decode(userRequest.getAccessToken().getTokenValue()));
         LoginClient client = LoginClient.of(userRequest.getClientRegistration().getRegistrationId());
-        List<GrantedAuthority> authorities = client.grantsAdministrator() ? adminAuthorities(email)
+        if (client.requiresAdministrator() && !administrator) {
+            throw denied("This account has no access to the admin panel.");
+        }
+        List<GrantedAuthority> authorities = administrator ? List
+            .of(new SimpleGrantedAuthority(Roles.USER_AUTHORITY), new SimpleGrantedAuthority(Roles.ADMIN_AUTHORITY))
                 : List.of(new SimpleGrantedAuthority(Roles.USER_AUTHORITY));
         return new DefaultOidcUser(authorities, user.getIdToken(), user.getUserInfo(), StandardClaimNames.SUB);
     }
 
-    private List<GrantedAuthority> adminAuthorities(String email) {
-        if (!administrators.isAdministrator(email)) {
-            throw new OAuth2AuthenticationException(
-                new OAuth2Error(OAuth2ErrorCodes.ACCESS_DENIED, "This account has no access to the admin panel.", null)
-            );
-        }
-        return List
-            .of(new SimpleGrantedAuthority(Roles.USER_AUTHORITY), new SimpleGrantedAuthority(Roles.ADMIN_AUTHORITY));
+    private static OAuth2AuthenticationException denied(String description) {
+        return new OAuth2AuthenticationException(new OAuth2Error(OAuth2ErrorCodes.ACCESS_DENIED, description, null));
     }
 }

@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { useState } from "react";
 import styled from "styled-components";
-import { useTranslations } from "use-intl";
+import { useLocale, useTranslations } from "use-intl";
 import type { SessionUser } from "@festival/shared/api/types";
 import { signOut } from "@festival/shared/auth/session";
-import Button from "@/components/atoms/Button";
+import Button, { ButtonLink } from "@/components/atoms/Button";
 import RevealWrapper from "@/components/atoms/RevealWrapper";
 import Tabs from "@/components/organisms/Tabs";
 import AddressTab from "./AddressTab";
@@ -47,11 +47,21 @@ const UserProfile = styled.div`
   }
 `;
 
+const Actions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
 const TABS = ["orders", "wishlist", "address"] as const;
 type Tab = (typeof TABS)[number];
 
-export default function AccountPanels({ user }: Readonly<{ user: SessionUser }>) {
+export default function AccountPanels({
+  user,
+  accountUrl,
+}: Readonly<{ user: SessionUser; accountUrl: string | null }>) {
   const t = useTranslations("page.account");
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<Tab>("orders");
   const tabs = Object.fromEntries(TABS.map((tab) => [tab, t(`tabs.${tab}`)])) as Record<Tab, string>;
   return (
@@ -62,9 +72,16 @@ export default function AccountPanels({ user }: Readonly<{ user: SessionUser }>)
           {user.picture && <Image src={user.picture} alt="" width={50} height={50} />}
           <div>{user.name ?? user.email}</div>
         </UserProfile>
-        <Button $usage="primary" $size="m" onClick={() => void signOut("/")}>
-          {t("logout")}
-        </Button>
+        <Actions>
+          {accountUrl && (
+            <ButtonLink $usage="primary" $size="m" href={`${accountUrl}?kc_locale=${locale}`}>
+              {t("settings")}
+            </ButtonLink>
+          )}
+          <Button $usage="primary" $size="m" onClick={() => void signOut()}>
+            {t("logout")}
+          </Button>
+        </Actions>
       </ProfilePanel>
       <ContentPanel>
         <RevealWrapper>

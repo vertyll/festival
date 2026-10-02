@@ -16,7 +16,6 @@ const NAV_ITEMS = [
   { href: "/news", label: "news", icon: "news" },
   { href: "/sponsors", label: "sponsors", icon: "sponsors" },
   { href: "/translations", label: "translations", icon: "translations" },
-  { href: "/administrators", label: "administrators", icon: "administrators" },
   { href: "/settings", label: "settings", icon: "settings" },
 ] as const satisfies readonly { href: string; label: string; icon: IconName }[];
 
@@ -44,7 +43,7 @@ export default function Sidebar({ show }: Readonly<{ show: boolean }>) {
             {t(item.label)}
           </Link>
         ))}
-        <button type="button" className={LINK} onClick={() => void signOut("/")}>
+        <button type="button" className={LINK} onClick={() => void signOut()}>
           <Icon name="logout" />
           {t("logout")}
         </button>

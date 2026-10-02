@@ -28,7 +28,7 @@ export default function LoginPanel() {
         </p>
         <p>{t("loginBenefits")}</p>
         <Button $usage="primary" $size="m" onClick={() => signIn("page")}>
-          {t("googleLogin")}
+          {t("login")}
         </Button>
       </LoginInfo>
       <LottieAnimation name="login" style={{ maxWidth: "350px", height: "350px" }} />

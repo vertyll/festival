@@ -8,7 +8,7 @@ export type LoginClient = "page" | "admin";
 export type SessionState =
   | { status: "loading" }
   | { status: "anonymous" }
-  | { status: "authenticated"; user: SessionUser }
+  | { status: "authenticated"; user: SessionUser; accountUrl: string | null }
   | { status: "error"; error: unknown };
 
 interface SessionContextValue {
@@ -19,8 +19,8 @@ const SessionContext = createContext<SessionContextValue | null>(null);
 
 async function loadSession(): Promise<SessionState> {
   try {
-    const { user } = await publicApi(browserHttp).me();
-    return user ? { status: "authenticated", user } : { status: "anonymous" };
+    const { user, accountUrl } = await publicApi(browserHttp).me();
+    return user ? { status: "authenticated", user, accountUrl } : { status: "anonymous" };
   } catch (error) {
     return { status: "error", error };
   }
@@ -58,7 +58,7 @@ export function signIn(client: LoginClient): void {
   window.location.assign(`/oauth2/authorization/${client}`);
 }
 
-export async function signOut(redirectTo = "/"): Promise<void> {
-  await browserHttp.send("POST", "/logout");
-  window.location.assign(redirectTo);
+export async function signOut(): Promise<void> {
+  const { logoutUrl } = await browserHttp.post<{ logoutUrl: string }>("/logout", {});
+  window.location.assign(logoutUrl);
 }

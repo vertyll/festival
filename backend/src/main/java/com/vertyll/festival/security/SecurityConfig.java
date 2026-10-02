@@ -1,6 +1,7 @@
 package com.vertyll.festival.security;
 
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -8,13 +9,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import static java.util.Objects.requireNonNull;
+import tools.jackson.databind.ObjectMapper;
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
@@ -39,8 +53,11 @@ class SecurityConfig {
         FestivalOidcUserService oidcUserService,
         ActiveAdministratorAuthorization activeAdministrator,
         LoginRedirectHandler loginRedirectHandler,
+        ClientRegistrationRepository clientRegistrations,
+        OAuth2AuthorizedClientRepository authorizedClients,
+        KeycloakProperties keycloak,
         FestivalSecurityProperties properties,
-        ServerProperties serverProperties
+        ObjectMapper objectMapper
     ) {
         http.authorizeHttpRequests(
             authorize -> authorize.requestMatchers(HttpMethod.GET, PUBLIC_READ_ENDPOINTS)
@@ -57,15 +74,20 @@ class SecurityConfig {
                 .denyAll()
         )
             .oauth2Login(
-                login -> disableGeneratedLoginPage(login)
+                login -> login.loginPage("/login")
+                    .authorizationEndpoint(
+                        endpoint -> endpoint.authorizationRequestResolver(
+                            new LocalizedAuthorizationRequestResolver(clientRegistrations)
+                        )
+                    )
+                    .authorizedClientRepository(authorizedClients)
                     .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcUserService))
                     .successHandler(loginRedirectHandler)
                     .failureHandler(loginRedirectHandler)
             )
             .logout(
                 logout -> logout.logoutUrl("/logout")
-                    .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
-                    .deleteCookies(sessionCookieName(serverProperties))
+                    .logoutSuccessHandler(new LogoutUrlResponder(keycloak, properties, objectMapper))
             )
             .csrf(csrf -> csrf.spa().csrfTokenRepository(csrfTokenRepository(properties.secureCookies())))
             .exceptionHandling(
@@ -75,10 +97,61 @@ class SecurityConfig {
         return http.build();
     }
 
-    private static OAuth2LoginConfigurer<HttpSecurity> disableGeneratedLoginPage(
-        OAuth2LoginConfigurer<HttpSecurity> login
+    @Bean
+    ClientRegistrationRepository clientRegistrationRepository(
+        KeycloakProperties keycloak,
+        FestivalSecurityProperties properties
     ) {
-        return login.loginPage("/login");
+        return new InMemoryClientRegistrationRepository(
+            Arrays.stream(LoginClient.values()).map(client -> registration(client, keycloak, properties)).toList()
+        );
+    }
+
+    @Bean
+    OAuth2AuthorizedClientRepository authorizedClientRepository() {
+        return new HttpSessionOAuth2AuthorizedClientRepository();
+    }
+
+    @Bean
+    OAuth2AuthorizedClientManager authorizedClientManager(
+        ClientRegistrationRepository clientRegistrations,
+        OAuth2AuthorizedClientRepository authorizedClients
+    ) {
+        DefaultOAuth2AuthorizedClientManager manager =
+                new DefaultOAuth2AuthorizedClientManager(clientRegistrations, authorizedClients);
+        manager.setAuthorizedClientProvider(
+            OAuth2AuthorizedClientProviderBuilder.builder().authorizationCode().refreshToken().build()
+        );
+        return manager;
+    }
+
+    @Bean
+    JwtDecoder accessTokenDecoder(KeycloakProperties keycloak) {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(keycloak.backchannelEndpoint("certs")).build();
+        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(keycloak.realmUrl()));
+        return decoder;
+    }
+
+    private static ClientRegistration registration(
+        LoginClient client,
+        KeycloakProperties keycloak,
+        FestivalSecurityProperties properties
+    ) {
+        FestivalSecurityProperties.ClientSettings settings = properties.client(client);
+        return ClientRegistration.withRegistrationId(client.registrationId())
+            .clientName("Keycloak")
+            .clientId(settings.clientId())
+            .clientSecret(settings.clientSecret())
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .redirectUri(settings.baseUrl() + "/login/oauth2/code/{registrationId}")
+            .scope(OidcScopes.OPENID, OidcScopes.PROFILE, OidcScopes.EMAIL)
+            .authorizationUri(keycloak.endpoint("auth"))
+            .tokenUri(keycloak.backchannelEndpoint("token"))
+            .jwkSetUri(keycloak.backchannelEndpoint("certs"))
+            .issuerUri(keycloak.realmUrl())
+            .userNameAttributeName(IdTokenClaimNames.SUB)
+            .build();
     }
 
     @SuppressWarnings("java:S3330")
@@ -86,9 +159,5 @@ class SecurityConfig {
         CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         repository.setCookieCustomizer(cookie -> cookie.secure(secureCookies).sameSite("Lax"));
         return repository;
-    }
-
-    private static String sessionCookieName(ServerProperties serverProperties) {
-        return requireNonNull(serverProperties.getServlet().getSession().getCookie().getName());
     }
 }

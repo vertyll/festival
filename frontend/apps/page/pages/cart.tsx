@@ -284,7 +284,7 @@ export default function CartPage() {
             <>
               <p>{t("loginRequired")}</p>
               <Button $size="m" $usage="primary" onClick={() => signIn("page")}>
-                {t("googleLogin")}
+                {t("login")}
               </Button>
             </>
           )}

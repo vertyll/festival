@@ -41,6 +41,7 @@ export interface SessionUser {
 
 export interface MeResponse {
   user: SessionUser | null;
+  accountUrl: string | null;
 }
 
 export interface Stage {
@@ -273,16 +274,6 @@ export interface OrderItemRequest {
 export interface PlaceOrderRequest {
   shipping: ShippingDetails;
   items: OrderItemRequest[];
-}
-
-export interface Administrator {
-  id: Id;
-  email: string;
-  createdAt: IsoDateTime;
-}
-
-export interface AdministratorRequest {
-  email: string;
 }
 
 export interface UploadResponse {

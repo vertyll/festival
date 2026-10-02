@@ -41,7 +41,9 @@ export default function AccountPage() {
             {session.status === "loading" && <Spinner />}
             {session.status === "error" && <p>{t("sessionFailed")}</p>}
             {session.status === "anonymous" && <LoginPanel />}
-            {session.status === "authenticated" && <AccountPanels user={session.user} />}
+            {session.status === "authenticated" && (
+              <AccountPanels user={session.user} accountUrl={session.accountUrl} />
+            )}
           </Wrapper>
         </DivCenter>
       </Layout>

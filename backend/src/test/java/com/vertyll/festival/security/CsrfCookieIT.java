@@ -45,7 +45,7 @@ class CsrfCookieIT {
                     .header(CSRF_HEADER, token)
                     .POST(HttpRequest.BodyPublishers.noBody())
             ).statusCode()
-        ).isEqualTo(204);
+        ).isEqualTo(200);
     }
 
     private HttpResponse<String> send(HttpRequest.Builder request) throws IOException, InterruptedException {

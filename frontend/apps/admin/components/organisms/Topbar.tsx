@@ -27,7 +27,7 @@ export default function Topbar({ user }: Readonly<{ user: SessionUser }>) {
             <button
               type="button"
               className="flex gap-2 items-center p-2 w-full text-sm rounded-md text-gray-700 hover:bg-indigo-300 hover:text-white transition duration-300"
-              onClick={() => void signOut("/")}
+              onClick={() => void signOut()}
             >
               <Icon name="logout" />
               {t("logout")}

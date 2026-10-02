@@ -34,7 +34,7 @@ const SIZES: Record<ButtonSize, ReturnType<typeof css>> = {
   `,
 };
 
-const StyledButton = styled.button<StyleProps>`
+const buttonStyles = css<StyleProps>`
   border: 0;
   width: 100%;
   max-width: max-content;
@@ -60,6 +60,15 @@ const StyledButton = styled.button<StyleProps>`
 
   ${(props) => props.$usage && USAGES[props.$usage]}
   ${(props) => props.$size && SIZES[props.$size]}
+`;
+
+const StyledButton = styled.button<StyleProps>`
+  ${buttonStyles}
+`;
+
+export const ButtonLink = styled.a<StyleProps>`
+  ${buttonStyles}
+  text-decoration: none;
 `;
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & StyleProps;

@@ -15,6 +15,11 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(MongoTestContainer.class)
+@Import(
+    {
+        MongoTestContainer.class,
+        TestAccessTokens.class
+    }
+)
 public @interface IntegrationTest {
 }

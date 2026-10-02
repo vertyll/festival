@@ -49,11 +49,6 @@ public final class MessageKeys {
     public static final String STAGE_NOT_FOUND = "errors.stage.notFound";
     public static final String NEWS_NOT_FOUND = "errors.news.notFound";
     public static final String SPONSOR_NOT_FOUND = "errors.sponsor.notFound";
-    public static final String ADMINISTRATOR_NOT_FOUND = "errors.administrator.notFound";
-    public static final String ADMINISTRATOR_EXISTS = "errors.administrator.exists";
-    public static final String ADMINISTRATOR_LAST = "errors.administrator.last";
-    public static final String ADMINISTRATOR_SELF_UPDATE = "errors.administrator.selfUpdate";
-    public static final String ADMINISTRATOR_SELF_DELETE = "errors.administrator.selfDelete";
     public static final String CHECKOUT_DISABLED = "errors.checkout.disabled";
     public static final String CART_QUANTITY_TOO_LARGE = "errors.cart.quantityTooLarge";
     public static final String CART_PRODUCT_UNAVAILABLE = "errors.cart.productUnavailable";
