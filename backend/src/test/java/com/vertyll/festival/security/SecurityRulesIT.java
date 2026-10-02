@@ -30,7 +30,7 @@ import static com.vertyll.festival.TestUsers.removedAdmin;
 @IntegrationTest
 class SecurityRulesIT {
 
-    private static final String KEYCLOAK = "http://localhost:8181/realms/festival/protocol/openid-connect";
+    private static final String KEYCLOAK = "http://localhost:9000/realms/festival/protocol/openid-connect";
 
     private static final String STAGE = "{\"name\":{\"pl\":\"Scena główna\",\"en\":\"Main stage\"}}";
 

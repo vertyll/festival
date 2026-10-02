@@ -135,7 +135,7 @@ pnpm lint && pnpm typecheck && pnpm format:check && pnpm check:translations
 > **Wymagania**: Docker, Java 25, Node.js 24 (pnpm przez Corepack).
 
 ```bash
-docker compose -f docker-compose.local.yml up -d   # MongoDB :27017, Garage :3900 (S3), :3902 (publiczny odczyt) i konsola :3909, Keycloak :8181 (admin/admin), maildev :1081
+docker compose -f docker-compose.local.yml up -d   # MongoDB :27017, Garage :3900 (S3), :3902 (publiczny odczyt) i konsola :3909, Keycloak :9000 (admin/admin), maildev :1025/:1080
 
 cd backend && ./mvnw spring-boot:run                                # :8080
 cd frontend && pnpm install && pnpm dev:page                         # http://localhost:3000
