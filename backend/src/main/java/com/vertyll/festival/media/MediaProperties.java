@@ -11,7 +11,7 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@ConfigurationProperties("festival.media")
+@ConfigurationProperties("application.media")
 record MediaProperties(
     @NotBlank String endpoint,
     @NotBlank String region,

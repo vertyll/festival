@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@ConfigurationProperties("festival.security")
+@ConfigurationProperties("application.security")
 public record FestivalSecurityProperties(
     @NotNull Boolean secureCookies,
     @NotNull Map<LoginClient, @Valid @NotNull ClientSettings> login
@@ -23,7 +23,7 @@ public record FestivalSecurityProperties(
         Set<LoginClient> missing = EnumSet.allOf(LoginClient.class);
         missing.removeAll(login.keySet());
         if (!missing.isEmpty()) {
-            throw new IllegalArgumentException("Missing festival.security.login.* for clients: " + missing);
+            throw new IllegalArgumentException("Missing application.security.login.* for clients: " + missing);
         }
         login = Map.copyOf(login);
     }

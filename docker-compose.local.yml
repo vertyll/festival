@@ -134,8 +134,8 @@ services:
       SPRING_MONGODB_URI: mongodb://mongo:27017/festival
       SPRING_DATA_REDIS_HOST: redis
       SPRING_MAIL_HOST: maildev
-      FESTIVAL_MEDIA_ENDPOINT: http://garage:3900
-      FESTIVAL_KEYCLOAK_BACKCHANNEL_REALM_URL: http://keycloak:8080/realms/festival
+      APPLICATION_MEDIA_ENDPOINT: http://garage:3900
+      APPLICATION_KEYCLOAK_BACKCHANNEL_REALM_URL: http://keycloak:8080/realms/festival
     ports:
       - "127.0.0.1:8080:8080"
 

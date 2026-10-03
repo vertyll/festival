@@ -105,7 +105,7 @@ Zmienne środowiskowe profilu `prod`:
 | `S3_PUBLIC_BASE_URL`                                                    | publiczny adres bucketa (web endpoint Garage)                    |
 | `INTERNAL_CA_CERT`                                                      | CA klastra (TLS do MongoDB, Redisa i Garage): `file:/tls/ca.crt` |
 | `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`                            | Redis na sesje (TLS)                                             |
-| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM` | serwer SMTP i nadawca (`spring.mail.*`, `festival.mail.from`)    |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM` | serwer SMTP i nadawca (`spring.mail.*`, `application.mail.from`) |
 
 ## Front-endy
 

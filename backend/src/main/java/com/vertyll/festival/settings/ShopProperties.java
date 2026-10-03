@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@ConfigurationProperties("festival.shop")
+@ConfigurationProperties("application.shop")
 public record ShopProperties(
     @NotNull Boolean checkoutEnabled,
     @NotBlank String currency,
