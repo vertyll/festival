@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Import(
     {
         MongoTestContainer.class,
+        RedisTestContainer.class,
         TestAccessTokens.class
     }
 )

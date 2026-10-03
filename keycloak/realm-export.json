@@ -324,5 +324,8 @@
       ],
       "requiredActions": []
     }
-  ]
+  ],
+  "revokeRefreshToken": true,
+  "refreshTokenMaxReuse": 0,
+  "accessTokenLifespan": 300
 }

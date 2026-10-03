@@ -93,6 +93,17 @@ services:
       retries: 30
       start_period: 30s
 
+  redis:
+    image: docker.io/library/redis:8-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   maildev:
     image: docker.io/maildev/maildev:3.0.0
     restart: unless-stopped
@@ -112,6 +123,8 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       garage-init:
         condition: service_completed_successfully
       keycloak:
@@ -119,6 +132,8 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: local
       SPRING_MONGODB_URI: mongodb://mongo:27017/festival
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_MAIL_HOST: maildev
       FESTIVAL_MEDIA_ENDPOINT: http://garage:3900
       FESTIVAL_KEYCLOAK_BACKCHANNEL_REALM_URL: http://keycloak:8080/realms/festival
     ports:
