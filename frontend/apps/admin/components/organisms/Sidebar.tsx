@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LegalLinks from "../molecules/LegalLinks";
 import { useRouter } from "next/router";
 import { useTranslations } from "use-intl";
 import { signOut } from "@festival/shared/auth/session";
@@ -31,7 +32,7 @@ export default function Sidebar({ show }: Readonly<{ show: boolean }>) {
   const { pathname } = useRouter();
   return (
     <aside
-      className={`${show ? "left-0" : "-left-full"} transition-all md:w-auto md:static top-0 text-white p-4 fixed w-full bg-indigo-600 h-full z-50`}
+      className={`${show ? "left-0" : "-left-full"} transition-all md:w-auto md:static top-0 text-white p-4 fixed w-full bg-indigo-600 h-full z-50 flex flex-col`}
     >
       <div className="mb-10 p-2">
         <Logo />
@@ -48,6 +49,7 @@ export default function Sidebar({ show }: Readonly<{ show: boolean }>) {
           {t("logout")}
         </button>
       </nav>
+      <LegalLinks className="mt-auto flex-col gap-1 p-2 text-indigo-100" />
     </aside>
   );
 }

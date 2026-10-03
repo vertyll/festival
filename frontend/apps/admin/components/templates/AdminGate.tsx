@@ -7,6 +7,7 @@ import { signIn, signOut, useSession } from "@festival/shared/auth/session";
 import Button from "../atoms/Button";
 import Spinner from "../atoms/Spinner";
 import LanguageSwitcher from "../molecules/LanguageSwitcher";
+import LegalLinks from "../molecules/LegalLinks";
 import CookieBanner from "../organisms/CookieBanner";
 
 const AdminUserContext = createContext<SessionUser | null>(null);
@@ -29,6 +30,7 @@ function FullScreen({ children }: Readonly<{ children: ReactNode }>) {
       <div className="bg-indigo-600 w-screen h-screen flex items-center justify-center">
         <LanguageSwitcher className="absolute top-4 right-4" />
         <div className="text-center text-white">{children}</div>
+        <LegalLinks className="absolute bottom-6 text-white" />
         <CookieBanner />
       </div>
     </>

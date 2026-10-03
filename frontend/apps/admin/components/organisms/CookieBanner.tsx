@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { useTranslations } from "use-intl";
 import { useCookieConsent } from "@festival/shared/react/useCookieConsent";
 
 export default function CookieBanner() {
   const t = useTranslations("common.cookies");
+  const legal = useTranslations("legal");
   const { consentMissing, accept } = useCookieConsent();
 
   if (!consentMissing) {
@@ -11,7 +13,12 @@ export default function CookieBanner() {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-md z-50">
       <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-        <p className="text-sm text-gray-700 mb-2 sm:mb-0">{t("text")}</p>
+        <p className="text-sm text-gray-700 mb-2 sm:mb-0">
+          {t("text")}{" "}
+          <Link href="/privacy" className="text-indigo-700 underline">
+            {legal("privacyPolicy.title")}
+          </Link>
+        </p>
         <button
           type="button"
           onClick={accept}

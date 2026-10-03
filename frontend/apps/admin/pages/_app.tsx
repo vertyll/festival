@@ -10,6 +10,8 @@ import { loadMessages } from "@festival/shared/i18n/messages";
 import AdminGate from "@/components/templates/AdminGate";
 import { DialogProvider } from "@/lib/dialogs";
 
+const PUBLIC_PAGES = new Set(["/terms", "/privacy"]);
+
 interface AdminAppProps extends AppProps {
   messages: FlatMessages;
 }
@@ -30,11 +32,15 @@ export default function App({ Component, pageProps, router, messages }: Readonly
     <FestivalIntlProvider language={toLanguage(router.locale)} messages={messages}>
       <AppHead />
       <SessionProvider>
-        <AdminGate>
-          <DialogProvider>
-            <Component {...pageProps} />
-          </DialogProvider>
-        </AdminGate>
+        {PUBLIC_PAGES.has(router.pathname) ? (
+          <Component {...pageProps} />
+        ) : (
+          <AdminGate>
+            <DialogProvider>
+              <Component {...pageProps} />
+            </DialogProvider>
+          </AdminGate>
+        )}
       </SessionProvider>
     </FestivalIntlProvider>
   );

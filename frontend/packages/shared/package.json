@@ -9,6 +9,7 @@
     "./*": "./src/*.ts",
     "./auth/session": "./src/auth/session.tsx",
     "./react/LoadState": "./src/react/LoadState.tsx",
+    "./react/LegalParagraphs": "./src/react/LegalParagraphs.tsx",
     "./i18n/IntlSetup": "./src/i18n/IntlSetup.tsx",
     "./i18n/richText": "./src/i18n/richText.tsx"
   },

@@ -1,4 +1,5 @@
 import { useTranslations } from "use-intl";
+import LegalParagraphs from "@festival/shared/react/LegalParagraphs";
 import DivCenter from "../atoms/DivCenter";
 import DivText from "../atoms/DivText";
 import PageTitle from "../atoms/PageTitle";
@@ -16,11 +17,7 @@ export default function LegalPage({ document }: Readonly<{ document: LegalDocume
         <DivCenter>
           <Title>{t(`${document}.heading`)}</Title>
           <DivText>
-            {t(`${document}.content`)
-              .split("\n\n")
-              .map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
+            <LegalParagraphs content={t(`${document}.content`)} />
           </DivText>
         </DivCenter>
       </Layout>
