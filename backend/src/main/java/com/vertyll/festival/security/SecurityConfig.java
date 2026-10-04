@@ -123,7 +123,8 @@ class SecurityConfig {
     @Bean
     OAuth2AuthorizedClientManager authorizedClientManager(
         ClientRegistrationRepository clientRegistrations,
-        OAuth2AuthorizedClientRepository authorizedClients
+        OAuth2AuthorizedClientRepository authorizedClients,
+        SharedRefreshes sharedRefreshes
     ) {
         DefaultOAuth2AuthorizedClientManager manager =
                 new DefaultOAuth2AuthorizedClientManager(clientRegistrations, authorizedClients);
@@ -132,6 +133,7 @@ class SecurityConfig {
                 OAuth2AuthorizedClientProviderBuilder.builder().authorizationCode().build(),
                 new SingleFlightRefreshTokenProvider(
                     OAuth2AuthorizedClientProviderBuilder.builder().refreshToken().build(),
+                    sharedRefreshes,
                     Clock.systemUTC()
                 )
             )

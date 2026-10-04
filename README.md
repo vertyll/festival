@@ -62,8 +62,9 @@ Music festival website with a shop, and an admin panel to run both.
 - **State**: the back-end is stateless: every request is authorized by the JWT alone, so any instance can serve it. The
   only state is the browser session holding the tokens, and it lives in Redis, outside the application.
 - **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
-  old one, and concurrent requests of one session share a single refresh. A refresh Keycloak refuses ends the session,
-  so a blocked account or a revoked role stops working within minutes. Signing out also ends the Keycloak session.
+  old one, and concurrent requests of one session share a single refresh, across replicas too (a lock in Redis). A
+  refresh Keycloak refuses ends the session, so a blocked account or a revoked role stops working within minutes.
+  Signing out also ends the Keycloak session.
 - **Accounts**: there is no local copy of a person; orders, addresses and wishlists are keyed by the Keycloak
   identifier.
 
