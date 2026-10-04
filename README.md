@@ -54,10 +54,12 @@ Music festival website with a shop, and an admin panel to run both.
   clients (`festival-page`, `festival-admin`) using the authorization code flow and PKCE; the back-end keeps the tokens
   and the browser holds only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` in production) with a
   CSRF token.
-- **Session store**: Redis (Spring Session, `festival:session` namespace), so the back-end holds no state of its own.
+- **Session store**: Redis (Spring Session, `festival:session` namespace).
 - **JWT**: every admin request decodes the current access token (signature from Keycloak's JWKS, issuer, expiry) and
   requires the `ADMIN` realm role in it, so revoking the role in Keycloak cuts access within minutes. Every account gets
   `USER`; only `ADMIN` opens the admin panel.
+- **State**: not stateless: requests are authorized by the session (admin requests also by the JWT inside it). The
+  session lives in Redis, so the back-end keeps nothing in its own memory and every instance is interchangeable.
 - **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
   old one, and concurrent requests of one session share a single refresh. Signing out revokes the refresh token at
   Keycloak.
