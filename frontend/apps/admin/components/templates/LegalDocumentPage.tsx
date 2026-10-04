@@ -20,7 +20,7 @@ export default function LegalDocumentPage({ document }: Readonly<{ document: Adm
             <Link href="/" className="text-indigo-700 hover:underline">
               ← {layout("back")}
             </Link>
-            <LanguageSwitcher />
+            <LanguageSwitcher tone="onLight" />
           </div>
           <h1 className="mb-6 text-3xl font-bold">{t(`${document}.title`)}</h1>
           <div className="flex flex-col gap-4 leading-relaxed text-gray-800">

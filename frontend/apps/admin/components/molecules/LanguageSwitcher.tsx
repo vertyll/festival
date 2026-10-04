@@ -1,7 +1,15 @@
 import { useTranslations } from "use-intl";
 import { useLanguageSwitch } from "@festival/shared/i18n/IntlSetup";
 
-export default function LanguageSwitcher({ className = "" }: Readonly<{ className?: string }>) {
+const TONES = {
+  onDark: { current: "bg-indigo-700 text-white font-bold", other: "text-white hover:bg-indigo-500" },
+  onLight: { current: "bg-indigo-700 text-white font-bold", other: "text-indigo-700 hover:bg-indigo-100" },
+} as const;
+
+export default function LanguageSwitcher({
+  className = "",
+  tone = "onDark",
+}: Readonly<{ className?: string; tone?: keyof typeof TONES }>) {
   const t = useTranslations("common.language");
   const { current, languages, switchTo } = useLanguageSwitch();
   return (
@@ -14,7 +22,7 @@ export default function LanguageSwitcher({ className = "" }: Readonly<{ classNam
           aria-pressed={language === current}
           aria-label={t(`name.${language}`)}
           onClick={() => switchTo(language)}
-          className={`px-2 py-1 rounded-md text-sm text-white ${language === current ? "bg-indigo-700 font-bold" : "hover:bg-indigo-500"}`}
+          className={`px-2 py-1 rounded-md text-sm ${language === current ? TONES[tone].current : TONES[tone].other}`}
         >
           {t(`short.${language}`)}
         </button>
