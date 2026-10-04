@@ -1,159 +1,96 @@
-# Sunset Festival
+## Project Assumptions
 
-Strona festiwalu muzycznego ze sklepem i panel administracyjny.
+Music festival website with a shop, and an admin panel to run both.
 
-Link: https://festival-page.vertyll.dev
+## Link: https://festival-page.vertyll.dev
 
-## Struktura repozytorium
+## Technology Stack
 
-| Katalog                              | Opis                                                                                        |
-|--------------------------------------|---------------------------------------------------------------------------------------------|
-| `backend/`                           | Spring Boot 4.1, Java 25 - API                                                              |
-| `frontend/packages/shared/`          | `@festival/shared`: typy modeli API, klient HTTP z CSRF, sesja, walidacja, formaty          |
-| `frontend/apps/page/`                | Strona festiwalu i sklep                                                                    |
-| `frontend/apps/admin/`               | Panel administracyjny                                                                       |
-| `frontend/Dockerfile`                | Wieloetapowy obraz dla obu front-endów (`--build-arg APP=page\|admin`)                      |
-| `docker-compose.local.yml`, `infra/` | Lokalnie: MongoDB, Redis, Garage, Keycloak, maildev, opcjonalnie cały system (profil `app`) |
-| `keycloak/`                          | Realm `festival` importowany przez lokalny Keycloak                                         |
-| `.github/workflows/`                 | CI/CD                                                                                       |
-
-## Back-end
-
-### Stos technologiczny
+### Back-end:
 
 - Spring Boot.
 - Java.
 - Maven.
 - MongoDB.
+- Redis (Spring Session).
+- Garage (S3-compatible storage for images).
 - JUnit.
 - Mockito.
+- Testcontainers.
 - Lombok.
 - Spring Security.
 - Spring Data MongoDB.
 - Spring Web.
-- Keycloak.
+- Spring Mail.
 
-### Budowanie i jakość
-
-```bash
-cd backend
-./mvnw spotless:apply   # formatowanie
-./mvnw verify           # kompilacja z Error Prone/NullAway, testy, Spotless, PMD, SpotBugs
-```
-
-> [!IMPORTANT]
->
-> Polecenie `verify` wymaga środowiska skonteneryzowanego dla Testcontainers.
-
-### Moduły
-
-| Pakiet                                 | Odpowiedzialność                                                        |
-|----------------------------------------|-------------------------------------------------------------------------|
-| `security`                             | Spring Security, logowanie przez Keycloak (OIDC), role, CSRF, `/api/me` |
-| `catalog.{product,category,attribute}` | Produkty z opcjami i wariantami, kategorie, atrybuty                    |
-| `lineup.{artist,stage}`                | Artyści i sceny                                                         |
-| `content.{news,sponsor}`               | Newsy i sponsorzy                                                       |
-| `settings`                             | Ustawienia sklepu                                                       |
-| `shop.{address,wishlist,order}`        | Adres dostawy, lista życzeń, zamówienia                                 |
-| `media`                                | Upload zdjęć do Garage                                                  |
-| `i18n`                                 | Tłumaczenia interfejsu w MongoDB (ICU), edycja w panelu                 |
-| `common`, `config`                     | Błędy (RFC 9457), walidacja, konfiguracja Mongo/Jackson/zegara          |
-
-### Profile i konfiguracja
-
-Domyślny profil to `local`; obraz Dockera ustawia `prod` (`SPRING_PROFILES_ACTIVE=prod`).
-
-| Plik                           | Zawartość                                                            |
-|--------------------------------|----------------------------------------------------------------------|
-| `application.properties`       | wspólna konfiguracja, bez zmiennych środowiskowych                   |
-| `application-local.properties` | pełna konfiguracja lokalna (usługi z `docker-compose.local.yml`)     |
-| `application-prod.properties`  | same odwołania `${...}` do zmiennych środowiskowych (tabela poniżej) |
-
-### Logowanie i role
-
-Rejestracją, logowaniem, weryfikacją e-maila, resetem hasła, 2FA i akceptacją regulaminu zajmuje się Keycloak (realm
-`festival`). Strona i panel logują się osobnymi klientami (`festival-page`, `festival-admin`) przepływem authorization
-code z PKCE; back-end trzyma tokeny w sesji i daje przeglądarce tylko ciasteczko `FESTIVAL_SESSION` (`HttpOnly`,
-`SameSite=Lax`, na produkcji `Secure`). Sesje leżą w Redisie (Spring Session, przestrzeń kluczy `festival:session`), więc
-back-end nie trzyma stanu: restart nie wylogowuje, a replik może być więcej. Język wybrany na stronie (`NEXT_LOCALE`)
-trafia na strony Keycloaka jako `ui_locales`.
-
-Token dostępu żyje pięć minut, a każde odświeżenie wydaje nowy refresh token i unieważnia poprzedni. Równoległe żądania
-jednej sesji odświeżają go raz: kolejne dostają wynik pierwszego, także gdy wczytały sesję sprzed odświeżenia.
-
-Role są rolami realmu: każde konto dostaje `USER`, a `ADMIN` nadaje się w konsoli Keycloaka
-(*Users → konto → Role mapping*). Do panelu wchodzi tylko konto z `ADMIN`. Każde żądanie do `/api/admin/**` sprawdza
-rolę w aktualnym tokenie dostępu, odświeżanym w razie potrzeby, więc odebranie roli albo zakończenie sesji w Keycloaku
-odcina dostęp najpóźniej po wygaśnięciu tokenu, bez czekania na koniec sesji panelu. Wylogowanie
-(`POST /logout`) kończy też sesję w Keycloaku.
-
-Lokalny realm (`keycloak/realm-export.json`) ma dwa konta z hasłem `festival`: `admin@festival.local` (`ADMIN`) i
-`klient@festival.local`.
-
-Zmienne środowiskowe profilu `prod`:
-
-| Zmienna                                                                 | Opis                                                             |
-|-------------------------------------------------------------------------|------------------------------------------------------------------|
-| `MONGODB_URI`                                                           | np. `mongodb://localhost:27017/festival`                         |
-| `FESTIVAL_PAGE_URL`, `FESTIVAL_ADMIN_URL`                               | publiczne adresy front-endów (powrót z Keycloaka)                |
-| `KEYCLOAK_REALM_URL`                                                    | adres realmu, np. `https://keycloak.vertyll.dev/realms/festival` |
-| `KEYCLOAK_PAGE_CLIENT_SECRET`                                           | sekret klienta `festival-page`                                   |
-| `KEYCLOAK_ADMIN_CLIENT_SECRET`                                          | sekret klienta `festival-admin`                                  |
-| `FESTIVAL_CHECKOUT_ENABLED`                                             | czy można składać zamówienia (`true`/`false`)                    |
-| `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`                                 | Garage: API S3, region (`s3_region` z `garage.toml`), bucket     |
-| `S3_ACCESS_KEY`, `S3_SECRET_ACCESS_KEY`                                 | klucz Garage z uprawnieniem zapisu do bucketa                    |
-| `S3_PUBLIC_BASE_URL`                                                    | publiczny adres bucketa (web endpoint Garage)                    |
-| `INTERNAL_CA_CERT`                                                      | CA klastra (TLS do MongoDB, Redisa i Garage): `file:/tls/ca.crt` |
-| `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`                            | Redis na sesje (TLS)                                             |
-| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM` | serwer SMTP i nadawca (`spring.mail.*`, `application.mail.from`) |
-
-## Front-endy
-
-### Stos technologiczny
+### Front-end:
 
 - Next.js.
 - React.
-- Node.js.
+- TypeScript.
 - Tailwind CSS.
 - styled-components.
+- pnpm workspaces with Turborepo: the festival page (`apps/page`), the admin panel (`apps/admin`) and shared code
+  (`packages/shared`).
 
-### Budowanie i jakość
+### Authentication:
 
-Oba front-endy i kod współdzielony (`packages/shared`) to monorepo pnpm zarządzane przez Turborepo.
+- Keycloak (realm `festival`) handles sign-up, sign-in, email verification, password reset, two-factor authentication
+  and acceptance of the terms of use.
+- The page and the admin panel sign in with separate clients (`festival-page`, `festival-admin`) using the
+  authorization code flow with PKCE. The back-end keeps the tokens in its session, stored in Redis, and gives the
+  browser only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` in production) with a CSRF token.
+- Every account gets the `USER` role; only `ADMIN` opens the admin panel. Admin requests check the role in the current
+  access token, so revoking it in Keycloak cuts access within minutes.
+- Locally, `docker-compose.local.yml` runs MongoDB, Redis, RedisInsight (`:5540`, connected to Redis), Garage, Keycloak
+  on `:9000` (admin/admin) and maildev. The realm from `keycloak/realm-export.json` has two accounts with the password
+  `festival`: `admin@festival.local` (`ADMIN`) and `klient@festival.local`.
 
-```bash
-cd frontend
-pnpm install
-pnpm dev:page           # http://localhost:3000
-pnpm dev:admin          # http://127.0.0.1:3001
-pnpm build              # turbo build obu aplikacji
-pnpm lint && pnpm typecheck && pnpm format:check && pnpm check:translations
-```
+### Core back-end:
 
-> [!NOTE]
->
-> Adres back-endu dla `next dev` znajduje się w `apps/*/.env.development`.
+- Maven build system.
+- The application has an exception handling mechanism (RFC 9457 problem details).
+- The application has a logging mechanism.
+- The application has separate environments for local and prod.
+- The application has a dedicated configuration file.
+- The application has RBAC (Role Based Access Control).
+- The application has translations stored in MongoDB (ICU MessageFormat), editable in the admin panel.
+- The application has image uploads to S3-compatible storage.
+- And many other features that can be found in the application code.
 
-## Uruchomienie lokalne
+### Core front-end:
 
-> [!IMPORTANT]
->
-> **Wymagania**: Docker, Java 25, Node.js 24 (pnpm przez Corepack).
+- Monorepo with shared types, HTTP client with CSRF, session handling and validation.
+- The application has separate environments for local and prod.
+- Polish and English, with translations served by the back-end.
+- And many other features that can be found in the application code.
 
-```bash
-docker compose -f docker-compose.local.yml up -d   # MongoDB :27017, Redis :6379, Garage :3900 (S3), :3902 (publiczny odczyt) i konsola :3909, Keycloak :9000 (admin/admin), maildev :1025/:1080
+### Other:
 
-cd backend && ./mvnw spring-boot:run                                # :8080
-cd frontend && pnpm install && pnpm dev:page                         # http://localhost:3000
-cd frontend && pnpm dev:admin                                       # http://127.0.0.1:3001
-```
+- Docker for development environment.
+- PMD for static code analysis.
+- SpotBugs for static code analysis.
+- JSpecify for null-safety annotations.
+- NullAway for null-safety checks.
+- Error Prone for static code analysis.
+- Spotless for code formatting.
+- ESLint and Prettier for the front-end.
 
-Albo cały system w kontenerach: `docker compose -f docker-compose.local.yml --profile app up -d --build`.
+## Preview Screenshots
 
-## Zrzuty ekranu
+### Festival page
 
-| Strona                           | Panel                             |
-|----------------------------------|-----------------------------------|
-| ![](docs/screenshots/page/1.png) | ![](docs/screenshots/admin/1.png) |
-| ![](docs/screenshots/page/2.png) | ![](docs/screenshots/admin/2.png) |
-| ![](docs/screenshots/page/3.png) | ![](docs/screenshots/admin/3.png) |
+![Project View](docs/screenshots/page/1.png)
+![Project View](docs/screenshots/page/2.png)
+![Project View](docs/screenshots/page/3.png)
+![Project View](docs/screenshots/page/4.png)
+![Project View](docs/screenshots/page/5.png)
+![Project View](docs/screenshots/page/6.png)
+
+### Admin panel
+
+![Project View](docs/screenshots/admin/1.png)
+![Project View](docs/screenshots/admin/2.png)
+![Project View](docs/screenshots/admin/3.png)
+![Project View](docs/screenshots/admin/4.png)
+![Project View](docs/screenshots/admin/5.png)
