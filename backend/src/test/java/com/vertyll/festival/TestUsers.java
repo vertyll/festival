@@ -26,6 +26,10 @@ public final class TestUsers {
         return user("admin", "admin", "admin@example.com", TestAccessTokens.ADMIN, "ROLE_USER", "ROLE_ADMIN");
     }
 
+    public static RequestPostProcessor customerWithRejectedToken() {
+        return user("page", "rejected", "rejected@example.com", "rejected-access-token", "ROLE_USER");
+    }
+
     public static RequestPostProcessor removedAdmin() {
         return user(
             "admin",

@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties("application.keycloak")
-record KeycloakProperties(@NotBlank String realmUrl, @Nullable String backchannelRealmUrl) {
+record KeycloakProperties(@NotBlank String realmUrl, @Nullable String backchannelRealmUrl, @NotBlank String audience) {
 
     String backchannel() {
         return backchannelRealmUrl == null || backchannelRealmUrl.isBlank() ? realmUrl : backchannelRealmUrl;

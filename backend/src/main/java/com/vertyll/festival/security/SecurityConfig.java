@@ -2,6 +2,7 @@ package com.vertyll.festival.security;
 
 import java.time.Clock;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +22,16 @@ import org.springframework.security.oauth2.client.web.HttpSessionOAuth2Authorize
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
+import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
@@ -53,7 +58,7 @@ class SecurityConfig {
     SecurityFilterChain securityFilterChain(
         HttpSecurity http,
         FestivalOidcUserService oidcUserService,
-        ActiveAdministratorAuthorization activeAdministrator,
+        SessionAccessTokens sessionAccessTokens,
         LoginRedirectHandler loginRedirectHandler,
         ClientRegistrationRepository clientRegistrations,
         OAuth2AuthorizedClientRepository authorizedClients,
@@ -65,7 +70,7 @@ class SecurityConfig {
             authorize -> authorize.requestMatchers(HttpMethod.GET, PUBLIC_READ_ENDPOINTS)
                 .permitAll()
                 .requestMatchers("/api/admin/**")
-                .access(activeAdministrator)
+                .hasRole(Roles.ADMIN)
                 .requestMatchers("/api/account/**")
                 .authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/orders")
@@ -95,7 +100,8 @@ class SecurityConfig {
             .exceptionHandling(
                 exceptions -> exceptions.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             )
-            .requestCache(RequestCacheConfigurer::disable);
+            .requestCache(RequestCacheConfigurer::disable)
+            .addFilterBefore(new SessionAccessTokenFilter(sessionAccessTokens), AnonymousAuthenticationFilter.class);
         return http.build();
     }
 
@@ -136,7 +142,15 @@ class SecurityConfig {
     @Bean
     JwtDecoder accessTokenDecoder(KeycloakProperties keycloak) {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(keycloak.backchannelEndpoint("certs")).build();
-        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(keycloak.realmUrl()));
+        decoder.setJwtValidator(
+            new DelegatingOAuth2TokenValidator<>(
+                JwtValidators.createDefaultWithIssuer(keycloak.realmUrl()),
+                new JwtClaimValidator<List<String>>(
+                    JwtClaimNames.AUD,
+                    audience -> audience != null && audience.contains(keycloak.audience())
+                )
+            )
+        );
         return decoder;
     }
 

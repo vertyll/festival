@@ -55,14 +55,15 @@ Music festival website with a shop, and an admin panel to run both.
   and the browser holds only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` in production) with a
   CSRF token.
 - **Session store**: Redis (Spring Session, `festival:session` namespace).
-- **JWT**: every admin request decodes the current access token (signature from Keycloak's JWKS, issuer, expiry) and
-  requires the `ADMIN` realm role in it, so revoking the role in Keycloak cuts access within minutes. Every account gets
-  `USER`; only `ADMIN` opens the admin panel.
-- **State**: not stateless: requests are authorized by the session (admin requests also by the JWT inside it). The
-  session lives in Redis, so the back-end keeps nothing in its own memory and every instance is interchangeable.
+- **JWT**: on every API request the back-end takes the access token from the session, refreshing it when it is about to
+  expire, and verifies it like a resource server: signature (Keycloak's JWKS), issuer, expiry and audience
+  (`festival-api`). The request's identity and roles come from that token, so revoking `ADMIN` in Keycloak cuts admin
+  access within minutes. Every account gets `USER`; only `ADMIN` opens the admin panel.
+- **State**: the back-end is stateless: every request is authorized by the JWT alone, so any instance can serve it. The
+  only state is the browser session holding the tokens, and it lives in Redis, outside the application.
 - **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
-  old one, and concurrent requests of one session share a single refresh. Signing out revokes the refresh token at
-  Keycloak.
+  old one, and concurrent requests of one session share a single refresh. A refresh Keycloak refuses ends the session,
+  so a blocked account or a revoked role stops working within minutes. Signing out also ends the Keycloak session.
 - **Accounts**: there is no local copy of a person; orders, addresses and wishlists are keyed by the Keycloak
   identifier.
 

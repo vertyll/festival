@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 final class Roles {
@@ -17,6 +19,12 @@ final class Roles {
     static final String KEYCLOAK_ADMIN = "ADMIN";
 
     private Roles() {
+    }
+
+    static List<GrantedAuthority> authorities(Jwt accessToken) {
+        return isAdministrator(accessToken)
+                ? List.of(new SimpleGrantedAuthority(USER_AUTHORITY), new SimpleGrantedAuthority(ADMIN_AUTHORITY))
+                : List.of(new SimpleGrantedAuthority(USER_AUTHORITY));
     }
 
     static boolean isAdministrator(Jwt accessToken) {

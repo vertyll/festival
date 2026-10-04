@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static com.vertyll.festival.TestUsers.admin;
 import static com.vertyll.festival.TestUsers.customer;
+import static com.vertyll.festival.TestUsers.customerWithRejectedToken;
 import static com.vertyll.festival.TestUsers.removedAdmin;
 
 @IntegrationTest
@@ -172,6 +173,15 @@ class SecurityRulesIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(STAGE)
             ).andExpect(status().isForbidden());
+        }
+
+        @Test
+        void isSignedOutWhenTheAccessTokenIsRejected() throws Exception {
+            mvc.perform(get("/api/account/orders").with(customerWithRejectedToken()))
+                .andExpect(status().isUnauthorized());
+            mvc.perform(get("/api/me").with(customerWithRejectedToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user").isEmpty());
         }
 
         @Test
