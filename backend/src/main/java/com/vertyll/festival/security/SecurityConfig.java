@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,10 +31,12 @@ import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
 import tools.jackson.databind.ObjectMapper;
 
@@ -96,7 +99,18 @@ class SecurityConfig {
                 logout -> logout.logoutUrl("/logout")
                     .logoutSuccessHandler(new LogoutUrlResponder(keycloak, properties, objectMapper))
             )
-            .csrf(csrf -> csrf.spa().csrfTokenRepository(csrfTokenRepository(properties.secureCookies())))
+            .oauth2ResourceServer(
+                resourceServer -> resourceServer.jwt(
+                    jwt -> jwt.jwtAuthenticationConverter(
+                        token -> new JwtAuthenticationToken(token, Roles.authorities(token))
+                    )
+                )
+            )
+            .csrf(
+                csrf -> csrf.spa()
+                    .csrfTokenRepository(csrfTokenRepository(properties.secureCookies()))
+                    .ignoringRequestMatchers(new RequestHeaderRequestMatcher(HttpHeaders.AUTHORIZATION))
+            )
             .exceptionHandling(
                 exceptions -> exceptions.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             )

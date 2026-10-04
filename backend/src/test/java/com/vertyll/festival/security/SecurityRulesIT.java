@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.vertyll.festival.IntegrationTest;
+import com.vertyll.festival.TestAccessTokens;
 import com.vertyll.festival.common.MessageKeys;
 
 import static org.hamcrest.Matchers.allOf;
@@ -273,6 +274,41 @@ class SecurityRulesIT {
         void invalidIdentifierIsBadRequest() throws Exception {
             mvc.perform(delete("/api/admin/products/not-an-id").with(admin()).with(csrf()))
                 .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    class BearerToken {
+
+        @Test
+        void identifiesTheCallerFromTheAccessToken() throws Exception {
+            mvc.perform(get("/api/me").header("Authorization", "Bearer " + TestAccessTokens.CUSTOMER))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.email").value("klient@example.com"))
+                .andExpect(jsonPath("$.user.administrator").value(false));
+        }
+
+        @Test
+        void takesTheRolesFromTheAccessToken() throws Exception {
+            mvc.perform(get("/api/admin/orders").header("Authorization", "Bearer " + TestAccessTokens.ADMIN))
+                .andExpect(status().isOk());
+            mvc.perform(get("/api/admin/orders").header("Authorization", "Bearer " + TestAccessTokens.CUSTOMER))
+                .andExpect(status().isForbidden());
+        }
+
+        @Test
+        void needsNoCsrfTokenBecauseNoCookieIsInvolved() throws Exception {
+            mvc.perform(
+                post("/api/admin/stages").header("Authorization", "Bearer " + TestAccessTokens.ADMIN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(STAGE)
+            ).andExpect(status().isCreated());
+        }
+
+        @Test
+        void rejectsAnUnknownToken() throws Exception {
+            mvc.perform(get("/api/account/orders").header("Authorization", "Bearer forged"))
+                .andExpect(status().isUnauthorized());
         }
     }
 }

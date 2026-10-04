@@ -21,17 +21,18 @@ public class TestAccessTokens {
     @Primary
     JwtDecoder testAccessTokenDecoder() {
         return token -> switch (token) {
-            case ADMIN -> jwt(token, List.of("USER", "ADMIN"));
-            case CUSTOMER -> jwt(token, List.of("USER"));
+            case ADMIN -> jwt(token, "admin@example.com", List.of("USER", "ADMIN"));
+            case CUSTOMER -> jwt(token, "klient@example.com", List.of("USER"));
             default -> throw new BadJwtException("Unknown test token");
         };
     }
 
-    private static Jwt jwt(String token, List<String> roles) {
+    private static Jwt jwt(String token, String email, List<String> roles) {
         Instant now = Instant.now();
         return Jwt.withTokenValue(token)
             .header("alg", "none")
             .subject("test")
+            .claim("email", email)
             .claim("realm_access", Map.of("roles", roles))
             .issuedAt(now)
             .expiresAt(now.plusSeconds(300))

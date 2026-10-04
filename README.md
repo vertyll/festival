@@ -58,7 +58,9 @@ Music festival website with a shop, and an admin panel to run both.
 - **JWT**: on every API request the back-end takes the access token from the session, refreshing it when it is about to
   expire, and verifies it like a resource server: signature (Keycloak's JWKS), issuer, expiry and audience
   (`festival-api`). The request's identity and roles come from that token, so revoking `ADMIN` in Keycloak cuts admin
-  access within minutes. Every account gets `USER`; only `ADMIN` opens the admin panel.
+  access within minutes. Every account gets `USER`; only `ADMIN` opens the admin panel. A client without a browser calls
+  the same API with `Authorization: Bearer` and its own Keycloak token: the same checks apply and no CSRF token is
+  needed, since no cookie is involved.
 - **State**: the back-end is stateless: every request is authorized by the JWT alone, so any instance can serve it. The
   only state is the browser session holding the tokens, and it lives in Redis, outside the application.
 - **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
