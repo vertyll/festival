@@ -47,16 +47,22 @@ Music festival website with a shop, and an admin panel to run both.
 
 ### Authentication:
 
-- Keycloak (realm `festival`) handles sign-up, sign-in, email verification, password reset, two-factor authentication
-  and acceptance of the terms of use.
-- The page and the admin panel sign in with separate clients (`festival-page`, `festival-admin`) using the
-  authorization code flow with PKCE. The back-end keeps the tokens in its session, stored in Redis, and gives the
-  browser only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` in production) with a CSRF token.
-- Every account gets the `USER` role; only `ADMIN` opens the admin panel. Admin requests check the role in the current
-  access token, so revoking it in Keycloak cuts access within minutes.
-- Locally, `docker-compose.local.yml` runs MongoDB, Redis, RedisInsight (`:5540`, connected to Redis), Garage, Keycloak
-  on `:9000` (admin/admin) and maildev. The realm from `keycloak/realm-export.json` has two accounts with the password
-  `festival`: `admin@festival.local` (`ADMIN`) and `klient@festival.local`.
+- **Identity provider**: Keycloak (realm `festival`) owns every page that touches a credential: sign-up, sign-in, email
+  verification, password reset, two-factor authentication and acceptance of the terms of use. The application never sees
+  a password.
+- **Pattern**: BFF with Spring Security's OAuth2 client. The festival page and the admin panel sign in with separate
+  clients (`festival-page`, `festival-admin`) using the authorization code flow and PKCE; the back-end keeps the tokens
+  and the browser holds only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` in production) with a
+  CSRF token.
+- **Session store**: Redis (Spring Session, `festival:session` namespace), so the back-end holds no state of its own.
+- **JWT**: every admin request decodes the current access token (signature from Keycloak's JWKS, issuer, expiry) and
+  requires the `ADMIN` realm role in it, so revoking the role in Keycloak cuts access within minutes. Every account gets
+  `USER`; only `ADMIN` opens the admin panel.
+- **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
+  old one, and concurrent requests of one session share a single refresh. Signing out revokes the refresh token at
+  Keycloak.
+- **Accounts**: there is no local copy of a person; orders, addresses and wishlists are keyed by the Keycloak
+  identifier.
 
 ### Core back-end:
 
