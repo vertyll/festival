@@ -45,7 +45,8 @@ final class CategoryTree {
         return List.copyOf(path);
     }
 
-    @Nullable Reference parentOf(CategoryDocument category) {
+    @Nullable
+    Reference parentOf(CategoryDocument category) {
         ObjectId parentId = category.parentId();
         if (parentId == null) {
             return null;
