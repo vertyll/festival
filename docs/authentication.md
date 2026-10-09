@@ -67,23 +67,8 @@ apply.
 
 ## Sessions and refreshing
 
-The session lives in Redis (Spring Session, namespace `festival:session`) and lasts ten hours. Access tokens live five
-minutes.
-
-> [!IMPORTANT]
->
-> Keycloak rotates refresh tokens: every refresh returns a new one and invalidates the old one, and replaying a spent
-> one ends the session. Two requests of one session refreshing at once would therefore sign the user out.
-
-A refresh therefore runs once per refresh token:
-
-- within one instance, `SingleFlightRefreshTokenProvider` lets the first request refresh and hands its result to the
-  others;
-- across instances, `SharedRefreshes` takes a lock in Redis; the instance holding it refreshes and leaves the new tokens
-  in Redis for 30 seconds, where the others pick them up.
-
-When Keycloak refuses a refresh (`invalid_grant`), the session is invalidated and the request goes on anonymous: a
-blocked account or a revoked role stops working within minutes.
+The session lives in Redis for ten hours, and its access token is refreshed once per refresh token, across instances:
+[Token refresh](../backend/docs/mechanisms/token-refresh.md).
 
 ## Signing out
 
@@ -93,9 +78,7 @@ to the application's home page.
 
 ## CSRF
 
-The session is a cookie, so every unsafe request needs the CSRF token: the back-end sets it in the `XSRF-TOKEN` cookie
-and the shared HTTP client sends it back in `X-XSRF-TOKEN`. A request carrying `Authorization` is exempt, because no
-cookie is involved.
+Every unsafe request repeats the `XSRF-TOKEN` cookie in a header: [CSRF](mechanisms/csrf.md).
 
 ## Code
 

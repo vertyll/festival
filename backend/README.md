@@ -31,24 +31,14 @@ endpoint is closed until it is listed there.
 There is no local copy of a person. Orders, addresses and wishlists are keyed by the Keycloak identifier, and the name
 and email come from the token, so a change made in Keycloak is visible at once.
 
-## Shop
+## Mechanisms
 
-The cart lives in the browser until an order is placed. Placing one takes the products and prices from the catalog,
-not from the request, and reserves the stock line by line; when a line cannot be reserved, everything reserved so far is
-released and no order is written. `FESTIVAL_CHECKOUT_ENABLED` switches ordering off without hiding the shop, and the
-settings an admin changes start from `application.shop.initial-settings`.
-
-## Media
-
-Images are uploaded through the admin panel to `POST /api/admin/media` and stored in the object storage (Garage locally,
-any S3-compatible service in production). They are served straight from the storage's public address
-(`application.media.public-base-url`), never through the back-end.
-
-## Translations
-
-The catalog ships in `src/main/resources/i18n`. At startup the stored catalog is brought in line with those files.
-An admin can override any message, one at a time or by importing a spreadsheet exported from the panel; an override
-must parse as ICU MessageFormat and may use only the placeholders of its default.
+- [Media storage](docs/mechanisms/media-storage.md) – Where uploaded files are written, and how they reach the browser.
+- [Order placement](docs/mechanisms/order-placement.md) – What happens between a cart in the browser and a stored order.
+- [Token refresh](docs/mechanisms/token-refresh.md) – How the session keeps a valid access token without signing the
+  user out when requests race.
+- [Translation catalog](docs/mechanisms/translation-catalog.md) – Where the text behind every message key comes from,
+  and how an administrator's edits survive a deployment.
 
 ## Running it
 

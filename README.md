@@ -51,7 +51,7 @@ Music festival website with a shop, and an admin panel to run both.
 - **Pattern**: BFF with Spring Security's OAuth2 client; the browser holds only a session cookie.
 - **Session store**: Redis (Spring Session).
 - **JWT**: verified on every request; a client without a browser calls the API with a Bearer token.
-- **Details**: [Authentication](./docs/authentication.md).
+- **Details**: [Authentication](docs/authentication.md).
 
 ### Core back-end:
 
@@ -85,13 +85,9 @@ Music festival website with a shop, and an admin panel to run both.
 
 ## Documentation
 
-- [Glossary](./GLOSSARY.md) – every term the docs use, and where it is explained.
-- [Standards](./STANDARDS.md) – the RFCs and specifications the code implements or depends on.
-- [Development Setup](./docs/development-setup.md) – the infrastructure and starting the applications.
-- [Architecture](./docs/architecture.md) – the applications, and the errors and translations they share.
-- [Authentication](./docs/authentication.md) – the two clients, tokens, sessions, refreshing and CSRF.
-- [Back-end](./backend/README.md) – packages, access, shop, media, translations, running and production.
-- [Front-end](./frontend/README.md) – the two applications, text, running and production.
+- [Contents](CONTENTS.md) – every document in the repository, the module it belongs to, and what it covers.
+- [Glossary](GLOSSARY.md) – every term the docs use, and where it is explained.
+- [Standards](STANDARDS.md) – the RFCs and specifications the code implements or depends on.
 
 ## Preview Screenshots
 
