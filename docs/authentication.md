@@ -19,6 +19,30 @@ address:
 
 ## Signing in
 
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant N as Next.js (page or panel)
+    participant A as Back-end
+    participant K as Keycloak
+    participant R as Redis
+
+    B->>N: GET /oauth2/authorization/page (or /admin)
+    N->>A: forwarded
+    A-->>B: 302 to Keycloak, with state and the PKCE challenge
+    B->>K: sign in on Keycloak's page
+    K-->>B: 302 to /login/oauth2/code/page on the application's address
+    B->>N: GET /login/oauth2/code/page?code&state
+    N->>A: forwarded
+    A->>K: code + that client's secret + PKCE verifier
+    K-->>A: access, refresh and ID token
+    A->>R: store the tokens in the session
+    A-->>B: 302 to /account (the panel: /), FESTIVAL_SESSION and XSRF-TOKEN cookies
+    B->>N: /api/... + cookies
+    N->>A: forwarded
+    Note over A: the request is authorized by the session's access token
+```
+
 1. The application sends the browser to `/oauth2/authorization/page` or `/oauth2/authorization/admin`, which Next.js
    forwards to the back-end. `LocalizedAuthorizationRequestResolver` builds the authorization request with PKCE and
    passes the language from the `NEXT_LOCALE` cookie.
