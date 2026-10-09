@@ -83,6 +83,14 @@ Music festival website with a shop, and an admin panel to run both.
 - Spotless for code formatting.
 - ESLint and Prettier for the front-end.
 
+## Documentation
+
+- [Development Setup](./docs/development-setup.md) – the infrastructure and starting the applications.
+- [Architecture](./docs/architecture.md) – the applications, and the errors and translations they share.
+- [Authentication](./docs/authentication.md) – the two clients, tokens, sessions, refreshing and CSRF.
+- [Back-end](./backend/README.md) – packages, access, shop, media, translations, running and production.
+- [Front-end](./frontend/README.md) – the two applications, text, running and production.
+
 ## Preview Screenshots
 
 ### Festival page
