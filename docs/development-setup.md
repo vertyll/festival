@@ -33,8 +33,10 @@ Keycloak imports `keycloak/realm-export.json` on its first start, with two accou
 | `admin@festival.local`  | `festival` | `USER`, `ADMIN` |
 | `klient@festival.local` | `festival` | `USER`          |
 
-The realm lives in the `keycloak-data` volume afterwards, so a change to the export file only takes effect after
-`docker compose -f docker-compose.local.yml down -v`.
+> [!NOTE]
+>
+> The realm lives in the `keycloak-data` volume afterwards, so a change to the export file only takes effect after
+> `docker compose -f docker-compose.local.yml down -v`.
 
 ## Run the applications
 

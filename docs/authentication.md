@@ -46,9 +46,12 @@ apply.
 The session lives in Redis (Spring Session, namespace `festival:session`) and lasts ten hours. Access tokens live five
 minutes.
 
-Keycloak rotates refresh tokens: every refresh returns a new one and invalidates the old one, and replaying a spent one
-ends the session. Two requests of one session refreshing at once would therefore sign the user out, so a refresh runs
-once per refresh token:
+> [!IMPORTANT]
+>
+> Keycloak rotates refresh tokens: every refresh returns a new one and invalidates the old one, and replaying a spent
+> one ends the session. Two requests of one session refreshing at once would therefore sign the user out.
+
+A refresh therefore runs once per refresh token:
 
 - within one instance, `SingleFlightRefreshTokenProvider` lets the first request refresh and hands its result to the
   others;

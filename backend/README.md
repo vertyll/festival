@@ -22,10 +22,9 @@ The code is split by feature, and each feature keeps its controllers, service, r
 
 ## Access
 
-`security/SecurityConfig` decides by path: public reads of the catalogue, lineup, content, settings and translations;
-`/api/account/**` and placing an order for a signed-in user; `/api/admin/**` for `ADMIN`. Everything else is refused
-(`denyAll()`), so a new endpoint is closed until it is listed. There is no OpenAPI description; the controllers are the
-reference.
+`security/SecurityConfig` decides by path: the public reads are listed in `PUBLIC_READ_ENDPOINTS`, `/api/admin/**`
+needs `ADMIN`, and the account and ordering paths a signed-in user. Everything else is refused (`denyAll()`), so a new
+endpoint is closed until it is listed there.
 
 ## Accounts
 

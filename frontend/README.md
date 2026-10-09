@@ -37,9 +37,13 @@ pnpm dev:admin    # only the panel
 | The festival page | `http://localhost:3000` |
 | The admin panel   | `http://127.0.0.1:3001` |
 
-Each reads `BACKEND_INTERNAL_URL` from its `.env.development`. The panel runs on `127.0.0.1`, not `localhost`: cookies
-are scoped to the host, not the port, so this keeps the page's and the panel's sessions apart, and Keycloak's
-`festival-admin` client accepts only that address as a redirect.
+Each reads `BACKEND_INTERNAL_URL` from its `.env.development`.
+
+> [!IMPORTANT]
+>
+> The panel runs on `127.0.0.1`, not `localhost`. Cookies are scoped to the host, not the port, so this keeps the
+> page's and the panel's sessions apart, and Keycloak's `festival-admin` client accepts only that address as a
+> redirect.
 
 ## Checks
 
