@@ -16,7 +16,7 @@ Each application forwards `/api/*`, `/oauth2/*`, `/login/oauth2/*` and `/logout`
 
 ## Text
 
-Every label and every error is a key of the back-end's catalogue, formatted with `use-intl`
+Every label and every error is a key of the back-end's catalog, formatted with `use-intl`
 ([Errors and translations](../docs/architecture.md#errors-and-translations)). A failed call is an `ApiError`:
 show `userMessage` for the whole request and `fieldErrors` next to the form's inputs. The language is kept in the
 `NEXT_LOCALE` cookie, which the back-end also passes to Keycloak.

@@ -8,17 +8,17 @@ keys ([Errors and translations](../docs/architecture.md#errors-and-translations)
 
 The code is split by feature, and each feature keeps its controllers, service, repository and documents together.
 
-| Package    | Holds                                                                       |
-|------------|-----------------------------------------------------------------------------|
-| `catalog`  | products, categories and attributes                                         |
-| `shop`     | orders, addresses and wishlists                                             |
-| `lineup`   | artists and stages                                                          |
-| `content`  | news and sponsors                                                           |
-| `media`    | image uploads to the object storage                                         |
-| `settings` | shop settings an admin can change: shipping price, stock visibility         |
-| `i18n`     | the message catalogue, its defaults, admin overrides and spreadsheet import |
-| `security` | sign-in, sessions and tokens                                                |
-| `common`   | errors, localized text, validation and shared types                         |
+| Package    | Holds                                                                     |
+|------------|---------------------------------------------------------------------------|
+| `catalog`  | products, categories and attributes                                       |
+| `shop`     | orders, addresses and wishlists                                           |
+| `lineup`   | artists and stages                                                        |
+| `content`  | news and sponsors                                                         |
+| `media`    | image uploads to the object storage                                       |
+| `settings` | shop settings an admin can change: shipping price, stock visibility       |
+| `i18n`     | the message catalog, its defaults, admin overrides and spreadsheet import |
+| `security` | sign-in, sessions and tokens                                              |
+| `common`   | errors, localized text, validation and shared types                       |
 
 ## Access
 
@@ -33,7 +33,7 @@ and email come from the token, so a change made in Keycloak is visible at once.
 
 ## Shop
 
-The cart lives in the browser until an order is placed. Placing one takes the products and prices from the catalogue,
+The cart lives in the browser until an order is placed. Placing one takes the products and prices from the catalog,
 not from the request, and reserves the stock line by line; when a line cannot be reserved, everything reserved so far is
 released and no order is written. `FESTIVAL_CHECKOUT_ENABLED` switches ordering off without hiding the shop, and the
 settings an admin changes start from `application.shop.initial-settings`.
@@ -46,7 +46,7 @@ any S3-compatible service in production). They are served straight from the stor
 
 ## Translations
 
-The catalogue ships in `src/main/resources/i18n`. At startup the stored catalogue is brought in line with those files.
+The catalog ships in `src/main/resources/i18n`. At startup the stored catalog is brought in line with those files.
 An admin can override any message, one at a time or by importing a spreadsheet exported from the panel; an override
 must parse as ICU MessageFormat and may use only the placeholders of its default.
 
