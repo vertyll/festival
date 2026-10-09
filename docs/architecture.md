@@ -2,6 +2,28 @@
 
 ## Three applications, one back-end
 
+```mermaid
+flowchart LR
+    browser([Browser])
+    page["apps/page<br/>Next.js"]
+    admin["apps/admin<br/>Next.js"]
+    back["backend<br/>Spring Boot"]
+    kc[Keycloak]
+    redis[("Redis<br/>sessions")]
+    mongo[(MongoDB)]
+    s3[("Object storage<br/>images")]
+
+    browser -- "FESTIVAL_SESSION cookie" --> page
+    browser -- "FESTIVAL_SESSION cookie" --> admin
+    page -- "/api, /oauth2, /logout forwarded" --> back
+    admin -- "/api, /oauth2, /logout forwarded" --> back
+    back -- "sign-in, refresh, token keys" --> kc
+    back --> redis
+    back --> mongo
+    back -- "uploads" --> s3
+    browser -- "images, directly" --> s3
+```
+
 | Application                                                | What it is                                                      |
 |------------------------------------------------------------|-----------------------------------------------------------------|
 | `frontend/apps/page` ([front-end](../frontend/README.md))  | the festival page and shop (Next.js)                            |
