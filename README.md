@@ -85,7 +85,8 @@ Music festival website with a shop, and an admin panel to run both.
 
 ## Documentation
 
-- [Glossary](./GLOSSARY.md) – the terms, the standards they come from, and where each is explained.
+- [Glossary](./GLOSSARY.md) – every term the docs use, and where it is explained.
+- [Standards](./STANDARDS.md) – the RFCs and specifications the code implements or depends on.
 - [Development Setup](./docs/development-setup.md) – the infrastructure and starting the applications.
 - [Architecture](./docs/architecture.md) – the applications, and the errors and translations they share.
 - [Authentication](./docs/authentication.md) – the two clients, tokens, sessions, refreshing and CSRF.
