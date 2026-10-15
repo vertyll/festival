@@ -10,15 +10,17 @@
     <img alt="" src="https://img.shields.io/badge/Apache_Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white">
 </p>
 
+# Festival
+
 ## Project Assumptions
 
 Music festival website with a shop, and an admin panel to run both.
 
-## Link: https://festival-page.vertyll.dev
+## Link: <https://festival-page.vertyll.dev>
 
 ## Technology Stack
 
-### Back-end:
+### Back-end
 
 - Spring Boot.
 - Java.
@@ -35,7 +37,7 @@ Music festival website with a shop, and an admin panel to run both.
 - Spring Web.
 - Spring Mail.
 
-### Front-end:
+### Front-end
 
 - Next.js.
 - React.
@@ -45,7 +47,7 @@ Music festival website with a shop, and an admin panel to run both.
 - pnpm workspaces with Turborepo: the festival page (`apps/page`), the admin panel (`apps/admin`) and shared code
   (`packages/shared`).
 
-### Authentication:
+### Authentication
 
 - **Identity provider**: Keycloak (realm `festival`); the application never sees a password.
 - **Pattern**: BFF with Spring Security's OAuth2 client; the browser holds only a session cookie.
@@ -53,7 +55,7 @@ Music festival website with a shop, and an admin panel to run both.
 - **JWT**: verified on every request; a client without a browser calls the API with a Bearer token.
 - **Details**: [Authentication](docs/authentication.md).
 
-### Core back-end:
+### Core back-end
 
 - Maven build system.
 - The application has an exception handling mechanism (RFC 9457 problem details).
@@ -65,14 +67,14 @@ Music festival website with a shop, and an admin panel to run both.
 - The application has image uploads to S3-compatible storage.
 - And many other features that can be found in the application code.
 
-### Core front-end:
+### Core front-end
 
 - Monorepo with shared types, HTTP client with CSRF, session handling and validation.
 - The application has separate environments for local and prod.
 - Polish and English, with translations served by the back-end.
 - And many other features that can be found in the application code.
 
-### Other:
+### Other
 
 - Docker for development environment.
 - PMD for static code analysis.
