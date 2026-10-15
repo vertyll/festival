@@ -4,15 +4,12 @@ import FooterInfoLinks from "../molecules/FooterInfoLinks";
 const StyledFooter = styled.footer`
   background-color: var(--footer-color);
   color: var(--light-text-color);
-  margin: 0 auto;
-  padding: 0 20px;
-  min-height: 20vh;
+  padding: 24px 20px;
 `;
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 20px 0;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
 export default function Footer() {

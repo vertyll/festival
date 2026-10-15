@@ -17,9 +17,14 @@ const StyledDiv = styled.div`
 `;
 
 const Title = styled.h1`
+  box-sizing: border-box;
+  max-width: 100%;
   margin: 0;
+  padding: 0 16px;
   font-weight: bold;
-  font-size: 3em;
+  font-size: clamp(2.25rem, 10vw, 3em);
+  text-align: center;
+  overflow-wrap: break-word;
   font-family: "Almendra", serif;
   color: var(--light-color);
   text-shadow: 3px 3px 6px rgba(14, 14, 14, 1);

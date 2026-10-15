@@ -22,7 +22,10 @@ export default function LegalDocumentPage({ document }: Readonly<{ document: Adm
             </Link>
             <LanguageSwitcher tone="onLight" />
           </div>
-          <h1 className="mb-6 text-3xl font-bold">{t(`${document}.title`)}</h1>
+          <h1 className="text-3xl font-bold">{t(`${document}.title`)}</h1>
+          <p className="mt-2 mb-6 text-sm text-gray-500">
+            {t("lastModified")}: {t(`${document}.lastModified`)}
+          </p>
           <div className="flex flex-col gap-4 leading-relaxed text-gray-800">
             <LegalParagraphs content={t(`${document}.content`)} linkClassName="text-indigo-700 underline" />
           </div>
