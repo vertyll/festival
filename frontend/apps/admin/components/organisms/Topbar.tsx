@@ -14,7 +14,7 @@ export default function Topbar({ user }: Readonly<{ user: SessionUser }>) {
       <div className="relative" onMouseEnter={() => setShowMenu(true)} onMouseLeave={() => setShowMenu(false)}>
         <div className="flex items-center text-white gap-2 p-2 rounded-md uppercase text-sm">
           {user.picture && (
-            // eslint-disable-next-line @next/next/no-img-element -- awatar z Google, poza optymalizacją obrazów
+            // eslint-disable-next-line @next/next/no-img-element -- a Google avatar, outside the image optimization
             <img src={user.picture} alt="" className="w-10 h-10 rounded-full border-2" referrerPolicy="no-referrer" />
           )}
           <span className="py-1 px-2">

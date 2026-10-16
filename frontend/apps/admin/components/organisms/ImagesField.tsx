@@ -49,7 +49,7 @@ export default function ImagesField({ images, onChange, error }: Readonly<Images
         >
           {images.map((url) => (
             <div key={url} className="group relative shadow-md rounded-md h-32 bg-neutral-100">
-              {/* eslint-disable-next-line @next/next/no-img-element -- podgląd zdjęcia z magazynu */}
+              {/* eslint-disable-next-line @next/next/no-img-element -- a preview of the stored picture */}
               <img src={url} alt="" className="rounded-md object-cover h-full w-full" />
               <button
                 type="button"

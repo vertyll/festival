@@ -8,7 +8,7 @@ export function useCookieConsent(): { consentMissing: boolean; accept: () => voi
   const [consentMissing, setConsentMissing] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- ciasteczka istnieją dopiero w przeglądarce
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- cookies exist only in the browser
     setConsentMissing(getCookie(CONSENT_COOKIE) === null);
   }, []);
 
