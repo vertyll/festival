@@ -48,7 +48,7 @@ export default function InfoPage() {
           <Title>{t("mapHeading")}</Title>
           <ImageWrapper>
             <p>{t("mapDescription")}</p>
-            {/* eslint-disable-next-line @next/next/no-img-element -- statyczna grafika z public/ */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- a static picture from public/ */}
             <img src="/images/mapka.webp" alt={t("mapAlt")} />
           </ImageWrapper>
         </DivCenter>

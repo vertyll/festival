@@ -22,7 +22,7 @@ const Content = styled.div`
 export default function TitleBanner({ imageUrl, children }: Readonly<{ imageUrl: string; children?: ReactNode }>) {
   return (
     <Banner>
-      {/* eslint-disable-next-line @next/next/no-img-element -- statyczny baner z public/ */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- a static banner from public/ */}
       <img src={imageUrl} alt="" />
       <Content>{children}</Content>
     </Banner>
