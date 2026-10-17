@@ -3,10 +3,13 @@ import { useState } from "react";
 import styled from "styled-components";
 import { useTranslations } from "use-intl";
 import type { SessionUser } from "@festival/shared/api/types";
+import type { SecondFactor } from "@festival/shared/api/types";
 import { signOut, startAccountAction } from "@festival/shared/auth/session";
+import { useLoader } from "@festival/shared/react/useLoader";
 import Button from "@/components/atoms/Button";
 import RevealWrapper from "@/components/atoms/RevealWrapper";
 import Tabs from "@/components/organisms/Tabs";
+import { account } from "@/lib/api";
 import AddressTab from "./AddressTab";
 import OrdersTab from "./OrdersTab";
 import WishlistTab from "./WishlistTab";
@@ -58,6 +61,7 @@ type Tab = (typeof TABS)[number];
 
 export default function AccountPanels({ user }: Readonly<{ user: SessionUser }>) {
   const t = useTranslations("page.account");
+  const secondFactor = useLoader(account.secondFactor);
   const [activeTab, setActiveTab] = useState<Tab>("orders");
   const tabs = Object.fromEntries(TABS.map((tab) => [tab, t(`tabs.${tab}`)])) as Record<Tab, string>;
   return (
@@ -72,9 +76,7 @@ export default function AccountPanels({ user }: Readonly<{ user: SessionUser }>)
           <Button $usage="primary" $size="m" onClick={() => startAccountAction("page", "UPDATE_PASSWORD")}>
             {t("password")}
           </Button>
-          <Button $usage="primary" $size="m" onClick={() => startAccountAction("page", "CONFIGURE_TOTP")}>
-            {t("twoFactor")}
-          </Button>
+          {secondFactor.state.status === "loaded" && <SecondFactorButton factor={secondFactor.state.data} />}
           <Button $usage="primary" $size="m" onClick={() => void signOut()}>
             {t("logout")}
           </Button>
@@ -89,5 +91,19 @@ export default function AccountPanels({ user }: Readonly<{ user: SessionUser }>)
         </RevealWrapper>
       </ContentPanel>
     </>
+  );
+}
+
+function SecondFactorButton({ factor }: Readonly<{ factor: SecondFactor }>) {
+  const t = useTranslations("page.account");
+  const { credentialId } = factor;
+  return credentialId ? (
+    <Button $usage="primary" $size="m" onClick={() => startAccountAction("page", `delete_credential:${credentialId}`)}>
+      {t("twoFactorOff")}
+    </Button>
+  ) : (
+    <Button $usage="primary" $size="m" onClick={() => startAccountAction("page", "CONFIGURE_TOTP")}>
+      {t("twoFactorOn")}
+    </Button>
   );
 }

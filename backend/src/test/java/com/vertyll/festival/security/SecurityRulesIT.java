@@ -1,5 +1,7 @@
 package com.vertyll.festival.security;
 
+import java.util.List;
+
 import jakarta.servlet.http.Cookie;
 
 import org.junit.jupiter.api.Nested;
@@ -72,6 +74,7 @@ class SecurityRulesIT {
         void cannotSeeOrdersOrAccountData() throws Exception {
             mvc.perform(get("/api/admin/orders")).andExpect(status().isUnauthorized());
             mvc.perform(get("/api/account/orders")).andExpect(status().isUnauthorized());
+            mvc.perform(get("/api/account/second-factor")).andExpect(status().isUnauthorized());
             mvc.perform(get("/api/account/address")).andExpect(status().isUnauthorized());
             mvc.perform(get("/api/account/wishlist")).andExpect(status().isUnauthorized());
         }
@@ -123,9 +126,18 @@ class SecurityRulesIT {
         }
 
         @Test
+        void removingACredentialNamedByItsIdIsPassedOnToKeycloak() throws Exception {
+            String action = "delete_credential:90062308-97cf-410a-afe5-06680a07a349";
+            mvc.perform(get("/oauth2/authorization/page").param("kc_action", action))
+                .andExpect(header().string("Location", containsString("kc_action=" + action)));
+        }
+
+        @Test
         void anUnknownAccountActionIsDropped() throws Exception {
-            mvc.perform(get("/oauth2/authorization/page").param("kc_action", "delete_account"))
-                .andExpect(header().string("Location", not(containsString("kc_action"))));
+            for (String action : List.of("delete_account", "delete_credential", "delete_credential:otp")) {
+                mvc.perform(get("/oauth2/authorization/page").param("kc_action", action))
+                    .andExpect(header().string("Location", not(containsString("kc_action"))));
+            }
         }
 
         @Test

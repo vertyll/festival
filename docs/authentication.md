@@ -55,11 +55,15 @@ The browser holds only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`
 
 ## Account actions
 
-The account page changes the password and sets up the second factor on Keycloak's own pages, so no password and no
-TOTP secret passes through the application. It sends the signed-in browser to `/oauth2/authorization/page?kc_action=…`,
-and `LocalizedAuthorizationRequestResolver` passes `kc_action` on to Keycloak when it is `UPDATE_PASSWORD` or
-`CONFIGURE_TOTP`, and drops any other value. Keycloak shows only that page, then returns through the usual sign-in to
-the client's landing path.
+The account page changes the password and turns the second factor on and off on Keycloak's own pages, so no password
+and no TOTP secret passes through the application. `GET /api/account/second-factor` reads the caller's OTP credential
+from Keycloak's account API (`/realms/festival/account/credentials`) with the caller's own access token, which carries
+the `account` audience and the `manage-account` role every account gets, so the application needs no right to read
+anyone else's credentials. The page then sends the signed-in browser to `/oauth2/authorization/page?kc_action=…`, and
+`LocalizedAuthorizationRequestResolver` passes `kc_action` on to Keycloak when it is `UPDATE_PASSWORD`,
+`CONFIGURE_TOTP` or `delete_credential:<id>` with a UUID, and drops any other value. Keycloak shows only that page,
+asks to confirm a removal and removes a credential only when it is the person's own, then returns through the usual
+sign-in to the client's landing path.
 
 ## Every API request is authorized by a token
 

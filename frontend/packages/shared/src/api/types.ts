@@ -39,6 +39,12 @@ export interface SessionUser {
   administrator: boolean;
 }
 
+/** Whether the signed-in person set up a second factor, and the credential Keycloak's `delete_credential` removes. */
+export interface SecondFactor {
+  enabled: boolean;
+  credentialId: string | null;
+}
+
 export interface MeResponse {
   user: SessionUser | null;
 }
