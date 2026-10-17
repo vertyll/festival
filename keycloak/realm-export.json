@@ -2,6 +2,8 @@
   "realm": "festival",
   "enabled": true,
   "displayName": "Sunset Festival",
+  "loginTheme": "festival-page",
+  "emailTheme": "festival-page",
   "sslRequired": "external",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
@@ -202,11 +204,11 @@
   "localizationTexts": {
     "pl": {
       "termsTitle": "Regulamin Sunset Festival",
-      "termsText": "<p>Sunset Festival to projekt demonstracyjny, stworzony w celach nauki i portfolio. Twoje dane są przechowywane w bazach danych na prywatnym serwerze autora w Unii Europejskiej.</p><p>Akceptując, potwierdzasz, że przeczytałeś <a href=\"http://localhost:3000/termsofuse\" target=\"_blank\" rel=\"noopener\">warunki korzystania</a> i <a href=\"http://localhost:3000/privacypolicy\" target=\"_blank\" rel=\"noopener\">politykę prywatności</a> i akceptujesz warunki korzystania.</p>"
+      "termsText": "<p>Sunset Festival to projekt demonstracyjny, stworzony do nauki i jako portfolio.</p><p>Akceptując, potwierdzasz, że:</p><ul><li>akceptujesz <a href=\"http://localhost:3000/termsofuse\" target=\"_blank\" rel=\"noopener\">warunki korzystania</a>;</li><li>znasz <a href=\"http://localhost:3000/privacypolicy\" target=\"_blank\" rel=\"noopener\">politykę prywatności</a>;</li><li>wiesz, że Twoje dane są przechowywane na prywatnym serwerze autora w Unii Europejskiej.</li></ul>"
     },
     "en": {
       "termsTitle": "Sunset Festival terms of use",
-      "termsText": "<p>Sunset Festival is a demo project built for learning and as a portfolio piece. Your data is stored in databases on the author's private server in the European Union.</p><p>By accepting, you confirm that you have read the <a href=\"http://localhost:3000/termsofuse\" target=\"_blank\" rel=\"noopener\">terms of use</a> and the <a href=\"http://localhost:3000/privacypolicy\" target=\"_blank\" rel=\"noopener\">privacy policy</a>, and you accept the terms of use.</p>"
+      "termsText": "<p>Sunset Festival is a demo project built for learning and as a portfolio piece.</p><p>By accepting, you confirm that you:</p><ul><li>accept the <a href=\"http://localhost:3000/termsofuse\" target=\"_blank\" rel=\"noopener\">terms of use</a>;</li><li>have read the <a href=\"http://localhost:3000/privacypolicy\" target=\"_blank\" rel=\"noopener\">privacy policy</a>;</li><li>know that your data is stored on the author’s private server in the European Union.</li></ul>"
     }
   },
   "components": {
@@ -245,7 +247,8 @@
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://localhost:3000/*"
+        "post.logout.redirect.uris": "http://localhost:3000/*",
+        "login_theme": "festival-page"
       },
       "protocolMappers": [
         {
@@ -286,7 +289,8 @@
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://127.0.0.1:3001/*"
+        "post.logout.redirect.uris": "http://127.0.0.1:3001/*",
+        "login_theme": "festival-admin"
       },
       "protocolMappers": [
         {
