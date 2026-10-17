@@ -55,15 +55,15 @@ The browser holds only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`
 
 ## Account actions
 
-The account page changes the password and turns the second factor on and off on Keycloak's own pages, so no password
-and no TOTP secret passes through the application. `GET /api/account/second-factor` reads the caller's OTP credential
-from Keycloak's account API (`/realms/festival/account/credentials`) with the caller's own access token, which carries
-the `account` audience and the `manage-account` role every account gets, so the application needs no right to read
-anyone else's credentials. The page then sends the signed-in browser to `/oauth2/authorization/page?kc_action=…`, and
-`LocalizedAuthorizationRequestResolver` passes `kc_action` on to Keycloak when it is `UPDATE_PASSWORD`,
-`CONFIGURE_TOTP` or `delete_credential:<id>` with a UUID, and drops any other value. Keycloak shows only that page,
-asks to confirm a removal and removes a credential only when it is the person's own, then returns through the usual
-sign-in to the client's landing path.
+The account page changes the password and turns the second factor on and off on Keycloak's own pages, so no password and
+no TOTP secret passes through the application. `GET /api/account/second-factor` reads the caller's OTP credential from
+Keycloak's account API (`/realms/festival/account/credentials`) with the caller's own access token, which carries the
+`account` audience and the `manage-account` role every account gets, so the application needs no right to read anyone
+else's credentials. The page then sends the signed-in browser to `/oauth2/authorization/page?kc_action=…`, and
+`LocalizedAuthorizationRequestResolver` passes `kc_action` on to Keycloak when `KeycloakAccounts` finds it is
+`UPDATE_PASSWORD`, `CONFIGURE_TOTP` or `delete_credential:<id>` with a UUID, and drops any other value. Keycloak shows
+only that page, asks to confirm a removal and removes a credential only when it is the person's own, then returns
+through the usual sign-in to the client's landing path.
 
 ## Every API request is authorized by a token
 
@@ -137,15 +137,16 @@ image holding it in `/themes`, which the Keycloak theme workflow publishes on a 
 
 All in `backend/src/main/java/com/vertyll/festival/security` unless noted:
 
-| Class                                                 | Role                                               |
-|-------------------------------------------------------|----------------------------------------------------|
-| `SecurityConfig`                                      | the filter chain, both client registrations, CSRF  |
-| `FestivalOidcUserService`                             | verified email, the admin client's role check      |
-| `LocalizedAuthorizationRequestResolver`               | PKCE and the language                              |
-| `LoginRedirectHandler`                                | landing and failure paths per client               |
-| `SessionAccessTokenFilter`, `SessionAccessTokens`     | a session's request authorized by its token        |
-| `SingleFlightRefreshTokenProvider`, `SharedRefreshes` | one refresh per refresh token                      |
-| `LogoutUrlResponder`                                  | Keycloak's end-session address                     |
-| `frontend/packages/shared/src/auth/session.tsx`       | signing in and out from the applications           |
-| `../keycloak/KeycloakAccounts`                        | the way into Keycloak's account: actions, language |
-| `frontend/packages/shared/src/keycloak`               | the shared language and the account actions        |
+| Class                                                 | Role                                                        |
+|-------------------------------------------------------|-------------------------------------------------------------|
+| `SecurityConfig`                                      | the filter chain, both client registrations, CSRF           |
+| `FestivalOidcUserService`                             | verified email, the admin client's role check               |
+| `LocalizedAuthorizationRequestResolver`               | PKCE and the language                                       |
+| `LoginRedirectHandler`                                | landing and failure paths per client                        |
+| `SessionAccessTokenFilter`, `SessionAccessTokens`     | a session's request authorized by its token                 |
+| `SingleFlightRefreshTokenProvider`, `SharedRefreshes` | one refresh per refresh token                               |
+| `LogoutUrlResponder`                                  | Keycloak's end-session address                              |
+| `KeycloakLanguageFilter`                              | the language stored on the account before an account action |
+| `frontend/packages/shared/src/auth/session.tsx`       | signing in and out from the applications                    |
+| `../keycloak/KeycloakAccounts`                        | the way into Keycloak's account: actions, language          |
+| `frontend/packages/shared/src/keycloak`               | the shared language and the account actions                 |

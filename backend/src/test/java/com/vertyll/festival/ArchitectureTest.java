@@ -13,6 +13,9 @@ import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vertyll.festival.keycloak.KeycloakAccounts;
+import com.vertyll.festival.keycloak.KeycloakProperties;
+
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -24,8 +27,8 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.equivalentTo;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.simpleName;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
@@ -37,11 +40,11 @@ final class ArchitectureTest {
 
     @ArchTest
     static final ArchRule KEYCLOAK_IS_REACHED_THROUGH_ITS_ENTRY = noClasses().that()
-        .resideOutsideOfPackage("..keycloak..")
+        .resideOutsideOfPackage("com.vertyll.festival.keycloak..")
         .should()
         .dependOnClassesThat(
-            resideInAPackage("..keycloak..").and(not(simpleName("KeycloakAccounts")))
-                .and(not(simpleName("KeycloakProperties")))
+            resideInAPackage("com.vertyll.festival.keycloak..").and(not(equivalentTo(KeycloakAccounts.class)))
+                .and(not(equivalentTo(KeycloakProperties.class)))
         );
 
     @ArchTest

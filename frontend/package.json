@@ -13,6 +13,7 @@
     "dev:admin": "turbo dev --filter=@festival/admin",
     "build": "turbo build",
     "typecheck": "turbo typecheck",
+    "test": "turbo test",
     "lint": "eslint --max-warnings 0 .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

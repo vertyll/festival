@@ -53,9 +53,13 @@ export function useSession(): SessionContextValue {
   return value;
 }
 
+/** Where the browser starts a sign-in with this client, through the back-end. */
+export function authorizationPath(client: LoginClient): string {
+  return `/oauth2/authorization/${client}`;
+}
+
 export function signIn(client: LoginClient): void {
-  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-  window.location.assign(`/oauth2/authorization/${client}`);
+  window.location.assign(authorizationPath(client));
 }
 
 export async function signOut(): Promise<void> {

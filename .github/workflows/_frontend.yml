@@ -63,6 +63,9 @@ jobs:
       - name: Type check
         run: pnpm turbo typecheck --filter="@festival/${{ inputs.app }}..."
 
+      - name: Test
+        run: pnpm turbo test --filter="@festival/${{ inputs.app }}..."
+
       - name: Check translations
         run: pnpm run check:translations
 

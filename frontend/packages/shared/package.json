@@ -16,7 +16,8 @@
     "./i18n/richText": "./src/i18n/richText.tsx"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/**/*.test.mjs\""
   },
   "peerDependencies": {
     "react": "^19.0.0",

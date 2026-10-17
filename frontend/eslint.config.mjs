@@ -14,6 +14,20 @@ const config = [
       eqeqeq: ["error", "always"],
     },
   },
+  {
+    // The keycloak module is reached through its index, from the applications by the package's exports map and from
+    // the rest of the shared package by this rule.
+    files: ["packages/shared/src/**"],
+    ignores: ["packages/shared/src/keycloak/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [{ regex: "(^|/)keycloak/.+", message: "Use the keycloak module through what its index exports." }],
+        },
+      ],
+    },
+  },
   prettier,
 ];
 

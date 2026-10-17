@@ -2,7 +2,7 @@
 // exports is reachable from outside: the package's exports map `./keycloak/*` to nothing.
 import { browserHttp } from "../api/http";
 import { LANGUAGES, type Language } from "../api/types";
-import type { LoginClient } from "../auth/session";
+import { authorizationPath, type LoginClient } from "../auth/session";
 import { keycloakAccountApi, type SecondFactor } from "./accountApi";
 import { readShared, writeShared } from "./sharedCookie";
 
@@ -10,7 +10,8 @@ export type { SecondFactor } from "./accountApi";
 
 /**
  * The language the reader last chose, in the application or on Keycloak's pages, which both write: a shared record
- * rather than a message, so the two agree however the reader moves between them.
+ * rather than a message, so the two agree however the reader moves between them. Its name ends in the realm's, as
+ * Keycloak's theme builds it: `realm` in `keycloak/realm-export.json`.
  */
 const SHARED_LANGUAGE_COOKIE = "ui_locale_festival";
 
@@ -22,7 +23,7 @@ export type AccountAction = "UPDATE_PASSWORD" | "CONFIGURE_TOTP" | `delete_crede
 
 export function startAccountAction(client: LoginClient, action: AccountAction): void {
   // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-  window.location.assign(`/oauth2/authorization/${client}?kc_action=${action}`);
+  window.location.assign(`${authorizationPath(client)}?kc_action=${action}`);
 }
 
 /** The language last chosen here or on Keycloak's pages, when one was. */

@@ -54,6 +54,7 @@ Each reads `BACKEND_INTERNAL_URL` from its `.env.development`.
 pnpm format
 pnpm lint
 pnpm typecheck
+pnpm test
 pnpm check:translations   # every key in both languages
 ```
 
