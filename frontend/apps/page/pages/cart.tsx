@@ -24,16 +24,16 @@ import { shippingErrorsOf, useShippingForm } from "@/lib/shipping";
 import { useShopSettings } from "@/lib/shopSettings";
 import { bold } from "@festival/shared/i18n/richText";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $single: boolean }>`
   display: grid;
   grid-template-columns: 1fr;
   gap: 50px;
-  max-width: 1000px;
+  max-width: ${(props) => (props.$single ? "600px" : "1000px")};
   width: 100%;
   margin-top: 50px;
 
   @media screen and (min-width: 768px) {
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: ${(props) => (props.$single ? "1fr" : "1.2fr 0.8fr")};
   }
 `;
 
@@ -164,7 +164,7 @@ export default function CartPage() {
 
   if (placedOrder) {
     return (
-      <Page>
+      <Page single>
         <Box>
           <h1>{t("thanks")}</h1>
           <p>
@@ -182,7 +182,7 @@ export default function CartPage() {
   const itemsTotal = lines?.reduce((sum, line) => sum + line.item.quantity * line.product.price, 0) ?? 0;
 
   return (
-    <Page>
+    <Page single={lines === null || lines.length === 0}>
       {alert && <Alert message={alert} duration={6000} type="danger" onClose={() => setAlert(null)} />}
       <Box>
         <Title>{t("heading")}</Title>
@@ -296,14 +296,14 @@ export default function CartPage() {
   );
 }
 
-function Page({ children }: Readonly<{ children: ReactNode }>) {
+function Page({ single, children }: Readonly<{ single: boolean; children: ReactNode }>) {
   const t = useTranslations("page.cart");
   return (
     <>
       <PageTitle title={t("title")} />
       <Layout>
         <DivCenter>
-          <Wrapper>{children}</Wrapper>
+          <Wrapper $single={single}>{children}</Wrapper>
         </DivCenter>
       </Layout>
     </>
