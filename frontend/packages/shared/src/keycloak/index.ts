@@ -1,10 +1,12 @@
 // The way into Keycloak's pages and the person's account there, for the rest of the front-ends. Only what this file
 // exports is reachable from outside: the package's exports map `./keycloak/*` to nothing.
-import { accountApi } from "../api/account";
 import { browserHttp } from "../api/http";
 import { LANGUAGES, type Language } from "../api/types";
 import type { LoginClient } from "../auth/session";
+import { keycloakAccountApi, type SecondFactor } from "./accountApi";
 import { readShared, writeShared } from "./sharedCookie";
+
+export type { SecondFactor } from "./accountApi";
 
 /**
  * The language the reader last chose, in the application or on Keycloak's pages, which both write: a shared record
@@ -35,8 +37,13 @@ export function chosenLanguage(): Language | undefined {
 export function languageChosen(language: Language, signedIn: boolean): void {
   writeShared(SHARED_LANGUAGE_COOKIE, language);
   if (signedIn) {
-    void accountApi(browserHttp)
+    void keycloakAccountApi(browserHttp)
       .keepLanguage(language)
       .catch(() => undefined);
   }
+}
+
+/** The person's second factor, and the credential Keycloak removes to turn it off. */
+export function secondFactor(): Promise<SecondFactor> {
+  return keycloakAccountApi(browserHttp).secondFactor();
 }

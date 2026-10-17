@@ -2,14 +2,13 @@ import Image from "next/image";
 import { useState } from "react";
 import styled from "styled-components";
 import { useTranslations } from "use-intl";
-import type { SecondFactor, SessionUser } from "@festival/shared/api/types";
+import type { SessionUser } from "@festival/shared/api/types";
 import { signOut } from "@festival/shared/auth/session";
-import { startAccountAction } from "@festival/shared/keycloak";
+import { secondFactor as loadSecondFactor, startAccountAction, type SecondFactor } from "@festival/shared/keycloak";
 import { useLoader } from "@festival/shared/react/useLoader";
 import Button from "@/components/atoms/Button";
 import RevealWrapper from "@/components/atoms/RevealWrapper";
 import Tabs from "@/components/organisms/Tabs";
-import { account } from "@/lib/api";
 import AddressTab from "./AddressTab";
 import OrdersTab from "./OrdersTab";
 import WishlistTab from "./WishlistTab";
@@ -61,7 +60,7 @@ type Tab = (typeof TABS)[number];
 
 export default function AccountPanels({ user }: Readonly<{ user: SessionUser }>) {
   const t = useTranslations("page.account");
-  const secondFactor = useLoader(account.secondFactor);
+  const secondFactor = useLoader(loadSecondFactor);
   const [activeTab, setActiveTab] = useState<Tab>("orders");
   const tabs = Object.fromEntries(TABS.map((tab) => [tab, t(`tabs.${tab}`)])) as Record<Tab, string>;
   return (
