@@ -8,7 +8,7 @@ export type LoginClient = "page" | "admin";
 export type SessionState =
   | { status: "loading" }
   | { status: "anonymous" }
-  | { status: "authenticated"; user: SessionUser; accountUrl: string | null }
+  | { status: "authenticated"; user: SessionUser }
   | { status: "error"; error: unknown };
 
 interface SessionContextValue {
@@ -19,8 +19,8 @@ const SessionContext = createContext<SessionContextValue | null>(null);
 
 async function loadSession(): Promise<SessionState> {
   try {
-    const { user, accountUrl } = await publicApi(browserHttp).me();
-    return user ? { status: "authenticated", user, accountUrl } : { status: "anonymous" };
+    const { user } = await publicApi(browserHttp).me();
+    return user ? { status: "authenticated", user } : { status: "anonymous" };
   } catch (error) {
     return { status: "error", error };
   }
@@ -56,6 +56,14 @@ export function useSession(): SessionContextValue {
 export function signIn(client: LoginClient): void {
   // eslint-disable-next-line @next/next/no-location-assign-relative-destination
   window.location.assign(`/oauth2/authorization/${client}`);
+}
+
+/** A page Keycloak shows to a signed-in person before returning: changing the password or setting up the second factor. */
+export type AccountAction = "UPDATE_PASSWORD" | "CONFIGURE_TOTP";
+
+export function startAccountAction(client: LoginClient, action: AccountAction): void {
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+  window.location.assign(`/oauth2/authorization/${client}?kc_action=${action}`);
 }
 
 export async function signOut(): Promise<void> {

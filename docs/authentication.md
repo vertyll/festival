@@ -51,8 +51,15 @@ sequenceDiagram
 3. `LoginRedirectHandler` sends the browser to the client's landing path.
 
 The browser holds only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` in production) and the
-`XSRF-TOKEN` cookie. `GET /api/me` tells the application who is signed in, whether they are an administrator, and the
-address of their Keycloak account page.
+`XSRF-TOKEN` cookie. `GET /api/me` tells the application who is signed in and whether they are an administrator.
+
+## Account actions
+
+The account page changes the password and sets up the second factor on Keycloak's own pages, so no password and no
+TOTP secret passes through the application. It sends the signed-in browser to `/oauth2/authorization/page?kc_action=…`,
+and `LocalizedAuthorizationRequestResolver` passes `kc_action` on to Keycloak when it is `UPDATE_PASSWORD` or
+`CONFIGURE_TOTP`, and drops any other value. Keycloak shows only that page, then returns through the usual sign-in to
+the client's landing path.
 
 ## Every API request is authorized by a token
 

@@ -41,7 +41,6 @@ export interface SessionUser {
 
 export interface MeResponse {
   user: SessionUser | null;
-  accountUrl: string | null;
 }
 
 export interface Stage {

@@ -5,27 +5,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequestMapping("/api/me")
-@RequiredArgsConstructor
 class MeController {
-
-    private final KeycloakProperties keycloak;
 
     @GetMapping
     MeResponse me() {
-        return UserIdentity.current()
-            .map(UserView::of)
-            .map(user -> new MeResponse(user, keycloak.realmUrl() + "/account"))
-            .orElseGet(MeResponse::anonymous);
+        return UserIdentity.current().map(UserView::of).map(MeResponse::new).orElseGet(MeResponse::anonymous);
     }
 
-    record MeResponse(@Nullable UserView user, @Nullable String accountUrl) {
+    record MeResponse(@Nullable UserView user) {
 
         static MeResponse anonymous() {
-            return new MeResponse(null, null);
+            return new MeResponse(null);
         }
     }
 
