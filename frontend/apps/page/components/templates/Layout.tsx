@@ -6,6 +6,17 @@ import CookieBanner from "../organisms/CookieBanner";
 import Footer from "../organisms/Footer";
 import Header from "../organisms/Header";
 
+const Page = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+`;
+
+const Content = styled(AnimatedPage)`
+  flex: 1;
+`;
+
 const Main = styled.main`
   min-height: 80vh;
   margin-bottom: 50px;
@@ -13,13 +24,13 @@ const Main = styled.main`
 
 export default function Layout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <>
+    <Page>
       <Header />
-      <AnimatedPage initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
+      <Content initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
         <Main>{children}</Main>
-      </AnimatedPage>
+      </Content>
       <CookieBanner />
       <Footer />
-    </>
+    </Page>
   );
 }

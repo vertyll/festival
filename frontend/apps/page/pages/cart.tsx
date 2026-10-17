@@ -11,7 +11,6 @@ import { Alert } from "@/components/atoms/Alert";
 import Button from "@/components/atoms/Button";
 import DivCenter from "@/components/atoms/DivCenter";
 import LoadFailed from "@/components/atoms/LoadFailed";
-import LottieAnimation from "@/components/atoms/LottieAnimation";
 import PageTitle from "@/components/atoms/PageTitle";
 import Price from "@/components/atoms/Price";
 import Spinner from "@/components/atoms/Spinner";
@@ -52,12 +51,6 @@ const Box = styled.div`
   input {
     background-color: var(--light-color);
   }
-`;
-
-const Centered = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 const Thumbnail = styled.div`
@@ -180,7 +173,6 @@ export default function CartPage() {
               total: format.number(placedOrder.total, { style: "currency", currency: placedOrder.currency }),
             })}
           </p>
-          <LottieAnimation name="thanks" />
           <ShopLink href="/products">{t("backToShop")}</ShopLink>
         </Box>
       </Page>
@@ -270,13 +262,6 @@ export default function CartPage() {
           </Table>
         )}
       </Box>
-      {lines?.length === 0 && (
-        <Box>
-          <Centered>
-            <LottieAnimation name="cart" />
-          </Centered>
-        </Box>
-      )}
       {lines !== null && lines.length > 0 && (
         <Box>
           <Title>{t("paymentHeading")}</Title>

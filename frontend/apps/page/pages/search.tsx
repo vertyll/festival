@@ -6,7 +6,6 @@ import { useDebouncedValue } from "@festival/shared/react/useDebouncedValue";
 import DivCenter from "@/components/atoms/DivCenter";
 import PageTitle from "@/components/atoms/PageTitle";
 import Input from "@/components/atoms/Input";
-import LottieAnimation from "@/components/atoms/LottieAnimation";
 import Spinner from "@/components/atoms/Spinner";
 import ProductBox from "@/components/organisms/ProductBox";
 import RevealGrid, { WIDE_GRID } from "@/components/organisms/RevealGrid";
@@ -65,12 +64,10 @@ export default function SearchPage() {
           </SearchWrapper>
           {loading && <Spinner />}
           {!loading && typed !== "" && products.length === 0 && <h2>{t("noResults", { term: typed })}</h2>}
-          {products.length > 0 ? (
+          {products.length > 0 && (
             <RevealGrid items={products} itemKey={(product) => product.id} columns={WIDE_GRID} gap={50}>
               {(product) => <ProductBox product={product} />}
             </RevealGrid>
-          ) : (
-            !loading && <LottieAnimation name="search" style={{ maxWidth: "450px", height: "450px" }} />
           )}
         </DivCenter>
       </Layout>
