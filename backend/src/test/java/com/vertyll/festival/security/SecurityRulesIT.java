@@ -16,7 +16,6 @@ import com.vertyll.festival.common.MessageKeys;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -76,6 +75,11 @@ class SecurityRulesIT {
             mvc.perform(get("/api/admin/orders")).andExpect(status().isUnauthorized());
             mvc.perform(get("/api/account/orders")).andExpect(status().isUnauthorized());
             mvc.perform(get("/api/account/second-factor")).andExpect(status().isUnauthorized());
+            mvc.perform(
+                put("/api/account/language").with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"language\":\"en\"}")
+            ).andExpect(status().isUnauthorized());
             mvc.perform(get("/api/account/address")).andExpect(status().isUnauthorized());
             mvc.perform(get("/api/account/wishlist")).andExpect(status().isUnauthorized());
         }
@@ -124,24 +128,6 @@ class SecurityRulesIT {
         void anAccountActionIsPassedOnToKeycloak() throws Exception {
             mvc.perform(get("/oauth2/authorization/page").param("kc_action", "CONFIGURE_TOTP"))
                 .andExpect(header().string("Location", containsString("kc_action=CONFIGURE_TOTP")));
-        }
-
-        @Test
-        void aLanguageChosenOnKeycloaksPagesIsTakenOverOnTheWayBack() throws Exception {
-            mvc.perform(get("/login/oauth2/code/page").cookie(new Cookie("ui_locale_festival", "en")))
-                .andExpect(header().stringValues("Set-Cookie", hasItem(startsWith("NEXT_LOCALE=en;"))))
-                .andExpect(
-                    header().stringValues(
-                        "Set-Cookie",
-                        hasItem(allOf(startsWith("ui_locale_festival=;"), containsString("Max-Age=0")))
-                    )
-                );
-        }
-
-        @Test
-        void aLanguageTheApplicationDoesNotHaveIsNotTakenOver() throws Exception {
-            mvc.perform(get("/login/oauth2/code/page").cookie(new Cookie("ui_locale_festival", "de")))
-                .andExpect(header().stringValues("Set-Cookie", not(hasItem(startsWith("NEXT_LOCALE=")))));
         }
 
         @Test
@@ -240,6 +226,16 @@ class SecurityRulesIT {
                              "postalCode": "80-001", "city": "Gdańsk", "country": "Polska",
                              "customerId": "ktos-inny"}
                             """)
+            ).andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void aLanguageTheApplicationDoesNotHaveIsNotStoredOnTheAccount() throws Exception {
+            mvc.perform(
+                put("/api/account/language").with(customer())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"language\":\"de\"}")
             ).andExpect(status().isBadRequest());
         }
 

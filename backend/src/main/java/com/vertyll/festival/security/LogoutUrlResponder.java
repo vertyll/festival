@@ -14,6 +14,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.vertyll.festival.keycloak.KeycloakProperties;
+
 import tools.jackson.databind.ObjectMapper;
 
 final class LogoutUrlResponder implements LogoutSuccessHandler {

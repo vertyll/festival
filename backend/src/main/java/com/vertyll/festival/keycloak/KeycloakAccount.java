@@ -1,4 +1,4 @@
-package com.vertyll.festival.security;
+package com.vertyll.festival.keycloak;
 
 import java.net.http.HttpClient;
 import java.time.Duration;

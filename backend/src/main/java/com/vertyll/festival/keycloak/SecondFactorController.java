@@ -1,4 +1,4 @@
-package com.vertyll.festival.security;
+package com.vertyll.festival.keycloak;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;

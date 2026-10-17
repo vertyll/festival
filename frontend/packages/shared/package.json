@@ -8,6 +8,8 @@
   "exports": {
     "./*": "./src/*.ts",
     "./auth/session": "./src/auth/session.tsx",
+    "./keycloak": "./src/keycloak/index.ts",
+    "./keycloak/*": null,
     "./react/LoadState": "./src/react/LoadState.tsx",
     "./react/LegalParagraphs": "./src/react/LegalParagraphs.tsx",
     "./i18n/IntlSetup": "./src/i18n/IntlSetup.tsx",

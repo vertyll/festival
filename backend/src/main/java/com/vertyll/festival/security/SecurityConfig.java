@@ -1,6 +1,5 @@
 package com.vertyll.festival.security;
 
-import java.net.URI;
 import java.time.Clock;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +39,9 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
+import com.vertyll.festival.keycloak.KeycloakAccounts;
+import com.vertyll.festival.keycloak.KeycloakProperties;
+
 import tools.jackson.databind.ObjectMapper;
 
 @Configuration(proxyBeanMethods = false)
@@ -70,7 +72,7 @@ class SecurityConfig {
         ClientRegistrationRepository clientRegistrations,
         OAuth2AuthorizedClientRepository authorizedClients,
         KeycloakProperties keycloak,
-        KeycloakAccount keycloakAccount,
+        KeycloakAccounts keycloakAccounts,
         FestivalSecurityProperties properties,
         ObjectMapper objectMapper
     ) {
@@ -122,12 +124,7 @@ class SecurityConfig {
             .requestCache(RequestCacheConfigurer::disable)
             .addFilterBefore(new SessionAccessTokenFilter(sessionAccessTokens), AnonymousAuthenticationFilter.class)
             .addFilterBefore(
-                new KeycloakLanguageFilter(
-                    keycloak.realm(),
-                    KeycloakLanguageFilter.sharedDomain(URI.create(keycloak.realmUrl()).getHost()).orElse(null),
-                    sessionAccessTokens,
-                    keycloakAccount
-                ),
+                new KeycloakLanguageFilter(sessionAccessTokens, keycloakAccounts),
                 OAuth2AuthorizationRequestRedirectFilter.class
             );
         return http.build();

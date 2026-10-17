@@ -58,17 +58,6 @@ export function signIn(client: LoginClient): void {
   window.location.assign(`/oauth2/authorization/${client}`);
 }
 
-/**
- * A page Keycloak shows to a signed-in person before returning: changing the password, setting up the second factor, or
- * removing a credential named by its id, which Keycloak asks to confirm.
- */
-export type AccountAction = "UPDATE_PASSWORD" | "CONFIGURE_TOTP" | `delete_credential:${string}`;
-
-export function startAccountAction(client: LoginClient, action: AccountAction): void {
-  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-  window.location.assign(`/oauth2/authorization/${client}?kc_action=${action}`);
-}
-
 export async function signOut(): Promise<void> {
   const { logoutUrl } = await browserHttp.post<{ logoutUrl: string }>("/logout", {});
   window.location.assign(logoutUrl);

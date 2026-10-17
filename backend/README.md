@@ -18,6 +18,7 @@ The code is split by feature, and each feature keeps its controllers, service, r
 | `settings` | shop settings an admin can change: shipping price, stock visibility       |
 | `i18n`     | the message catalog, its defaults, admin overrides and spreadsheet import |
 | `security` | sign-in, sessions and tokens                                              |
+| `keycloak` | Keycloak's pages and the account there: password, second factor, language |
 | `common`   | errors, localized text, validation and shared types                       |
 
 ## Access

@@ -1,4 +1,4 @@
-package com.vertyll.festival.security;
+package com.vertyll.festival.keycloak;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;

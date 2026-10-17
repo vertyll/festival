@@ -112,12 +112,13 @@ and `festival-admin`, set on the `festival-admin` client as its `login_theme` at
 without a footer, as the panel has no legal pages. Mails always come in the site's look.
 
 The language goes both ways. The sign-in page opens in the application's language, sent as `ui_locales`; Keycloak shows
-a signed-in person their account's language instead, so before an account action `KeycloakLanguageFilter` stores the
-application's language on the account, with the person's own token, through Keycloak's account API. A language chosen in
-Keycloak's own menu goes back to the application, as the sign-in returns to an address that carries nothing else:
-`language.js` leaves it in the cookie `ui_locale_festival`, under the domain Keycloak shares with the application, the
-parent of Keycloak's host (on localhost, every port), and `KeycloakLanguageFilter` takes it over into the `NEXT_LOCALE`
-cookie when the sign-in returns to `/login/oauth2/code/{client}`, and removes it.
+a signed-in person their account's language instead, so the application stores a signed-in person's choice there at
+once, through `PUT /api/account/language`, and again before an account action. The language the reader last chose, in
+the application or in Keycloak's own menu, is kept in the cookie `ui_locale_festival`, which both write, under the
+domain Keycloak shares with the application, the parent of Keycloak's host (on localhost, every port), and for a year:
+the front-end, which also keeps the `NEXT_LOCALE` cookie the back-end reads in step with it, reads it whenever a page
+loads and writes it when the reader picks a language, and `language.js` writes it on a choice in Keycloak's menu. Being
+a shared record rather than a message, it keeps the two in step however the reader moves between them.
 
 `template.ftl` is a copy of `keycloak.v2`'s own, changed only where it says `Changed from keycloak.v2`. Keycloak builds
 its pages from that template, so after an upgrade of Keycloak the copy is compared with the new release's and brought up
@@ -136,13 +137,15 @@ image holding it in `/themes`, which the Keycloak theme workflow publishes on a 
 
 All in `backend/src/main/java/com/vertyll/festival/security` unless noted:
 
-| Class                                                 | Role                                              |
-|-------------------------------------------------------|---------------------------------------------------|
-| `SecurityConfig`                                      | the filter chain, both client registrations, CSRF |
-| `FestivalOidcUserService`                             | verified email, the admin client's role check     |
-| `LocalizedAuthorizationRequestResolver`               | PKCE and the language                             |
-| `LoginRedirectHandler`                                | landing and failure paths per client              |
-| `SessionAccessTokenFilter`, `SessionAccessTokens`     | a session's request authorized by its token       |
-| `SingleFlightRefreshTokenProvider`, `SharedRefreshes` | one refresh per refresh token                     |
-| `LogoutUrlResponder`                                  | Keycloak's end-session address                    |
-| `frontend/packages/shared/src/auth/session.tsx`       | signing in and out from the applications          |
+| Class                                                 | Role                                               |
+|-------------------------------------------------------|----------------------------------------------------|
+| `SecurityConfig`                                      | the filter chain, both client registrations, CSRF  |
+| `FestivalOidcUserService`                             | verified email, the admin client's role check      |
+| `LocalizedAuthorizationRequestResolver`               | PKCE and the language                              |
+| `LoginRedirectHandler`                                | landing and failure paths per client               |
+| `SessionAccessTokenFilter`, `SessionAccessTokens`     | a session's request authorized by its token        |
+| `SingleFlightRefreshTokenProvider`, `SharedRefreshes` | one refresh per refresh token                      |
+| `LogoutUrlResponder`                                  | Keycloak's end-session address                     |
+| `frontend/packages/shared/src/auth/session.tsx`       | signing in and out from the applications           |
+| `../keycloak/KeycloakAccounts`                        | the way into Keycloak's account: actions, language |
+| `frontend/packages/shared/src/keycloak`               | the shared language and the account actions        |

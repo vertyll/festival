@@ -1,7 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, type ReactNode } from "react";
 import { IntlProvider, useFormatter, useLocale, useTranslations } from "use-intl";
+import { useSession } from "../auth/session";
 import { getCookie, setCookie } from "../browser/cookies";
+import { chosenLanguage, languageChosen } from "../keycloak";
 import {
   LANGUAGES,
   type FlatMessages,
@@ -16,6 +18,10 @@ import { nestMessages } from "./messages";
 const TIME_ZONE = "Europe/Warsaw";
 const LANGUAGE_COOKIE = "NEXT_LOCALE";
 const LANGUAGE_COOKIE_DAYS = 365;
+
+function languageInCookie(): Language | undefined {
+  return LANGUAGES.find((language) => language === getCookie(LANGUAGE_COOKIE));
+}
 
 interface FestivalIntlProviderProps {
   language: Language;
@@ -43,7 +49,11 @@ function PreferredLanguageRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    const preferred = LANGUAGES.find((language) => language === getCookie(LANGUAGE_COOKIE));
+    const preferred = chosenLanguage() ?? languageInCookie();
+    // The back-end reads `NEXT_LOCALE`, for the language of Keycloak's pages.
+    if (preferred && preferred !== languageInCookie()) {
+      setCookie(LANGUAGE_COOKIE, preferred, LANGUAGE_COOKIE_DAYS);
+    }
     if (preferred && preferred !== router.locale) {
       void router.replace(router.asPath, undefined, { locale: preferred });
     }
@@ -63,11 +73,13 @@ export function useLanguageSwitch(): {
 } {
   const router = useRouter();
   const current = useLanguage();
+  const { session } = useSession();
   return {
     current,
     languages: LANGUAGES,
     switchTo: (language) => {
       setCookie(LANGUAGE_COOKIE, language, LANGUAGE_COOKIE_DAYS);
+      languageChosen(language, session.status === "authenticated");
       void router.push(router.asPath, undefined, { locale: language });
     },
   };

@@ -11,6 +11,9 @@ session belong to the back-end ([Authentication](../docs/authentication.md)).
 | `apps/admin`      | the admin panel                                                           |
 | `packages/shared` | the HTTP client, the session, translations, formatting and validation     |
 
+What the applications share with Keycloak's pages, the language and the account actions, is the module
+`@festival/shared/keycloak`; only its index is exported.
+
 Each application forwards `/api/*`, `/oauth2/*`, `/login/oauth2/*` and `/logout` to the back-end at
 `BACKEND_INTERNAL_URL` (`next.config.base.mjs`), so every call is same-origin and carries the session and CSRF cookies.
 

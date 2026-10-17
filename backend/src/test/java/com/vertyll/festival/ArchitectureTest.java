@@ -23,6 +23,9 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 
+import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.simpleName;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
@@ -31,6 +34,15 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 final class ArchitectureTest {
 
     private static final String ADMIN_PREFIX = "/api/admin/";
+
+    @ArchTest
+    static final ArchRule KEYCLOAK_IS_REACHED_THROUGH_ITS_ENTRY = noClasses().that()
+        .resideOutsideOfPackage("..keycloak..")
+        .should()
+        .dependOnClassesThat(
+            resideInAPackage("..keycloak..").and(not(simpleName("KeycloakAccounts")))
+                .and(not(simpleName("KeycloakProperties")))
+        );
 
     @ArchTest
     static final ArchRule ADMIN_CONTROLLERS_SERVE_ONLY_ADMIN_PATHS = classes().that()

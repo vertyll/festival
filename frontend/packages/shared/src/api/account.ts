@@ -1,5 +1,5 @@
 import type { HttpClient } from "./http";
-import type { Id, Order, PlaceOrderRequest, ProductCard, SecondFactor, ShippingDetails } from "./types";
+import type { Id, Language, Order, PlaceOrderRequest, ProductCard, SecondFactor, ShippingDetails } from "./types";
 
 export function accountApi(http: HttpClient) {
   return {
@@ -11,6 +11,7 @@ export function accountApi(http: HttpClient) {
     removeFromWishlist: (productId: Id) => http.send("DELETE", `/api/account/wishlist/${productId}`),
     orders: () => http.get<Order[]>("/api/account/orders"),
     secondFactor: () => http.get<SecondFactor>("/api/account/second-factor"),
+    keepLanguage: (language: Language) => http.put<{ language: Language }>("/api/account/language", { language }),
     placeOrder: (request: PlaceOrderRequest) => http.post<Order>("/api/orders", request),
   };
 }
