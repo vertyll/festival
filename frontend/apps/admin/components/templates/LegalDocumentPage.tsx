@@ -27,7 +27,12 @@ export default function LegalDocumentPage({ document }: Readonly<{ document: Adm
             {t("lastModified")}: {t(`${document}.lastModified`)}
           </p>
           <div className="flex flex-col gap-4 leading-relaxed text-gray-800">
-            <LegalParagraphs content={t(`${document}.content`)} linkClassName="text-indigo-700 underline" />
+            <LegalParagraphs
+              document={document}
+              t={t}
+              headingClassName="mb-1 text-lg font-semibold"
+              linkClassName="text-indigo-700 underline"
+            />
           </div>
         </div>
       </main>

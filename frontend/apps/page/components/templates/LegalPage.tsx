@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { useTranslations } from "use-intl";
-import LegalParagraphs from "@festival/shared/react/LegalParagraphs";
+import LegalParagraphs, { type LegalDocumentName } from "@festival/shared/react/LegalParagraphs";
 import PageTitle from "../atoms/PageTitle";
 import Title from "../atoms/Title";
 import Layout from "./Layout";
 
-export type LegalDocument = "privacyPolicy" | "termsOfUse" | "regulations" | "bagPolicy";
+export type LegalDocument = LegalDocumentName;
 
 const Article = styled.article`
   box-sizing: border-box;
@@ -14,6 +14,15 @@ const Article = styled.article`
   margin: 0 auto;
   padding: 0 24px;
   line-height: 1.6;
+
+  h2 {
+    margin: 24px 0 4px;
+    font-size: 1.15rem;
+  }
+
+  h2 + p {
+    margin-top: 0;
+  }
 `;
 
 const Modified = styled.p`
@@ -34,7 +43,7 @@ export default function LegalPage({ document }: Readonly<{ document: LegalDocume
           <Modified>
             {t("lastModified")}: {t(`${document}.lastModified`)}
           </Modified>
-          <LegalParagraphs content={t(`${document}.content`)} />
+          <LegalParagraphs document={document} t={t} />
         </Article>
       </Layout>
     </>

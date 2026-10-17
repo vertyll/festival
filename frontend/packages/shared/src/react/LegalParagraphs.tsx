@@ -1,21 +1,43 @@
 import { Fragment } from "react";
 import { splitEmails } from "../format/emailLinks";
 
+/**
+ * The sections of each legal document: `legal.<document>.h<n>` and `p<n>` in the catalogue, the heading and the
+ * paragraph of section `n`. A document of one section is a single paragraph, without a heading.
+ */
+export const LEGAL_SECTIONS = { privacyPolicy: 8, termsOfUse: 6, regulations: 1, bagPolicy: 1 } as const;
+
+export type LegalDocumentName = keyof typeof LEGAL_SECTIONS;
+
 export default function LegalParagraphs({
-  content,
+  document,
+  t,
+  headingClassName,
   linkClassName,
-}: Readonly<{ content: string; linkClassName?: string }>) {
-  return content.split("\n\n").map((paragraph) => (
-    <p key={paragraph}>
-      {splitEmails(paragraph).map((segment) =>
-        segment.kind === "email" ? (
-          <a key={segment.at} href={`mailto:${segment.email}`} className={linkClassName}>
-            {segment.email}
-          </a>
-        ) : (
-          <Fragment key={segment.at}>{segment.text}</Fragment>
-        )
-      )}
-    </p>
-  ));
+}: Readonly<{
+  document: LegalDocumentName;
+  t: (key: string) => string;
+  headingClassName?: string;
+  linkClassName?: string;
+}>) {
+  const count = LEGAL_SECTIONS[document];
+  return Array.from({ length: count }, (_, index) => {
+    const text = t(`${document}.p${index + 1}`);
+    return (
+      <section key={index}>
+        {count > 1 && <h2 className={headingClassName}>{t(`${document}.h${index + 1}`)}</h2>}
+        <p>
+          {splitEmails(text).map((segment) =>
+            segment.kind === "email" ? (
+              <a key={segment.at} href={`mailto:${segment.email}`} className={linkClassName}>
+                {segment.email}
+              </a>
+            ) : (
+              <Fragment key={segment.at}>{segment.text}</Fragment>
+            )
+          )}
+        </p>
+      </section>
+    );
+  });
 }
