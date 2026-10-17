@@ -70,7 +70,7 @@ export default function AccountPanels({
         <h3>{t("profile")}</h3>
         <UserProfile>
           {user.picture && <Image src={user.picture} alt="" width={50} height={50} />}
-          <div>{user.name ?? user.email}</div>
+          <div>{user.name}</div>
         </UserProfile>
         <Actions>
           {accountUrl && (

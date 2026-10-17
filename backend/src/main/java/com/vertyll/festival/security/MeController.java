@@ -29,7 +29,7 @@ class MeController {
         }
     }
 
-    record UserView(String email, @Nullable String name, @Nullable String picture, boolean administrator) {
+    record UserView(String email, String name, @Nullable String picture, boolean administrator) {
 
         static UserView of(UserIdentity identity) {
             return new UserView(identity.email(), identity.name(), identity.picture(), identity.administrator());

@@ -12,13 +12,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-public record UserIdentity(
-    String id,
-    String email,
-    @Nullable String name,
-    @Nullable String picture,
-    boolean administrator
-) {
+public record UserIdentity(String id, String email, String name, @Nullable String picture, boolean administrator) {
 
     public static Optional<UserIdentity> current() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -47,7 +41,7 @@ public record UserIdentity(
             new UserIdentity(
                 Objects.requireNonNull(user.getSubject()),
                 Objects.requireNonNull(user.getEmail()),
-                nameOf(user.getFullName(), user.getPreferredUsername()),
+                Objects.requireNonNull(user.getPreferredUsername()),
                 user.getPicture(),
                 administrator
             )
@@ -58,17 +52,9 @@ public record UserIdentity(
         return new UserIdentity(
             Objects.requireNonNull(token.getSubject()),
             Objects.requireNonNull(token.getClaimAsString(StandardClaimNames.EMAIL)),
-            nameOf(
-                token.getClaimAsString(StandardClaimNames.NAME),
-                token.getClaimAsString(StandardClaimNames.PREFERRED_USERNAME)
-            ),
+            Objects.requireNonNull(token.getClaimAsString(StandardClaimNames.PREFERRED_USERNAME)),
             token.getClaimAsString(StandardClaimNames.PICTURE),
             administrator
         );
-    }
-
-    /** The name an account shows: its full name, or its username, which is all the sign-up asks for. */
-    static @Nullable String nameOf(@Nullable String fullName, @Nullable String username) {
-        return fullName != null && !fullName.isBlank() ? fullName : username;
     }
 }

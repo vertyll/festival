@@ -33,6 +33,7 @@ public class TestAccessTokens {
             .header("alg", "none")
             .subject("test")
             .claim("email", email)
+            .claim("preferred_username", "tester")
             .claim("realm_access", Map.of("roles", roles))
             .issuedAt(now)
             .expiresAt(now.plusSeconds(300))

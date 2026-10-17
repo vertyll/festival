@@ -18,7 +18,7 @@ export default function Topbar({ user }: Readonly<{ user: SessionUser }>) {
             <img src={user.picture} alt="" className="w-10 h-10 rounded-full border-2" referrerPolicy="no-referrer" />
           )}
           <span className="py-1 px-2">
-            <b>{user.name ?? user.email}</b>
+            <b>{user.name}</b>
           </span>
           <Icon name="chevronDown" className="w-4 h-4" />
         </div>

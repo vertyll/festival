@@ -11,21 +11,23 @@ export type LegalDocumentName = keyof typeof LEGAL_SECTIONS;
 
 export default function LegalParagraphs({
   document,
-  t,
+  heading,
+  paragraph,
   headingClassName,
   linkClassName,
 }: Readonly<{
   document: LegalDocumentName;
-  t: (key: string) => string;
+  heading: (section: number) => string;
+  paragraph: (section: number) => string;
   headingClassName?: string;
   linkClassName?: string;
 }>) {
   const count = LEGAL_SECTIONS[document];
   return Array.from({ length: count }, (_, index) => {
-    const text = t(`${document}.p${index + 1}`);
+    const text = paragraph(index + 1);
     return (
       <section key={index}>
-        {count > 1 && <h2 className={headingClassName}>{t(`${document}.h${index + 1}`)}</h2>}
+        {count > 1 && <h2 className={headingClassName}>{heading(index + 1)}</h2>}
         <p>
           {splitEmails(text).map((segment) =>
             segment.kind === "email" ? (

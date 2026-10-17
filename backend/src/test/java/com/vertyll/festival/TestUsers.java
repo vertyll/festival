@@ -50,7 +50,12 @@ public final class TestUsers {
     ) {
         Instant now = Instant.now();
         RequestPostProcessor login = oidcLogin().clientRegistration(registration(registrationId))
-            .idToken(token -> token.subject(subject).claim("email", email).claim("email_verified", true))
+            .idToken(
+                token -> token.subject(subject)
+                    .claim("email", email)
+                    .claim("email_verified", true)
+                    .claim("preferred_username", "tester")
+            )
             .authorities(Arrays.stream(roles).map(SimpleGrantedAuthority::new).toArray(GrantedAuthority[]::new));
         RequestPostProcessor client = oauth2Client(registrationId).clientRegistration(registration(registrationId))
             .principalName(subject)

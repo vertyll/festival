@@ -43,7 +43,11 @@ export default function LegalPage({ document }: Readonly<{ document: LegalDocume
           <Modified>
             {t("lastModified")}: {t(`${document}.lastModified`)}
           </Modified>
-          <LegalParagraphs document={document} t={t} />
+          <LegalParagraphs
+            document={document}
+            heading={(section) => t(`${document}.h${section}`)}
+            paragraph={(section) => t(`${document}.p${section}`)}
+          />
         </Article>
       </Layout>
     </>

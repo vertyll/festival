@@ -34,7 +34,7 @@ export interface ProblemDetail extends Message {
 
 export interface SessionUser {
   email: string;
-  name: string | null;
+  name: string;
   picture: string | null;
   administrator: boolean;
 }
