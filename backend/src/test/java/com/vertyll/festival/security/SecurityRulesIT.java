@@ -16,6 +16,7 @@ import com.vertyll.festival.common.MessageKeys;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -123,6 +124,24 @@ class SecurityRulesIT {
         void anAccountActionIsPassedOnToKeycloak() throws Exception {
             mvc.perform(get("/oauth2/authorization/page").param("kc_action", "CONFIGURE_TOTP"))
                 .andExpect(header().string("Location", containsString("kc_action=CONFIGURE_TOTP")));
+        }
+
+        @Test
+        void aLanguageChosenOnKeycloaksPagesIsTakenOverOnTheWayBack() throws Exception {
+            mvc.perform(get("/login/oauth2/code/page").cookie(new Cookie("ui_locale_festival", "en")))
+                .andExpect(header().stringValues("Set-Cookie", hasItem(startsWith("NEXT_LOCALE=en;"))))
+                .andExpect(
+                    header().stringValues(
+                        "Set-Cookie",
+                        hasItem(allOf(startsWith("ui_locale_festival=;"), containsString("Max-Age=0")))
+                    )
+                );
+        }
+
+        @Test
+        void aLanguageTheApplicationDoesNotHaveIsNotTakenOver() throws Exception {
+            mvc.perform(get("/login/oauth2/code/page").cookie(new Cookie("ui_locale_festival", "de")))
+                .andExpect(header().stringValues("Set-Cookie", not(hasItem(startsWith("NEXT_LOCALE=")))));
         }
 
         @Test

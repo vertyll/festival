@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -57,6 +58,8 @@ class SecurityConfig {
         "/api/i18n/*"
     };
 
+    // The one place that assembles the filter chain takes every collaborator a filter in it needs.
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     @Bean
     SecurityFilterChain securityFilterChain(
         HttpSecurity http,
@@ -66,6 +69,7 @@ class SecurityConfig {
         ClientRegistrationRepository clientRegistrations,
         OAuth2AuthorizedClientRepository authorizedClients,
         KeycloakProperties keycloak,
+        KeycloakAccount keycloakAccount,
         FestivalSecurityProperties properties,
         ObjectMapper objectMapper
     ) {
@@ -115,7 +119,11 @@ class SecurityConfig {
                 exceptions -> exceptions.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             )
             .requestCache(RequestCacheConfigurer::disable)
-            .addFilterBefore(new SessionAccessTokenFilter(sessionAccessTokens), AnonymousAuthenticationFilter.class);
+            .addFilterBefore(new SessionAccessTokenFilter(sessionAccessTokens), AnonymousAuthenticationFilter.class)
+            .addFilterBefore(
+                new KeycloakLanguageFilter(keycloak.realm(), sessionAccessTokens, keycloakAccount),
+                OAuth2AuthorizationRequestRedirectFilter.class
+            );
         return http.build();
     }
 
