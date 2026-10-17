@@ -239,7 +239,7 @@
   "legal.privacyPolicy.h1": "1. Administrator danych",
   "legal.privacyPolicy.p1": "Administratorem danych jest Mikołaj Gawron, autor Sunset Festival, projektu demonstracyjnego stworzonego w celach nauki i jako część portfolio. Festiwal nie odbywa się naprawdę, a sklep nie realizuje zamówień ani płatności. Kontakt: gawrmiko@gmail.com.",
   "legal.privacyPolicy.h2": "2. Jakie dane przetwarzamy",
-  "legal.privacyPolicy.p2": "Przetwarzamy dane konta (adres e-mail, imię i nazwisko, hasło przechowywane wyłącznie jako skrót w Keycloaku, usłudze logowania działającej na serwerze autora), adres dostawy, zamówienia i listę ulubionych. 6 ust. 1 lit. b RODO, czyli w celu świadczenia usługi, z której korzystasz.",
+  "legal.privacyPolicy.p2": "Przetwarzamy dane konta (adres e-mail, nazwa użytkownika, hasło przechowywane wyłącznie jako skrót w Keycloaku, usłudze logowania działającej na serwerze autora), adres dostawy, zamówienia i listę ulubionych. 6 ust. 1 lit. b RODO, czyli w celu świadczenia usługi, z której korzystasz.",
   "legal.privacyPolicy.h3": "3. Cel i podstawa prawna",
   "legal.privacyPolicy.p3": "Dane przetwarzamy wyłącznie po to, żeby aplikacja działała, na podstawie art. 6 ust. 1 lit. b RODO, czyli w celu świadczenia usługi, z której korzystasz.",
   "legal.privacyPolicy.h4": "4. Gdzie są dane i kto je otrzymuje",

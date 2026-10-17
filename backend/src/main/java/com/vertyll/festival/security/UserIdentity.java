@@ -47,7 +47,7 @@ public record UserIdentity(
             new UserIdentity(
                 Objects.requireNonNull(user.getSubject()),
                 Objects.requireNonNull(user.getEmail()),
-                user.getFullName(),
+                nameOf(user.getFullName(), user.getPreferredUsername()),
                 user.getPicture(),
                 administrator
             )
@@ -58,9 +58,17 @@ public record UserIdentity(
         return new UserIdentity(
             Objects.requireNonNull(token.getSubject()),
             Objects.requireNonNull(token.getClaimAsString(StandardClaimNames.EMAIL)),
-            token.getClaimAsString(StandardClaimNames.NAME),
+            nameOf(
+                token.getClaimAsString(StandardClaimNames.NAME),
+                token.getClaimAsString(StandardClaimNames.PREFERRED_USERNAME)
+            ),
             token.getClaimAsString(StandardClaimNames.PICTURE),
             administrator
         );
+    }
+
+    /** The name an account shows: its full name, or its username, which is all the sign-up asks for. */
+    static @Nullable String nameOf(@Nullable String fullName, @Nullable String username) {
+        return fullName != null && !fullName.isBlank() ? fullName : username;
     }
 }
