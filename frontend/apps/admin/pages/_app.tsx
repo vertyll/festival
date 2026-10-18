@@ -31,7 +31,7 @@ export default function App({ Component, pageProps, router, messages }: Readonly
   return (
     <FestivalIntlProvider language={toLanguage(router.locale)} messages={messages}>
       <AppHead />
-      <SessionProvider>
+      <SessionProvider client="admin">
         {PUBLIC_PAGES.has(router.pathname) ? (
           <Component {...pageProps} />
         ) : (

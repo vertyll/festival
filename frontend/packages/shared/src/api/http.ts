@@ -33,6 +33,19 @@ export class ApiError extends Error {
   }
 }
 
+const sessionEndListeners = new Set<() => void>();
+
+/**
+ * Calls `listener` whenever the back-end answers `401`, which, for a reader who was signed in, means their session
+ * ended while the page was open.
+ *
+ * @returns a function that stops listening
+ */
+export function whenUnauthorized(listener: () => void): () => void {
+  sessionEndListeners.add(listener);
+  return () => sessionEndListeners.delete(listener);
+}
+
 const CSRF_COOKIE = "XSRF-TOKEN";
 const CSRF_HEADER = "X-XSRF-TOKEN";
 
@@ -47,6 +60,9 @@ export function createHttpClient(baseUrl: string): HttpClient {
     }
     const response = await fetch(baseUrl + path, { method, headers, body, credentials: "same-origin" });
     if (!response.ok) {
+      if (response.status === 401) {
+        sessionEndListeners.forEach((listener) => listener());
+      }
       throw new ApiError(response.status, await readProblem(response));
     }
     return response;

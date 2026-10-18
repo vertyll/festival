@@ -43,7 +43,7 @@ export default function App({ Component, pageProps, router, messages }: Readonly
     <FestivalIntlProvider language={toLanguage(router.locale)} messages={messages}>
       <GlobalStyles />
       <AppHead />
-      <SessionProvider>
+      <SessionProvider client="page">
         <ShopSettingsProvider initial={pageProps.shopSettings ?? null}>
           <WishlistProvider>
             <AnimatePresence mode="wait">

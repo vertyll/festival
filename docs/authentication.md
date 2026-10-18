@@ -48,7 +48,10 @@ sequenceDiagram
    passes the language from the `NEXT_LOCALE` cookie.
 2. Keycloak returns to `/login/oauth2/code/{client}` on the application's own address. Spring Security exchanges the
    code with that client's secret and keeps the tokens in the HTTP session.
-3. `LoginRedirectHandler` sends the browser to the client's landing path.
+3. `LoginRedirectHandler` sends the browser to the page the sign-in was started from, named by the front-end in
+   `return_to` and kept in the session by `ReturnPage` (a path on this site only), or to the client's landing path. A
+   page that needs a session, and an API call whose session has ended, send the reader to sign in with the page they
+   are on; a failed sign-in stays on the page and says so.
 
 The browser holds only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` in production) and the
 `XSRF-TOKEN` cookie. `GET /api/me` tells the application who is signed in and whether they are an administrator.

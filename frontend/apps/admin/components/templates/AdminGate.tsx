@@ -1,9 +1,9 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode, useEffect } from "react";
 import { useTranslations } from "use-intl";
 import type { SessionUser } from "@festival/shared/api/types";
-import { signIn, signOut, useSession } from "@festival/shared/auth/session";
+import { signIn, thisPage, signOut, useSession } from "@festival/shared/auth/session";
 import Button from "../atoms/Button";
 import Spinner from "../atoms/Spinner";
 import LanguageSwitcher from "../molecules/LanguageSwitcher";
@@ -40,8 +40,17 @@ function FullScreen({ children }: Readonly<{ children: ReactNode }>) {
 export default function AdminGate({ children }: Readonly<{ children: ReactNode }>) {
   const t = useTranslations("admin.layout");
   const { session } = useSession();
-  const { query } = useRouter();
+  const { isReady, query } = useRouter();
+  const failed = query.loginError !== undefined;
+  const anonymous = session.status === "anonymous";
   const bold = (chunks: ReactNode) => <b>{chunks}</b>;
+
+  // A signed-out reader goes straight to the sign-in, and back here after; a failed sign-in stays and says so.
+  useEffect(() => {
+    if (isReady && anonymous && !failed) {
+      signIn("admin", thisPage());
+    }
+  }, [isReady, anonymous, failed]);
 
   if (session.status === "loading") {
     return (
@@ -60,8 +69,8 @@ export default function AdminGate({ children }: Readonly<{ children: ReactNode }
   if (session.status === "anonymous") {
     return (
       <FullScreen>
-        {query.loginError !== undefined && <p className="mb-4">{t("loginError")}</p>}
-        <Button variant="login" className="text-black" onClick={() => signIn("admin")}>
+        {failed && <p className="mb-4">{t("loginError")}</p>}
+        <Button variant="login" className="text-black" onClick={() => signIn("admin", thisPage())}>
           {t("login")}
         </Button>
       </FullScreen>

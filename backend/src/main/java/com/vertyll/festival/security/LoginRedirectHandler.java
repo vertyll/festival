@@ -38,7 +38,8 @@ class LoginRedirectHandler implements AuthenticationSuccessHandler, Authenticati
             throw new IllegalStateException("Expected OAuth2 authentication, got " + authentication.getClass());
         }
         LoginClient client = LoginClient.of(token.getAuthorizedClientRegistrationId());
-        redirectStrategy.sendRedirect(request, response, properties.client(client).successPath());
+        redirectStrategy
+            .sendRedirect(request, response, ReturnPage.take(request).orElse(properties.client(client).successPath()));
     }
 
     @Override

@@ -54,4 +54,9 @@
         <Bug pattern="SERVLET_PARAMETER"/>
     </Match>
 
+    <!-- FindSecBugs: return_to is kept only when it is a path on the front-end's own site, see ReturnPage.onThisSite -->
+    <Match>
+        <Class name="com.vertyll.festival.security.ReturnPage"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
 </FindBugsFilter>

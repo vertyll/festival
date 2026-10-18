@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { useFormatter, useTranslations } from "use-intl";
 import { ApiError } from "@festival/shared/api/http";
 import type { Order, ProductCard } from "@festival/shared/api/types";
-import { signIn, useSession } from "@festival/shared/auth/session";
+import { signIn, thisPage, useSession } from "@festival/shared/auth/session";
 import { useDescribeSelection, useLocalized, useMessage } from "@festival/shared/i18n/IntlSetup";
 import { Alert } from "@/components/atoms/Alert";
 import Button from "@/components/atoms/Button";
@@ -268,7 +268,7 @@ export default function CartPage() {
           {!authenticated && (
             <>
               <p>{t("loginRequired")}</p>
-              <Button $size="m" $usage="primary" onClick={() => signIn("page")}>
+              <Button $size="m" $usage="primary" onClick={() => signIn("page", thisPage())}>
                 {t("login")}
               </Button>
             </>

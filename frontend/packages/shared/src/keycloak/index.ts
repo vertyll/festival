@@ -2,7 +2,7 @@
 // exports is reachable from outside: the package's exports map `./keycloak/*` to nothing.
 import { browserHttp } from "../api/http";
 import { LANGUAGES, type Language } from "../api/types";
-import { authorizationPath, type LoginClient } from "../auth/session";
+import { authorizationPath, thisPage, type LoginClient } from "../auth/session";
 import { keycloakAccountApi, type SecondFactor } from "./accountApi";
 import { readShared, writeShared } from "./sharedCookie";
 
@@ -21,9 +21,9 @@ const SHARED_LANGUAGE_COOKIE = "ui_locale_festival";
  */
 export type AccountAction = "UPDATE_PASSWORD" | "CONFIGURE_TOTP" | `delete_credential:${string}`;
 
+/** Opens one of Keycloak's account pages, through the sign-in, and comes back to this page. */
 export function startAccountAction(client: LoginClient, action: AccountAction): void {
-  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-  window.location.assign(`${authorizationPath(client)}?kc_action=${action}`);
+  window.location.assign(authorizationPath(client, thisPage(), action));
 }
 
 /** The language last chosen here or on Keycloak's pages, when one was. */

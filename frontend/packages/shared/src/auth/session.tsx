@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { browserHttp } from "../api/http";
+import { browserHttp, whenUnauthorized } from "../api/http";
 import { publicApi } from "../api/public";
 import type { SessionUser } from "../api/types";
 
@@ -26,8 +26,15 @@ async function loadSession(): Promise<SessionState> {
   }
 }
 
-export function SessionProvider({ children }: Readonly<{ children: ReactNode }>) {
+/**
+ * Holds who is signed in to this application, signed in with `client`. A session that ends while a page is open sends
+ * the reader to sign in again, and back to that page.
+ */
+export function SessionProvider({ client, children }: Readonly<{ client: LoginClient; children: ReactNode }>) {
   const [session, setSession] = useState<SessionState>({ status: "loading" });
+  const signedIn = session.status === "authenticated";
+
+  useEffect(() => (signedIn ? whenUnauthorized(() => signIn(client, thisPage())) : undefined), [client, signedIn]);
 
   useEffect(() => {
     let active = true;
@@ -53,13 +60,25 @@ export function useSession(): SessionContextValue {
   return value;
 }
 
-/** Where the browser starts a sign-in with this client, through the back-end. */
-export function authorizationPath(client: LoginClient): string {
-  return `/oauth2/authorization/${client}`;
+/**
+ * Where the browser starts a sign-in with this client, through the back-end, which returns to `returnTo`, a path on
+ * this site, once the person is signed in, and asks Keycloak for one account page first when `action` names one.
+ */
+export function authorizationPath(client: LoginClient, returnTo: string, action?: string): string {
+  const query = new URLSearchParams({ return_to: returnTo });
+  if (action) {
+    query.set("kc_action", action);
+  }
+  return `/oauth2/authorization/${client}?${query}`;
 }
 
-export function signIn(client: LoginClient): void {
-  window.location.assign(authorizationPath(client));
+/** The page the reader is on, which a sign-in started here returns to. */
+export function thisPage(): string {
+  return window.location.pathname + window.location.search;
+}
+
+export function signIn(client: LoginClient, returnTo: string): void {
+  window.location.assign(authorizationPath(client, returnTo));
 }
 
 export async function signOut(): Promise<void> {
