@@ -1,3 +1,4 @@
+import stylistic from "@stylistic/eslint-plugin";
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 import nextTypescript from "eslint-config-next/typescript";
 import prettier from "eslint-config-prettier/flat";
@@ -29,6 +30,14 @@ const config = [
     },
   },
   prettier,
+  {
+    // Comments only, as Prettier keeps code to its width but never wraps a comment; last, as the Prettier config
+    // turns line length off.
+    plugins: { "@stylistic": stylistic },
+    rules: {
+      "@stylistic/max-len": ["error", { code: Number.MAX_SAFE_INTEGER, comments: 120, ignoreUrls: true }],
+    },
+  },
 ];
 
 export default config;

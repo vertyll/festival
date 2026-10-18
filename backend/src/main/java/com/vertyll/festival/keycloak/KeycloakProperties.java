@@ -15,7 +15,9 @@ public record KeycloakProperties(
     @NotBlank String audience
 ) {
 
-    /** The realm's address as the application reaches it from inside the cluster, which may differ from the browser's. */
+    /**
+     * The realm's address as the application reaches it from inside the cluster, which may differ from the browser's.
+     */
     public String backchannel() {
         return backchannelRealmUrl == null || backchannelRealmUrl.isBlank() ? realmUrl : backchannelRealmUrl;
     }

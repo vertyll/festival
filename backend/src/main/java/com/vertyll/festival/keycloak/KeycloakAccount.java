@@ -69,8 +69,8 @@ class KeycloakAccount {
 
     /**
      * Stores the language on the person's account, which Keycloak's pages show a signed-in person in, over the language
-     * the application asks for. The account is read and written back whole, so nothing else on it changes; a failure leaves
-     * Keycloak's pages in the language they had, and is only logged.
+     * the application asks for. The account is read and written back whole, so nothing else on it changes; a failure
+     * leaves Keycloak's pages in the language they had, and is only logged.
      */
     void keepLanguage(Jwt accessToken, Language language) {
         try {
