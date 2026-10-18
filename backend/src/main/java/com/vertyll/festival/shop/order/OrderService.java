@@ -112,7 +112,7 @@ class OrderService {
                 catalog.release(line.product().id(), line.valueCodes(), line.quantity());
             } catch (DataAccessException | IllegalStateException releaseFailure) {
                 log.error(
-                    "[ERROR] Failed to return {} units of variant {} for product {}",
+                    "Failed to return {} units of variant {} for product {}",
                     line.quantity(),
                     line.valueCodes(),
                     line.product().id(),

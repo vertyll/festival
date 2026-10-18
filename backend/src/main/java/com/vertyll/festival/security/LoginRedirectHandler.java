@@ -42,7 +42,7 @@ class LoginRedirectHandler implements AuthenticationSuccessHandler, Authenticati
             throw new IllegalStateException("Expected OAuth2 authentication, got " + authentication.getClass());
         }
         LoginClient client = LoginClient.of(token.getAuthorizedClientRegistrationId());
-        // Spring Security's saved request, the page ReturnPage kept, or the client's landing path; the page is used once.
+        // Spring Security's saved request, the page ReturnPage kept, or the landing path; the page is used once.
         SavedRequestAwareAuthenticationSuccessHandler landing = new SavedRequestAwareAuthenticationSuccessHandler();
         landing.setRequestCache(requestCache);
         landing.setDefaultTargetUrl(properties.client(client).successPath());
@@ -56,7 +56,7 @@ class LoginRedirectHandler implements AuthenticationSuccessHandler, Authenticati
         HttpServletResponse response,
         AuthenticationException exception
     ) throws IOException {
-        log.info("[INFO] OAuth2 login failed: {}", exception.getClass().getSimpleName());
+        log.info("OAuth2 login failed: {}", exception.getClass().getSimpleName());
         Optional<LoginClient> client = callbackClient(request);
         if (client.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);

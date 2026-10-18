@@ -173,6 +173,6 @@ class TranslationService implements SmartInitializingSingleton {
         bulk.execute();
         Set<String> keys = defaults.keySet();
         long removed = mongo.remove(query(where(KEY).nin(keys)), TranslationDocument.class).getDeletedCount();
-        log.info("[INFO] Translations synchronized: {} keys, {} stale removed", keys.size(), removed);
+        log.info("Translations synchronized: {} keys, {} stale removed", keys.size(), removed);
     }
 }

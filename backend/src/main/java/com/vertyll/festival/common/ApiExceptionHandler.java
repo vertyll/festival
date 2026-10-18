@@ -41,7 +41,7 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DuplicateKeyException.class)
     ProblemDetail handleDuplicateKey(DuplicateKeyException exception) {
-        log.debug("[DEBUG] Unique index violation in MongoDB", exception);
+        log.debug("Unique index violation in MongoDB", exception);
         return problem(HttpStatus.CONFLICT, MessageKeys.DUPLICATE_ENTRY, Map.of());
     }
 
