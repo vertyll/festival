@@ -3,6 +3,7 @@ package com.vertyll.festival.security;
 import java.io.IOException;
 import java.util.Optional;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -13,6 +14,8 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ class LoginRedirectHandler implements AuthenticationSuccessHandler, Authenticati
     private static final String CALLBACK_PREFIX = "/login/oauth2/code/";
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final RequestCache requestCache = ReturnPage.requestCache();
     private final FestivalSecurityProperties properties;
 
     @Override
@@ -33,13 +37,17 @@ class LoginRedirectHandler implements AuthenticationSuccessHandler, Authenticati
         HttpServletRequest request,
         HttpServletResponse response,
         Authentication authentication
-    ) throws IOException {
+    ) throws IOException, ServletException {
         if (!(authentication instanceof OAuth2AuthenticationToken token)) {
             throw new IllegalStateException("Expected OAuth2 authentication, got " + authentication.getClass());
         }
         LoginClient client = LoginClient.of(token.getAuthorizedClientRegistrationId());
-        redirectStrategy
-            .sendRedirect(request, response, ReturnPage.take(request).orElse(properties.client(client).successPath()));
+        // Spring Security's saved request, the page ReturnPage kept, or the client's landing path; the page is used once.
+        SavedRequestAwareAuthenticationSuccessHandler landing = new SavedRequestAwareAuthenticationSuccessHandler();
+        landing.setRequestCache(requestCache);
+        landing.setDefaultTargetUrl(properties.client(client).successPath());
+        landing.onAuthenticationSuccess(request, response, authentication);
+        requestCache.removeRequest(request, response);
     }
 
     @Override
