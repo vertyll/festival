@@ -3,7 +3,6 @@ import { sharedCookieDomain } from "./sharedDomain";
 
 const ONE_YEAR_DAYS = 365;
 
-/** Reads a cookie shared with Keycloak's pages. */
 export function readShared(name: string): string | null {
   return getCookie(name);
 }
