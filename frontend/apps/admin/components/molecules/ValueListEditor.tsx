@@ -87,21 +87,19 @@ export default function ValueListEditor({ values, onChange, error }: Readonly<Va
 
   return (
     <>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          commit();
-        }}
-      >
+      {/* The editor sits inside the attribute's form, and a form cannot hold another; Enter adds the value here
+          instead of submitting the attribute. */}
+      <div>
         <LocalizedTextField
           label={t("value")}
           value={draft}
           placeholder={t("valuePlaceholder")}
           onChange={setDraft}
           errors={draftErrors}
+          onEnter={commit}
         />
-        <Button type="submit">{editedCode === null ? t("addValue") : t("updateValue")}</Button>
-      </form>
+        <Button onClick={commit}>{editedCode === null ? t("addValue") : t("updateValue")}</Button>
+      </div>
       <ErrorMessage message={error} />
       {values.length > 0 && (
         <table className="primary-table mt-3">

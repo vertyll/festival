@@ -37,7 +37,7 @@ export default function TranslationEditor({
   return (
     <div className="border border-neutral-300 rounded-md p-2 my-2">
       <div className="flex flex-wrap justify-between gap-2">
-        <code className="font-bold">{translation.key}</code>
+        <code className="font-bold break-all">{translation.key}</code>
         <span className="text-sm text-neutral-500">
           {translation.customized
             ? t("customized", {

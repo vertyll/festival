@@ -30,7 +30,7 @@ export default function Layout({ title, children }: Readonly<{ title: string; ch
         </div>
         <div className="flex">
           <Sidebar show={showNav} />
-          <div className="bg-white grow">
+          <div className="bg-white min-w-0 grow">
             <Topbar user={user} />
             <main className="bg-white p-2 grow min-h-screen">
               <h1>{title}</h1>
