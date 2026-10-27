@@ -25,7 +25,7 @@
 
         <lombok.version>1.18.48</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <aws-sdk.version>2.57.3</aws-sdk.version>
+        <aws-sdk.version>2.57.4</aws-sdk.version>
         <mongodb.version>5.13.0</mongodb.version>
         <archunit.version>1.5.1</archunit.version>
         <icu4j.version>79.1</icu4j.version>
