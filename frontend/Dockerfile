@@ -1,7 +1,7 @@
-ARG NODE_IMAGE=node:24-alpine
+ARG NODE_IMAGE=node:26-alpine
 
 FROM ${NODE_IMAGE} AS base
-RUN corepack enable
+RUN npm install --global corepack@0.36.0 && corepack enable
 WORKDIR /workspace
 
 FROM base AS prune
