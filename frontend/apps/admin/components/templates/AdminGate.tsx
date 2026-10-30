@@ -52,7 +52,7 @@ export default function AdminGate({ children }: Readonly<{ children: ReactNode }
     }
   }, [isReady, anonymous, failed]);
 
-  if (session.status === "loading") {
+  if (session.status === "loading" || (anonymous && !failed)) {
     return (
       <FullScreen>
         <Spinner />
@@ -69,7 +69,7 @@ export default function AdminGate({ children }: Readonly<{ children: ReactNode }
   if (session.status === "anonymous") {
     return (
       <FullScreen>
-        {failed && <p className="mb-4">{t("loginError")}</p>}
+        <p className="mb-4">{t("loginError")}</p>
         <Button variant="login" className="text-black" onClick={() => signIn("admin", thisPage())}>
           {t("login")}
         </Button>
