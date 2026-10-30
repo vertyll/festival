@@ -15,7 +15,7 @@ address:
 | `festival-admin` | the panel   | `/`                     | an account with the `ADMIN` realm role |
 
 `FestivalOidcUserService` refuses an account without a verified email, and refuses the admin client to anyone without
-`ADMIN`. A refused or failed sign-in lands on the application's failure path (`?loginError=true`).
+`ADMIN`. A refused or failed sign-in lands on the application's failure path (`/?login=failed`).
 
 ## Signing in
 

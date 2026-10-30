@@ -41,7 +41,7 @@ export default function AdminGate({ children }: Readonly<{ children: ReactNode }
   const t = useTranslations("admin.layout");
   const { session } = useSession();
   const { isReady, query } = useRouter();
-  const failed = query.loginError !== undefined;
+  const failed = query.login === "failed";
   const anonymous = session.status === "anonymous";
   const bold = (chunks: ReactNode) => <b>{chunks}</b>;
 

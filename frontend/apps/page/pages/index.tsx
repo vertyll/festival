@@ -1,6 +1,8 @@
 import { useTranslations } from "use-intl";
 import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 import type { Artist, News, ProductCard } from "@festival/shared/api/types";
+import ErrorDiv from "@/components/atoms/ErrorDiv";
 import PageTitle from "@/components/atoms/PageTitle";
 import DivCenter from "@/components/atoms/DivCenter";
 import Title from "@/components/atoms/Title";
@@ -22,10 +24,16 @@ interface HomePageProps extends WithShopSettings {
 
 export default function HomePage({ products, artists, news }: Readonly<HomePageProps>) {
   const t = useTranslations("page.home");
+  const { query } = useRouter();
   return (
     <>
       <PageTitle title={t("title")} />
       <Layout>
+        {query.login === "failed" && (
+          <DivCenter>
+            <ErrorDiv role="alert">{t("loginError")}</ErrorDiv>
+          </DivCenter>
+        )}
         <Banner />
         <DivCenter>
           {artists.length > 0 && (
