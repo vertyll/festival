@@ -1,6 +1,5 @@
 package com.vertyll.festival.common;
 
-@SuppressWarnings("PMD.DataClass")
 public final class MessageKeys {
 
     public static final String REQUIRED = "validation.required";

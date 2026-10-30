@@ -1,6 +1,5 @@
 package com.vertyll.festival.common;
 
-@SuppressWarnings("PMD.DataClass")
 public final class ValidationLimits {
 
     public static final int NAME_MAX_LENGTH = 50;
