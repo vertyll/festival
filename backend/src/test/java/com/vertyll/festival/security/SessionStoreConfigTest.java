@@ -1,5 +1,7 @@
 package com.vertyll.festival.security;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -54,12 +56,12 @@ class SessionStoreConfigTest {
     }
 
     @Test
-    void theSecurityContextOfASignInSurvivesTheStore() {
+    void theSecurityContextOfASignInSurvivesTheStore() throws MalformedURLException {
         OidcIdToken idToken = new OidcIdToken(
             "id-token",
             ISSUED,
             EXPIRES,
-            Map.of("sub", "ola", "iss", "https://kc", "aud", List.of("page"))
+            Map.of("sub", "ola", "iss", URI.create("https://kc").toURL(), "aud", List.of("page"))
         );
         DefaultOidcUser user = new DefaultOidcUser(List.of(new SimpleGrantedAuthority(Roles.USER_AUTHORITY)), idToken);
         SecurityContextImpl context =

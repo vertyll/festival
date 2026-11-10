@@ -1,5 +1,7 @@
 package com.vertyll.festival.security;
 
+import java.net.URL;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
@@ -50,6 +52,7 @@ class SessionStoreConfig {
                         Thread.currentThread().getContextClassLoader(),
                         BasicPolymorphicTypeValidator.builder()
                             .allowIfSubType(JDK_IMMUTABLE_COLLECTIONS)
+                            .allowIfSubType(URL.class)
                             .allowIfSubType(SimpleSavedRequest.class)
                     )
                 )
