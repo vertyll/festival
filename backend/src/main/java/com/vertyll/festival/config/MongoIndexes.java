@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexDefinition;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.data.mongodb.core.index.MongoPersistentEntityIndexResolver;
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.stereotype.Component;
@@ -48,8 +47,7 @@ class MongoIndexes implements SmartInitializingSingleton {
     public void afterSingletonsInstantiated() {
         MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext =
                 mongo.getConverter().getMappingContext();
-        MongoPersistentEntityIndexResolver resolver =
-                new MongoPersistentEntityIndexResolver((MongoMappingContext) mappingContext);
+        MongoPersistentEntityIndexResolver resolver = new MongoPersistentEntityIndexResolver(mappingContext);
         for (MongoPersistentEntity<?> entity : mappingContext.getPersistentEntities()) {
             if (entity.isAnnotationPresent(org.springframework.data.mongodb.core.mapping.Document.class)) {
                 ensure(entity.getCollection(), resolver.resolveIndexFor(entity.getTypeInformation()));
