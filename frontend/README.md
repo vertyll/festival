@@ -62,3 +62,10 @@ pnpm check:translations   # every key in both languages
 
 Each image is built for one application (`APP=page` or `APP=admin`) with `BACKEND_INTERNAL_URL`, the back-end's address
 inside the cluster.
+
+## Security headers
+
+Every response carries `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options` and `Referrer-Policy`
+(`next.config.base.mjs`). Each page also carries a `Content-Security-Policy` with a nonce of its own, set by the
+application's `proxy.ts` (`packages/shared/src/security`): `_document` puts the nonce on the scripts Next.js writes, and
+no other inline script runs.

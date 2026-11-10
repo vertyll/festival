@@ -13,8 +13,8 @@ flowchart LR
     mongo[(MongoDB)]
     s3[("Object storage<br/>images")]
 
-    browser -- "FESTIVAL_SESSION cookie" --> page
-    browser -- "FESTIVAL_SESSION cookie" --> admin
+    browser -- "session cookie" --> page
+    browser -- "session cookie" --> admin
     page -- "/api, /oauth2, /logout forwarded" --> back
     admin -- "/api, /oauth2, /logout forwarded" --> back
     back -- "sign-in, refresh, token keys" --> kc

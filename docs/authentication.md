@@ -37,7 +37,7 @@ sequenceDiagram
     A->>K: code + that client's secret + PKCE verifier
     K-->>A: access, refresh and ID token
     A->>R: store the tokens in the session
-    A-->>B: 302 to /account (the panel: /), FESTIVAL_SESSION and XSRF-TOKEN cookies
+    A-->>B: 302 to /account (the panel: /), session and XSRF-TOKEN cookies
     B->>N: /api/... + cookies
     N->>A: forwarded
     Note over A: the request is authorized by the session's access token
@@ -53,8 +53,13 @@ sequenceDiagram
    client's landing path. A page that needs a session, and an API call whose session has ended, send the reader to sign
    in with the page they are on; a failed sign-in stays on the page and says so.
 
-The browser holds only the `FESTIVAL_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` in production) and the
-`XSRF-TOKEN` cookie. `GET /api/me` tells the application who is signed in and whether they are an administrator.
+The browser holds only the session cookie and the `XSRF-TOKEN` cookie, both `Secure` and `SameSite=Lax` wherever
+`application.security.secure-cookies` is on, as in production and in the tests. The session cookie is then
+`__Host-FESTIVAL_SESSION` (`HttpOnly`, `Path=/`, no `Domain`), a name the browser accepts only from this host over
+HTTPS; the `local` profile, served over plain HTTP, turns secure cookies off and names it `FESTIVAL_SESSION`, as the
+prefix requires `Secure`. The session itself is kept in Redis as JSON written by Spring Security's Jackson modules
+(`SessionStoreConfig`), never as Java serialization. `GET /api/me` tells the application who is signed in and whether
+they are an administrator.
 
 ## Account actions
 
@@ -73,11 +78,15 @@ through the usual sign-in to the client's landing path.
 For a request to `/api/*` with a session, `SessionAccessTokenFilter` takes the access token from the session,
 refreshing it when it is about to expire, and authorizes the request with that token rather than with the session. The
 token is verified like any resource server's: the signature against Keycloak's published keys, the issuer, the expiry
-and the audience (`festival-api`). `ADMIN` in the token's realm roles becomes `ROLE_ADMIN`, so revoking it in Keycloak
+the audience (`festival-api`), and Keycloak's own `typ` claim, which is `Bearer` on an access token and `ID` on an ID
+token signed with the same keys. `ADMIN` in the token's realm roles becomes `ROLE_ADMIN`, so revoking it in Keycloak
 cuts admin access within minutes.
 
 A client without a browser calls the same API with `Authorization: Bearer` and its own Keycloak token; the same checks
 apply.
+
+Every call the back-end makes to Keycloak, the code exchange, the refresh, the key set and the account API, goes through
+`KeycloakHttp`, which bounds connecting and waiting for a reply by ten seconds.
 
 ## Sessions and refreshing
 

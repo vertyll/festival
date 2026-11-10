@@ -9,6 +9,15 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("wishlist_items")
-@CompoundIndex(name = "customer_product", def = "{'customerId': 1, 'productId': 1}", unique = true)
-record WishlistItemDocument(@Id ObjectId id, String customerId, @Indexed ObjectId productId, Instant createdAt) {
+@CompoundIndex(
+    name = "uk_wishlist_items_customer_id_product_id",
+    def = "{'customerId': 1, 'productId': 1}",
+    unique = true
+)
+record WishlistItemDocument(
+    @Id ObjectId id,
+    String customerId,
+    @Indexed(name = "idx_wishlist_items_product_id") ObjectId productId,
+    Instant createdAt
+) {
 }

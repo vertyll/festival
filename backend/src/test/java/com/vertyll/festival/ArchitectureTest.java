@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vertyll.festival.keycloak.KeycloakAccounts;
+import com.vertyll.festival.keycloak.KeycloakHttp;
 import com.vertyll.festival.keycloak.KeycloakProperties;
 
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -45,6 +46,7 @@ final class ArchitectureTest {
         .dependOnClassesThat(
             resideInAPackage("com.vertyll.festival.keycloak..").and(not(equivalentTo(KeycloakAccounts.class)))
                 .and(not(equivalentTo(KeycloakProperties.class)))
+                .and(not(equivalentTo(KeycloakHttp.class)))
         );
 
     @ArchTest

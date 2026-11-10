@@ -14,7 +14,7 @@ import com.vertyll.festival.common.LocalizedText;
 record CategoryDocument(
     @Id ObjectId id,
     LocalizedText name,
-    @Indexed @Nullable ObjectId parentId,
+    @Indexed(name = "idx_categories_parent_id") @Nullable ObjectId parentId,
     Instant createdAt,
     Instant updatedAt
 ) {

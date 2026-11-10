@@ -32,6 +32,7 @@ Every document in this repository, the module it belongs to, and what it covers.
 |-----------------------------------------------------------------------|-----------|---------------|------------------------------------------------------------------------------------------------------------|
 | [Back-end](backend/README.md)                                         | back-end  | module README | Layout, access, accounts, running and production.                                                          |
 | [Media storage](backend/docs/mechanisms/media-storage.md)             | back-end  | mechanism     | Where uploaded files are written, and how they reach the browser.                                          |
+| [MongoDB indexes](backend/docs/mechanisms/mongodb-indexes.md)         | back-end  | mechanism     | How every declared index is created under its name, and an index an earlier release named is replaced.     |
 | [Order placement](backend/docs/mechanisms/order-placement.md)         | back-end  | mechanism     | What happens between a cart in the browser and a stored order.                                             |
 | [Token refresh](backend/docs/mechanisms/token-refresh.md)             | back-end  | mechanism     | How the session keeps a valid access token without signing the user out when requests race.                |
 | [Translation catalog](backend/docs/mechanisms/translation-catalog.md) | back-end  | mechanism     | Where the text behind every message key comes from, and how an administrator's edits survive a deployment. |

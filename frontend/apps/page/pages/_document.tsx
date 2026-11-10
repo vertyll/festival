@@ -1,8 +1,13 @@
 import Document, { Head, Html, Main, NextScript, type DocumentContext, type DocumentInitialProps } from "next/document";
 import { ServerStyleSheet } from "styled-components";
+import { nonceOf } from "@festival/shared/security/nonce";
 
-export default class FestivalDocument extends Document {
-  static override async getInitialProps(context: DocumentContext): Promise<DocumentInitialProps> {
+interface FestivalDocumentProps extends DocumentInitialProps {
+  nonce: string | undefined;
+}
+
+export default class FestivalDocument extends Document<FestivalDocumentProps> {
+  static override async getInitialProps(context: DocumentContext): Promise<FestivalDocumentProps> {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = context.renderPage;
     try {
@@ -14,6 +19,7 @@ export default class FestivalDocument extends Document {
       return {
         ...initialProps,
         styles: [initialProps.styles, sheet.getStyleElement()],
+        nonce: nonceOf(context.req?.headers),
       };
     } finally {
       sheet.seal();
@@ -21,12 +27,13 @@ export default class FestivalDocument extends Document {
   }
 
   override render() {
+    const { nonce } = this.props;
     return (
       <Html lang={this.props.locale}>
-        <Head />
+        <Head nonce={nonce} />
         <body>
           <Main />
-          <NextScript />
+          <NextScript nonce={nonce} />
         </body>
       </Html>
     );

@@ -1,7 +1,5 @@
 package com.vertyll.festival.keycloak;
 
-import java.net.http.HttpClient;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,7 +10,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -39,13 +36,11 @@ class KeycloakAccount {
 
     private static final String OTP_CREDENTIAL = "otp";
 
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
-
     private final RestClient keycloak;
 
     @Autowired
-    KeycloakAccount(KeycloakProperties properties) {
-        this(RestClient.builder().baseUrl(properties.backchannel()).requestFactory(requestFactory()));
+    KeycloakAccount(KeycloakProperties properties, KeycloakHttp http) {
+        this(RestClient.builder().baseUrl(properties.backchannel()).requestFactory(http.requestFactory()));
     }
 
     KeycloakAccount(RestClient.Builder keycloak) {
@@ -103,13 +98,6 @@ class KeycloakAccount {
         } catch (RestClientException e) {
             log.warn("Could not store the account's language in Keycloak: {}", e.getMessage());
         }
-    }
-
-    private static JdkClientHttpRequestFactory requestFactory() {
-        JdkClientHttpRequestFactory requests =
-                new JdkClientHttpRequestFactory(HttpClient.newBuilder().connectTimeout(TIMEOUT).build());
-        requests.setReadTimeout(TIMEOUT);
-        return requests;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

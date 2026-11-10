@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.vertyll.festival.shop.ShippingDetails;
 
 @Document("orders")
-@CompoundIndex(name = "customer_newest", def = "{'customerId': 1, 'createdAt': -1}")
+@CompoundIndex(name = "idx_orders_customer_id_created_at", def = "{'customerId': 1, 'createdAt': -1}")
 record OrderDocument(
     @Id ObjectId id,
     String customerId,

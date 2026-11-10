@@ -35,6 +35,8 @@ and email come from the token, so a change made in Keycloak is visible at once.
 ## Mechanisms
 
 - [Media storage](docs/mechanisms/media-storage.md) – Where uploaded files are written, and how they reach the browser.
+- [MongoDB indexes](docs/mechanisms/mongodb-indexes.md) – How every declared index is created under its name, and an
+  index an earlier release named is replaced.
 - [Order placement](docs/mechanisms/order-placement.md) – What happens between a cart in the browser and a stored order.
 - [Token refresh](docs/mechanisms/token-refresh.md) – How the session keeps a valid access token without signing the
   user out when requests race.
@@ -50,6 +52,11 @@ Start the infrastructure first ([Development Setup](../docs/development-setup.md
 ```
 
 The `local` profile is the default and points at the local containers; it listens on `http://localhost:8080`.
+
+What the application waits for is bounded in `application.properties`: MongoDB acknowledges a write once a majority of
+the replica set holds it, and connecting, choosing a server and reading a reply have timeouts (`application.mongodb`);
+Redis commands and connections have `spring.data.redis.timeout` and `connect-timeout`; Keycloak has ten seconds
+(`KeycloakHttp`).
 
 ## Checks
 

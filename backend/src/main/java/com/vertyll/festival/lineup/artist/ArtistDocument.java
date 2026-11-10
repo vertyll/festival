@@ -19,7 +19,7 @@ record ArtistDocument(
     String name,
     @Nullable LocalizedText description,
     List<String> images,
-    @Indexed @Nullable ObjectId stageId,
+    @Indexed(name = "idx_artists_stage_id") @Nullable ObjectId stageId,
     @Nullable LocalDate concertDate,
     @Nullable LocalTime concertTime,
     Instant createdAt,

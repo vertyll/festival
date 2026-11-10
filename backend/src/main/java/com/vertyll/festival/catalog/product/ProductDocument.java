@@ -23,7 +23,7 @@ record ProductDocument(
     LocalizedText name,
     @Nullable LocalizedText description,
     BigDecimal price,
-    @Indexed @Nullable ObjectId categoryId,
+    @Indexed(name = "idx_products_category_id") @Nullable ObjectId categoryId,
     List<String> images,
     List<ProductOption> options,
     List<ProductVariant> variants,
