@@ -1,7 +1,9 @@
 package com.vertyll.festival.security;
 
 import java.io.Serial;
+import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -29,5 +31,15 @@ final class AccessTokenAuthentication extends AbstractAuthenticationToken {
     @Override
     public Jwt getCredentials() {
         return accessToken;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object other) {
+        return other instanceof AccessTokenAuthentication that && super.equals(that) && session.equals(that.session);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), session);
     }
 }
