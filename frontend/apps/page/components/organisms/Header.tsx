@@ -1,6 +1,7 @@
 import { useTranslations } from "use-intl";
 import Link from "next/link";
 import styled from "styled-components";
+import { almendra } from "@/lib/fonts";
 import Navbar from "../molecules/Navbar";
 import { bold } from "@festival/shared/i18n/richText";
 
@@ -29,7 +30,7 @@ const Logo = styled(Link)`
   color: var(--dark-text-color);
   text-decoration: none;
   padding: 0 20px;
-  font-family: "Almendra", serif;
+  font-family: ${almendra.style.fontFamily}, serif;
   font-size: 1.44em;
 `;
 

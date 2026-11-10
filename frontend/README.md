@@ -67,5 +67,22 @@ inside the cluster.
 
 Every response carries `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options` and `Referrer-Policy`
 (`next.config.base.mjs`). Each page also carries a `Content-Security-Policy` with a nonce of its own, set by the
-application's `proxy.ts` (`packages/shared/src/security`): `_document` puts the nonce on the scripts Next.js writes, and
-no other inline script runs.
+application's `proxy.ts` (`packages/shared/src/security`): `_document` puts the nonce on the scripts Next.js writes and
+on the `<style>` elements of styled-components, which reads it in the browser from the `csp-nonce` meta tag. No other
+inline script or style runs, and no `style` attribute applies:
+
+- a component styles itself by a class, never by the `style` prop;
+- a picture goes through `components/atoms/Image.tsx` in the page, which lays it out as `next/image` does but by a
+  class;
+- the page's entry animation is a CSS animation, and only its exit is left to Motion;
+- each application's `pages/_error.tsx` draws Next.js's error page by classes, with its text from the catalog, or in
+  English when the catalog cannot be loaded.
+
+The fonts come from `next/font`, which downloads them when the application is built and serves them from its own
+origin.
+
+In production the policy has no `'unsafe-inline'`, `'unsafe-eval'` or `'unsafe-hashes'`. The development server adds
+two, as Next.js's own guide to the Content-Security-Policy does: `'unsafe-eval'` to scripts, for React's debugging, and
+`'unsafe-inline'` to styles, for the error overlay and the styles Next.js inserts as a module changes, neither of which
+carries the nonce. Since a nonce makes a browser ignore `'unsafe-inline'`, the development policy drops the nonce
+from styles.

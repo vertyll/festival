@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styled from "styled-components";
+import { almendra } from "@/lib/fonts";
 import { IconCreditCart } from "../atoms/icons";
 import { useTranslations } from "use-intl";
 
@@ -25,7 +26,7 @@ const Title = styled.h1`
   font-size: clamp(2.25rem, 10vw, 3em);
   text-align: center;
   overflow-wrap: break-word;
-  font-family: "Almendra", serif;
+  font-family: ${almendra.style.fontFamily}, serif;
   color: var(--light-color);
   text-shadow: 3px 3px 6px rgba(14, 14, 14, 1);
 `;

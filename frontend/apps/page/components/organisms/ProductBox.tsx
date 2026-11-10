@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { useState, type MouseEvent } from "react";
 import styled from "styled-components";
 import type { ProductCard } from "@festival/shared/api/types";
 import { useSession } from "@festival/shared/auth/session";
+import Image from "@/components/atoms/Image";
 import { useWishlist } from "@/lib/wishlist";
 import { Alert } from "../atoms/Alert";
 import HoverText from "../atoms/HoverText";
@@ -90,13 +90,7 @@ export default function ProductBox({ product }: Readonly<{ product: ProductCard 
         >
           {wished ? <IconHeart /> : <IconHeartOutline />}
         </WishlistButton>
-        <Image
-          src={product.images[0] ?? "/images/no-image-found.webp"}
-          alt=""
-          fill
-          sizes="200px"
-          style={{ objectFit: "cover" }}
-        />
+        <Image src={product.images[0] ?? "/images/no-image-found.webp"} alt="" fill sizes="200px" fit="cover" />
         <HoverText>{t("see")} &#8594;</HoverText>
       </Box>
       <ProductInfo>

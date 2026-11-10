@@ -1,3 +1,1 @@
-import { ErrorPage } from "@festival/shared/react/ErrorPage";
-
-export default ErrorPage;
+export { ErrorPage as default } from "@festival/shared/react/ErrorPage";

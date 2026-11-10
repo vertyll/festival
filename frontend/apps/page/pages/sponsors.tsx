@@ -2,6 +2,7 @@ import { useTranslations } from "use-intl";
 import type { GetServerSideProps } from "next";
 import styled from "styled-components";
 import type { Sponsor } from "@festival/shared/api/types";
+import { almendra } from "@/lib/fonts";
 import RevealGrid, { WIDE_GRID } from "@/components/organisms/RevealGrid";
 import SponsorBox from "@/components/organisms/SponsorBox";
 import ListingPage from "@/components/templates/ListingPage";
@@ -9,7 +10,7 @@ import { serverApi } from "@/lib/serverApi";
 
 const Thanks = styled.h2`
   font-size: 1.5em;
-  font-family: "Almendra", serif;
+  font-family: ${almendra.style.fontFamily}, serif;
 `;
 
 export default function SponsorsPage({ sponsors }: Readonly<{ sponsors: Sponsor[] }>) {

@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import styled from "styled-components";
 import type { Artist } from "@festival/shared/api/types";
 import { dateOnly } from "@festival/shared/format/format";
+import Image from "@/components/atoms/Image";
 import HoverText from "../atoms/HoverText";
 import { useFormatter, useTranslations } from "use-intl";
 
@@ -57,13 +57,7 @@ export default function ArtistBox({ artist }: Readonly<{ artist: Artist }>) {
         <Name href={url}>{artist.name}</Name>
       </ArtistName>
       <Box href={url}>
-        <Image
-          src={artist.images[0] ?? "/images/no-image-found.webp"}
-          alt=""
-          fill
-          sizes="170px"
-          style={{ objectFit: "cover" }}
-        />
+        <Image src={artist.images[0] ?? "/images/no-image-found.webp"} alt="" fill sizes="170px" fit="cover" />
         <HoverText>{t("see")} &#8594;</HoverText>
       </Box>
       <ConcertDate href={url}>

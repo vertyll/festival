@@ -1,14 +1,15 @@
 import "@/styles/globals.css";
-import NextApp, { type AppContext, type AppProps } from "next/app";
+import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useTranslations } from "use-intl";
 import type { FlatMessages } from "@festival/shared/api/types";
 import { SessionProvider } from "@festival/shared/auth/session";
 import { FestivalIntlProvider } from "@festival/shared/i18n/IntlSetup";
 import { toLanguage } from "@festival/shared/i18n/localized";
-import { loadMessages } from "@festival/shared/i18n/messages";
+import { appInitialProps } from "@festival/shared/react/appProps";
 import AdminGate from "@/components/templates/AdminGate";
 import { DialogProvider } from "@/lib/dialogs";
+import { roboto } from "@/lib/fonts";
 
 const PUBLIC_PAGES = new Set(["/terms", "/privacy"]);
 
@@ -32,24 +33,20 @@ export default function App({ Component, pageProps, router, messages }: Readonly
     <FestivalIntlProvider language={toLanguage(router.locale)} messages={messages}>
       <AppHead />
       <SessionProvider client="admin">
-        {PUBLIC_PAGES.has(router.pathname) ? (
-          <Component {...pageProps} />
-        ) : (
-          <AdminGate>
-            <DialogProvider>
-              <Component {...pageProps} />
-            </DialogProvider>
-          </AdminGate>
-        )}
+        <div className={roboto.className}>
+          {PUBLIC_PAGES.has(router.pathname) ? (
+            <Component {...pageProps} />
+          ) : (
+            <AdminGate>
+              <DialogProvider>
+                <Component {...pageProps} />
+              </DialogProvider>
+            </AdminGate>
+          )}
+        </div>
       </SessionProvider>
     </FestivalIntlProvider>
   );
 }
 
-App.getInitialProps = async (context: AppContext) => {
-  const [appProps, messages] = await Promise.all([
-    NextApp.getInitialProps(context),
-    loadMessages(toLanguage(context.ctx.locale ?? context.router.locale)),
-  ]);
-  return { ...appProps, messages };
-};
+App.getInitialProps = appInitialProps;

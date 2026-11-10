@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import styled from "styled-components";
 import type { News } from "@festival/shared/api/types";
 import { useLocalized } from "@festival/shared/i18n/IntlSetup";
+import Image from "@/components/atoms/Image";
 import HoverText from "../atoms/HoverText";
 import { useFormatter, useTranslations } from "use-intl";
 
@@ -64,13 +64,7 @@ export default function NewsBox({ news }: Readonly<{ news: News }>) {
   return (
     <Wrapper href={`/news/${news.id}`}>
       <ImageBox>
-        <Image
-          src={news.images[0] ?? "/images/no-image-found.webp"}
-          alt=""
-          fill
-          sizes="350px"
-          style={{ objectFit: "cover" }}
-        />
+        <Image src={news.images[0] ?? "/images/no-image-found.webp"} alt="" fill sizes="350px" fit="cover" />
       </ImageBox>
       <InfoWrapper>
         <NewsDate>

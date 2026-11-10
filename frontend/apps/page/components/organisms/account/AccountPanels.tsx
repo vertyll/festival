@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useState } from "react";
 import styled from "styled-components";
 import { useTranslations } from "use-intl";
@@ -6,6 +5,7 @@ import type { SessionUser } from "@festival/shared/api/types";
 import { signOut } from "@festival/shared/auth/session";
 import { secondFactor as loadSecondFactor, startAccountAction, type SecondFactor } from "@festival/shared/keycloak";
 import { useLoader } from "@festival/shared/react/useLoader";
+import Image from "@/components/atoms/Image";
 import Button from "@/components/atoms/Button";
 import RevealWrapper from "@/components/atoms/RevealWrapper";
 import Tabs from "@/components/organisms/Tabs";

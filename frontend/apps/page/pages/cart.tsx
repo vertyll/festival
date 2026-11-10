@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import styled from "styled-components";
@@ -7,6 +6,7 @@ import { ApiError } from "@festival/shared/api/http";
 import type { Order, ProductCard } from "@festival/shared/api/types";
 import { signIn, thisPage, useSession } from "@festival/shared/auth/session";
 import { useDescribeSelection, useLocalized, useMessage } from "@festival/shared/i18n/IntlSetup";
+import Image from "@/components/atoms/Image";
 import { Alert } from "@/components/atoms/Alert";
 import Button from "@/components/atoms/Button";
 import DivCenter from "@/components/atoms/DivCenter";
@@ -214,7 +214,7 @@ export default function CartPage() {
                         alt={localized(product.name)}
                         fill
                         sizes="100px"
-                        style={{ objectFit: "contain" }}
+                        fit="contain"
                       />
                     </Thumbnail>
                   </td>

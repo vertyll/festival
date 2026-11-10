@@ -21,6 +21,10 @@ const NewsletterContainer = styled.div`
   margin: 200px 0;
 `;
 
+const NewsletterTitle = styled(Title)`
+  margin-top: 10px;
+`;
+
 const Wrapper = styled.div`
   display: flex;
   gap: 10px;
@@ -58,7 +62,7 @@ export default function Newsletter() {
 
   return (
     <NewsletterContainer>
-      <Title style={{ marginTop: "10px" }}>{t("title")}</Title>
+      <NewsletterTitle>{t("title")}</NewsletterTitle>
       <p>{t("subtitle")}</p>
       <PolicyLink href="/privacypolicy">{t("privacyPolicy")}</PolicyLink>
       <form onSubmit={handleSubmit} noValidate>

@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import { AnimatePresence } from "framer-motion";
-import NextApp, { type AppContext, type AppProps } from "next/app";
+import type { AppProps } from "next/app";
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
 import { useTranslations } from "use-intl";
@@ -8,14 +8,15 @@ import type { FlatMessages, ShopSettings } from "@festival/shared/api/types";
 import { SessionProvider } from "@festival/shared/auth/session";
 import { FestivalIntlProvider } from "@festival/shared/i18n/IntlSetup";
 import { toLanguage } from "@festival/shared/i18n/localized";
-import { loadMessages } from "@festival/shared/i18n/messages";
+import { appInitialProps } from "@festival/shared/react/appProps";
 import ScrollToTop from "@/components/atoms/ScrollToTop";
+import { roboto } from "@/lib/fonts";
 import { ShopSettingsProvider } from "@/lib/shopSettings";
 import { WishlistProvider } from "@/lib/wishlist";
 
 const GlobalStyles = createGlobalStyle`
   body {
-    font-family: 'Roboto', sans-serif;
+    font-family: ${roboto.style.fontFamily}, sans-serif;
     padding: 0;
     margin: 0;
     background-color: var(--main-background-color);
@@ -57,10 +58,4 @@ export default function App({ Component, pageProps, router, messages }: Readonly
   );
 }
 
-App.getInitialProps = async (context: AppContext) => {
-  const [appProps, messages] = await Promise.all([
-    NextApp.getInitialProps(context),
-    loadMessages(toLanguage(context.ctx.locale ?? context.router.locale)),
-  ]);
-  return { ...appProps, messages };
-};
+App.getInitialProps = appInitialProps;

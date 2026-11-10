@@ -8,7 +8,8 @@ interface FestivalDocumentProps extends DocumentInitialProps {
 
 export default class FestivalDocument extends Document<FestivalDocumentProps> {
   static override async getInitialProps(context: DocumentContext): Promise<FestivalDocumentProps> {
-    const sheet = new ServerStyleSheet();
+    const nonce = nonceOf(context.req?.headers);
+    const sheet = new ServerStyleSheet({ nonce });
     const originalRenderPage = context.renderPage;
     try {
       context.renderPage = () =>
@@ -19,7 +20,7 @@ export default class FestivalDocument extends Document<FestivalDocumentProps> {
       return {
         ...initialProps,
         styles: [initialProps.styles, sheet.getStyleElement()],
-        nonce: nonceOf(context.req?.headers),
+        nonce,
       };
     } finally {
       sheet.seal();
@@ -30,7 +31,10 @@ export default class FestivalDocument extends Document<FestivalDocumentProps> {
     const { nonce } = this.props;
     return (
       <Html lang={this.props.locale}>
-        <Head nonce={nonce} />
+        <Head nonce={nonce}>
+          {/* Where styled-components finds the nonce for the styles it adds in the browser. */}
+          <meta property="csp-nonce" nonce={nonce} />
+        </Head>
         <body>
           <Main />
           <NextScript nonce={nonce} />

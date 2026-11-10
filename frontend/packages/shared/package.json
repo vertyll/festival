@@ -12,6 +12,7 @@
     "./keycloak/*": null,
     "./react/LoadState": "./src/react/LoadState.tsx",
     "./react/LegalParagraphs": "./src/react/LegalParagraphs.tsx",
+    "./react/ErrorPage": "./src/react/ErrorPage.tsx",
     "./i18n/IntlSetup": "./src/i18n/IntlSetup.tsx",
     "./i18n/richText": "./src/i18n/richText.tsx"
   },

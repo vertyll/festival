@@ -1,6 +1,6 @@
-import Image from "next/image";
 import styled from "styled-components";
 import type { Sponsor } from "@festival/shared/api/types";
+import Image from "@/components/atoms/Image";
 import HoverText from "../atoms/HoverText";
 import { useTranslations } from "use-intl";
 
@@ -29,7 +29,7 @@ export default function SponsorBox({ sponsor }: Readonly<{ sponsor: Sponsor }>) 
         alt={sponsor.name}
         fill
         sizes="200px"
-        style={{ objectFit: "cover" }}
+        fit="cover"
       />
       <HoverText>{t("visit")} &#8594;</HoverText>
     </Box>
