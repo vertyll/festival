@@ -66,6 +66,19 @@ class CsrfCookieIT {
     }
 
     @Test
+    void aWriteWithAnotherAuthorizationSchemeStillNeedsTheCsrfToken() throws IOException, InterruptedException {
+        send(HttpRequest.newBuilder(uri("/api/me")).GET());
+
+        HttpResponse<String> response = send(
+            HttpRequest.newBuilder(uri("/logout"))
+                .header("Authorization", "Basic YWRhOnNlY3JldA==")
+                .POST(HttpRequest.BodyPublishers.noBody())
+        );
+
+        assertThat(response.statusCode()).isEqualTo(403);
+    }
+
+    @Test
     void theCsrfCookieIsSecure() throws IOException, InterruptedException {
         HttpResponse<String> response = send(HttpRequest.newBuilder(uri("/api/me")).GET());
 
