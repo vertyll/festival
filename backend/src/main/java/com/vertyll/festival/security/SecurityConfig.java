@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.boot.session.autoconfigure.DefaultCookieSerializerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -72,8 +71,6 @@ class SecurityConfig {
     private static final String TOKEN_TYPE_CLAIM = "typ";
 
     private static final String ACCESS_TOKEN_TYPE = "Bearer";
-
-    private static final String SESSION_COOKIE = "FESTIVAL_SESSION";
 
     private static final String[] PUBLIC_READ_ENDPOINTS = {
         "/api/me",
@@ -218,20 +215,6 @@ class SecurityConfig {
             decoder.setClaimSetConverter(OidcIdTokenDecoderFactory.createDefaultClaimTypeConverter());
             return decoder;
         });
-    }
-
-    /**
-     * The session cookie: {@code __Host-FESTIVAL_SESSION} where cookies are secure, so the browser takes it only from
-     * this host, over HTTPS, for every path; a setup without TLS cannot keep the prefix, which requires {@code Secure},
-     * and names it {@code FESTIVAL_SESSION}.
-     */
-    @Bean
-    DefaultCookieSerializerCustomizer sessionCookieName(FestivalSecurityProperties properties) {
-        return serializer -> serializer.setCookieName(sessionCookieName(properties.secureCookies()));
-    }
-
-    static String sessionCookieName(boolean secureCookies) {
-        return secureCookies ? "__Host-" + SESSION_COOKIE : SESSION_COOKIE;
     }
 
     @Bean
