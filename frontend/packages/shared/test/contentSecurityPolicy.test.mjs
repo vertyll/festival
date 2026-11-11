@@ -5,7 +5,7 @@ import { contentSecurityPolicy } from "../src/security/contentSecurityPolicy.ts"
 
 test("scripts run from this origin or with the page's nonce, and nothing else inline", () => {
   const policy = contentSecurityPolicy("abc", false);
-  assert.match(policy, /script-src 'self' 'nonce-abc';/);
+  assert.match(policy, /script-src 'self' 'nonce-abc' 'strict-dynamic';/);
   assert.doesNotMatch(policy, /unsafe-eval|unsafe-inline|unsafe-hashes/);
 });
 
@@ -27,7 +27,7 @@ test("no other site may frame the page", () => {
 
 test("the development server may evaluate code, apply its own inline styles and show images over plain HTTP", () => {
   const policy = contentSecurityPolicy("abc", true);
-  assert.match(policy, /script-src 'self' 'nonce-abc' 'unsafe-eval';/);
+  assert.match(policy, /script-src 'self' 'nonce-abc' 'strict-dynamic' 'unsafe-eval';/);
   assert.match(policy, /style-src 'self' 'unsafe-inline';/);
   assert.match(policy, /img-src 'self' data: blob: https: http:;/);
 });

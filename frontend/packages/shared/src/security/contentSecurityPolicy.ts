@@ -2,8 +2,9 @@
 export const NONCE_HEADER = "x-nonce";
 
 /**
- * The Content-Security-Policy of a page, whose scripts and styles come only from this origin or carry its nonce, as the
- * script Next.js writes inline and the `<style>` elements of styled-components and of Next.js's own navigation do. No
+ * The Content-Security-Policy of a page, whose scripts carry its nonce, as every script Next.js writes into it does, or
+ * are loaded by one that does ('strict-dynamic'), and whose styles come from this origin or carry the nonce, as the
+ * `<style>` elements of styled-components and of Next.js's own navigation do. No
  * `style` attribute applies, so a component styles itself by a class; a style set from a script, through the element's
  * `style` property, is not an attribute and still applies. Only the development server allows inline styles.
  *
@@ -22,7 +23,7 @@ export function contentSecurityPolicy(nonce: string, development: boolean): stri
   const nonceSource = `'nonce-${nonce}'`;
   return [
     "default-src 'self'",
-    `script-src 'self' ${nonceSource}${development ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' ${nonceSource} 'strict-dynamic'${development ? " 'unsafe-eval'" : ""}`,
     `style-src 'self' ${development ? "'unsafe-inline'" : nonceSource}`,
     `img-src 'self' data: blob: https:${development ? " http:" : ""}`,
     "font-src 'self'",

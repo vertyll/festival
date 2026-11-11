@@ -68,8 +68,9 @@ inside the cluster.
 Every response carries `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options` and `Referrer-Policy`
 (`next.config.base.mjs`). Each page also carries a `Content-Security-Policy` with a nonce of its own, set by the
 application's `proxy.ts` (`packages/shared/src/security`): `_document` puts the nonce on the scripts Next.js writes and
-on the `<style>` elements of styled-components, which reads it in the browser from the `csp-nonce` meta tag. No other
-inline script or style runs, and no `style` attribute applies:
+on the `<style>` elements of styled-components, which reads it in the browser from the `csp-nonce` meta tag. With
+`'strict-dynamic'`, a script runs only if it carries the nonce or is loaded by one that does, as Next.js's chunks are,
+and the browser ignores `'self'` for scripts. No other inline script or style runs, and no `style` attribute applies:
 
 - a component styles itself by a class, never by the `style` prop;
 - a picture goes through `components/atoms/Image.tsx` in the page, which lays it out as `next/image` does but by a
