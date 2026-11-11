@@ -4,9 +4,9 @@ export const NONCE_HEADER = "x-nonce";
 /**
  * The Content-Security-Policy of a page, whose scripts carry its nonce, as every script Next.js writes into it does, or
  * are loaded by one that does ('strict-dynamic'), and whose styles come from this origin or carry the nonce, as the
- * `<style>` elements of styled-components and of Next.js's own navigation do. No
- * `style` attribute applies, so a component styles itself by a class; a style set from a script, through the element's
- * `style` property, is not an attribute and still applies. Only the development server allows inline styles.
+ * `<style>` elements of styled-components and of Next.js's own navigation do. No `style` attribute applies, so a
+ * component styles itself by a class; a style set from a script, through the element's `style` property, is not an
+ * attribute and still applies. Only the development server allows inline styles.
  *
  * Every call goes to this origin, which forwards it to the back-end, and a sign-in or a sign-out is a navigation, not a
  * request, so connections stay on 'self'. Images come from the media storage and the profile picture from the identity
