@@ -27,7 +27,9 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <aws-sdk.version>2.57.4</aws-sdk.version>
         <mongodb.version>5.13.0</mongodb.version>
+        <jspecify.version>1.0.1</jspecify.version>
         <archunit.version>1.5.1</archunit.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
         <icu4j.version>79.1</icu4j.version>
         <poi.version>6.0.0</poi.version>
 
@@ -39,7 +41,7 @@
         <spotbugs.version>4.10.5</spotbugs.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
         <spotless-maven-plugin.version>3.11.0</spotless-maven-plugin.version>
-        <eclipse-jdt.version>4.40</eclipse-jdt.version>
+        <eclipse-jdt.version>4.41</eclipse-jdt.version>
 
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
