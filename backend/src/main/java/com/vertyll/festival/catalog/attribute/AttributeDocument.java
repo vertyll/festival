@@ -23,13 +23,13 @@ record AttributeDocument(
         values = List.copyOf(values);
     }
 
-    static AttributeDocument create(AttributeRequest request, Instant now) {
-        OptionValue.requireUniqueCodes(request.values());
-        return new AttributeDocument(new ObjectId(), request.name(), request.values(), now, now);
+    static AttributeDocument create(LocalizedText name, List<OptionValue> values, Instant now) {
+        OptionValue.requireUniqueCodes(values);
+        return new AttributeDocument(new ObjectId(), name, values, now, now);
     }
 
-    AttributeDocument update(AttributeRequest request, Instant now) {
-        OptionValue.requireUniqueCodes(request.values());
-        return new AttributeDocument(id, request.name(), request.values(), createdAt, now);
+    AttributeDocument update(LocalizedText name, List<OptionValue> values, Instant now) {
+        OptionValue.requireUniqueCodes(values);
+        return new AttributeDocument(id, name, values, createdAt, now);
     }
 }

@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
 import com.vertyll.festival.IntegrationTest;
+import com.vertyll.festival.common.MessageKeys;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -22,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,11 +65,27 @@ class WishlistIT {
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(address)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isOk()).andExpect(content().json(address, JsonCompareMode.STRICT));
 
         mvc.perform(get("/api/account/address").with(customer()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.city").value("Gdańsk"));
+            .andExpect(content().json(address, JsonCompareMode.STRICT));
+    }
+
+    @Test
+    void invalidShippingAddressIsRefusedWithMessageKeys() throws Exception {
+        mvc.perform(
+            put("/api/account/address").with(customer())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"name": " ", "email": "jan", "streetAddress": "Długa 1", "postalCode": "80-001",
+                         "city": "Gdańsk", "country": "Polska"}
+                        """)
+        )
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors.name.code").value(MessageKeys.REQUIRED))
+            .andExpect(jsonPath("$.errors.email.code").value(MessageKeys.EMAIL_INVALID));
     }
 
     private String createProduct() {

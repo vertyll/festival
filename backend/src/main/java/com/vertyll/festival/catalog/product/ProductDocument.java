@@ -37,7 +37,12 @@ record ProductDocument(
         variants = List.copyOf(variants);
     }
 
-    static ProductDocument create(ProductRequest request, Instant now) {
+    static ProductDocument create(
+        ProductRequest request,
+        List<ProductOption> options,
+        List<ProductVariant> variants,
+        Instant now
+    ) {
         return new ProductDocument(
             new ObjectId(),
             request.name(),
@@ -45,14 +50,19 @@ record ProductDocument(
             request.price(),
             request.categoryId(),
             request.images(),
-            request.options(),
-            ProductVariants.validate(request.options(), request.variants()),
+            options,
+            ProductVariants.validate(options, variants),
             now,
             now
         );
     }
 
-    ProductDocument update(ProductRequest request, Instant now) {
+    ProductDocument update(
+        ProductRequest request,
+        List<ProductOption> options,
+        List<ProductVariant> variants,
+        Instant now
+    ) {
         return new ProductDocument(
             id,
             request.name(),
@@ -60,8 +70,8 @@ record ProductDocument(
             request.price(),
             request.categoryId(),
             request.images(),
-            request.options(),
-            ProductVariants.validate(request.options(), request.variants()),
+            options,
+            ProductVariants.validate(options, variants),
             createdAt,
             now
         );

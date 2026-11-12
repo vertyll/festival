@@ -29,11 +29,15 @@ class AttributeService {
     }
 
     AttributeResponse create(AttributeRequest request) {
-        return mapper.toResponse(repository.insert(AttributeDocument.create(request, clock.instant())));
+        AttributeDocument attribute =
+                AttributeDocument.create(request.name(), mapper.toValues(request.values()), clock.instant());
+        return mapper.toResponse(repository.insert(attribute));
     }
 
     AttributeResponse update(ObjectId id, AttributeRequest request) {
-        return mapper.toResponse(repository.save(get(id).update(request, clock.instant())));
+        AttributeDocument attribute =
+                get(id).update(request.name(), mapper.toValues(request.values()), clock.instant());
+        return mapper.toResponse(repository.save(attribute));
     }
 
     void delete(ObjectId id) {

@@ -74,6 +74,110 @@ class CatalogIT {
     }
 
     @Test
+    void adminProductIsAnsweredInTheShapeTheAdminPanelReads() {
+        String product = """
+                {
+                  "name": {"pl": "Bluza", "en": "Hoodie"},
+                  "description": {"pl": "Ciepła", "en": "Warm"},
+                  "price": 129.00,
+                  "categoryId": null,
+                  "images": ["https://media.example.com/uploads/b.webp"],
+                  "options": [{
+                    "code": "size",
+                    "name": {"pl": "Rozmiar", "en": "Size"},
+                    "values": [
+                      {"code": "s", "label": {"pl": "S", "en": "S"}},
+                      {"code": "m", "label": {"pl": "M", "en": "M"}}
+                    ]
+                  }],
+                  "variants": [
+                    {"valueCodes": ["m"], "stock": 4},
+                    {"valueCodes": ["s"], "stock": 2}
+                  ]
+                }
+                """;
+
+        MvcTestResult result = MockMvcTester.create(mvc).perform(asAdmin(post("/api/admin/products")).content(product));
+
+        assertThat(result).hasStatus(HttpStatus.CREATED);
+        String body = new String(result.getResponse().getContentAsByteArray(), StandardCharsets.UTF_8);
+        String id = JsonPath.read(body, "$.id");
+        String createdAt = JsonPath.read(body, "$.createdAt");
+        String updatedAt = JsonPath.read(body, "$.updatedAt");
+        assertThat(result).bodyJson().isStrictlyEqualTo("""
+                {
+                  "id": "%s",
+                  "name": {"pl": "Bluza", "en": "Hoodie"},
+                  "description": {"pl": "Ciepła", "en": "Warm"},
+                  "price": 129.00,
+                  "categoryId": null,
+                  "images": ["https://media.example.com/uploads/b.webp"],
+                  "options": [{
+                    "code": "size",
+                    "name": {"pl": "Rozmiar", "en": "Size"},
+                    "values": [
+                      {"code": "s", "label": {"pl": "S", "en": "S"}},
+                      {"code": "m", "label": {"pl": "M", "en": "M"}}
+                    ]
+                  }],
+                  "variants": [
+                    {"valueCodes": ["s"], "stock": 2},
+                    {"valueCodes": ["m"], "stock": 4}
+                  ],
+                  "createdAt": "%s",
+                  "updatedAt": "%s"
+                }
+                """.formatted(id, createdAt, updatedAt));
+    }
+
+    @Test
+    void attributeIsAnsweredInTheShapeTheAdminPanelReads() {
+        String attribute = """
+                {
+                  "name": {"pl": "Kolor", "en": "Colour"},
+                  "values": [{"code": "black", "label": {"pl": "Czarny", "en": "Black"}}]
+                }
+                """;
+
+        MvcTestResult result =
+                MockMvcTester.create(mvc).perform(asAdmin(post("/api/admin/attributes")).content(attribute));
+
+        assertThat(result).hasStatus(HttpStatus.CREATED);
+        String body = new String(result.getResponse().getContentAsByteArray(), StandardCharsets.UTF_8);
+        String id = JsonPath.read(body, "$.id");
+        assertThat(result).bodyJson().isStrictlyEqualTo("""
+                {
+                  "id": "%s",
+                  "name": {"pl": "Kolor", "en": "Colour"},
+                  "values": [{"code": "black", "label": {"pl": "Czarny", "en": "Black"}}]
+                }
+                """.formatted(id));
+    }
+
+    @Test
+    void nestedOptionValuesAreValidatedWithMessageKeys() throws Exception {
+        mvc.perform(asAdmin(post("/api/admin/products")).content("""
+                {
+                  "name": {"pl": "Czapka", "en": "Cap"}, "description": null, "price": 10.00,
+                  "categoryId": null, "images": [],
+                  "options": [{
+                    "code": "color",
+                    "name": {"pl": "Kolor", "en": "Colour"},
+                    "values": [{"code": "Black!", "label": {"pl": "Czarny", "en": "Black"}}]
+                  }],
+                  "variants": [{"valueCodes": ["black"], "stock": 1}]
+                }
+                """))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors['options[0].values[0].code'].code").value(MessageKeys.CODE_INVALID));
+        mvc.perform(asAdmin(post("/api/admin/attributes")).content("""
+                {"name": {"pl": "Kolor", "en": "Colour"}, "values": [{"code": "black", "label": null}]}
+                """))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors['values[0].label'].code").value(MessageKeys.REQUIRED));
+    }
+
+    @Test
     void variantsMustCoverEveryCombination() throws Exception {
         mvc.perform(asAdmin(post("/api/admin/products")).content("""
                 {

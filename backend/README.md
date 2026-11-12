@@ -7,6 +7,9 @@ keys ([Errors and translations](../docs/architecture.md#errors-and-translations)
 ## Layout
 
 The code is split by feature, and each feature keeps its controllers, service, repository and documents together.
+A document and the records stored inside it never reach HTTP: the API reads its own `*Request` records, where the
+validation lives, and answers with its own `*Response` records, mapped by MapStruct; `ArchitectureTest` keeps it
+so. `LocalizedText` is the exception, a plain value with the same shape in storage and in JSON.
 
 | Package    | Holds                                                                     |
 |------------|---------------------------------------------------------------------------|

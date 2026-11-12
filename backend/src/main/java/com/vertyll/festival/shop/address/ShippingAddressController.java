@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vertyll.festival.security.UserIdentity;
-import com.vertyll.festival.shop.ShippingDetails;
+import com.vertyll.festival.shop.ShippingDetailsRequest;
+import com.vertyll.festival.shop.ShippingDetailsResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,12 +23,12 @@ class ShippingAddressController {
     private final ShippingAddressService service;
 
     @GetMapping
-    ResponseEntity<ShippingDetails> get(UserIdentity user) {
+    ResponseEntity<ShippingDetailsResponse> get(UserIdentity user) {
         return service.find(user.id()).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PutMapping
-    ShippingDetails save(@Valid @RequestBody ShippingDetails details, UserIdentity user) {
-        return service.save(user.id(), details);
+    ShippingDetailsResponse save(@Valid @RequestBody ShippingDetailsRequest request, UserIdentity user) {
+        return service.save(user.id(), request);
     }
 }

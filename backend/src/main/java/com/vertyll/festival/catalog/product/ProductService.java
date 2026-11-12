@@ -61,18 +61,31 @@ class ProductService {
         ProductDocument product = get(id);
         ObjectId categoryId = product.categoryId();
         List<Reference> categoryPath = categoryId == null ? List.of() : categories.pathTo(categoryId);
-        return ProductDetailsResponse.of(product, settings.current(), categoryPath);
+        return ProductDetailsResponse
+            .of(product, mapper.toOptionResponses(product.options()), settings.current(), categoryPath);
     }
 
     ProductAdminResponse create(ProductRequest request) {
         requireCategoryExists(request.categoryId());
-        return mapper.toAdminResponse(repository.insert(ProductDocument.create(request, clock.instant())));
+        ProductDocument product = ProductDocument.create(
+            request,
+            mapper.toOptions(request.options()),
+            mapper.toVariants(request.variants()),
+            clock.instant()
+        );
+        return mapper.toAdminResponse(repository.insert(product));
     }
 
     ProductAdminResponse update(ObjectId id, ProductRequest request) {
         ProductDocument current = get(id);
         requireCategoryExists(request.categoryId());
-        return mapper.toAdminResponse(repository.save(current.update(request, clock.instant())));
+        ProductDocument product = current.update(
+            request,
+            mapper.toOptions(request.options()),
+            mapper.toVariants(request.variants()),
+            clock.instant()
+        );
+        return mapper.toAdminResponse(repository.save(product));
     }
 
     void delete(ObjectId id) {

@@ -5,7 +5,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.vertyll.festival.shop.ShippingDetails;
+import com.vertyll.festival.shop.ShippingDetailsRequest;
+import com.vertyll.festival.shop.ShippingDetailsResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,13 +15,16 @@ import lombok.RequiredArgsConstructor;
 class ShippingAddressService {
 
     private final ShippingAddressRepository repository;
+    private final ShippingAddressMapper mapper;
     private final Clock clock;
 
-    Optional<ShippingDetails> find(String customerId) {
-        return repository.findById(customerId).map(ShippingAddressDocument::details);
+    Optional<ShippingDetailsResponse> find(String customerId) {
+        return repository.findById(customerId).map(address -> mapper.toResponse(address.details()));
     }
 
-    ShippingDetails save(String customerId, ShippingDetails details) {
-        return repository.save(new ShippingAddressDocument(customerId, details, clock.instant())).details();
+    ShippingDetailsResponse save(String customerId, ShippingDetailsRequest request) {
+        ShippingAddressDocument address =
+                new ShippingAddressDocument(customerId, mapper.toDetails(request), clock.instant());
+        return mapper.toResponse(repository.save(address).details());
     }
 }

@@ -16,9 +16,12 @@ record ProductAdminResponse(
     BigDecimal price,
     @Nullable ObjectId categoryId,
     List<String> images,
-    List<ProductOption> options,
-    List<ProductVariant> variants,
+    List<ProductOptionResponse> options,
+    List<Variant> variants,
     Instant createdAt,
     Instant updatedAt
 ) {
+
+    record Variant(List<String> valueCodes, int stock) {
+    }
 }

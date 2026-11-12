@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import com.vertyll.festival.catalog.OptionValue;
+import com.vertyll.festival.catalog.OptionValueRequest;
 import com.vertyll.festival.common.LocalizedLength;
 import com.vertyll.festival.common.LocalizedText;
 import com.vertyll.festival.common.MessageKeys;
@@ -20,7 +20,7 @@ record AttributeRequest(
     @NotEmpty(message = MessageKeys.OPTION_VALUES_REQUIRED) @Size(
         max = ValidationLimits.MAX_ATTRIBUTE_VALUES,
         message = MessageKeys.TOO_MANY_ATTRIBUTE_VALUES
-    ) List<@Valid @NotNull(message = MessageKeys.REQUIRED) OptionValue> values
+    ) List<@Valid @NotNull(message = MessageKeys.REQUIRED) OptionValueRequest> values
 ) {
 
     AttributeRequest {

@@ -15,10 +15,10 @@ import org.bson.types.ObjectId;
 
 import com.vertyll.festival.common.MessageKeys;
 import com.vertyll.festival.common.ValidationLimits;
-import com.vertyll.festival.shop.ShippingDetails;
+import com.vertyll.festival.shop.ShippingDetailsRequest;
 
 record PlaceOrderRequest(
-    @NotNull(message = MessageKeys.REQUIRED) @Valid ShippingDetails shipping,
+    @NotNull(message = MessageKeys.REQUIRED) @Valid ShippingDetailsRequest shipping,
     @NotEmpty(message = MessageKeys.CART_EMPTY) @Size(
         max = ValidationLimits.MAX_CART_LINES,
         message = MessageKeys.CART_TOO_MANY_LINES

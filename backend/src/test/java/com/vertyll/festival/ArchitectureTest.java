@@ -1,10 +1,17 @@
 package com.vertyll.festival;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.RecordComponent;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.mapstruct.Mapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -13,6 +20,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vertyll.festival.common.LocalizedText;
 import com.vertyll.festival.keycloak.KeycloakAccounts;
 import com.vertyll.festival.keycloak.KeycloakHttp;
 import com.vertyll.festival.keycloak.KeycloakProperties;
@@ -38,6 +46,7 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 final class ArchitectureTest {
 
     private static final String ADMIN_PREFIX = "/api/admin/";
+    private static final String BASE_PACKAGE = "com.vertyll.festival";
 
     @ArchTest
     static final ArchRule KEYCLOAK_IS_REACHED_THROUGH_ITS_ENTRY = noClasses().that()
@@ -87,6 +96,9 @@ final class ArchitectureTest {
         .areAssignableTo(Repository.class);
 
     @ArchTest
+    static final ArchRule STORED_RECORDS_STAY_BEHIND_THE_API = classes().should(notExposeStoredRecords());
+
+    @ArchTest
     static final ArchRule MODULES_ARE_FREE_OF_CYCLES =
             slices().matching("com.vertyll.festival.(*)..").should().beFreeOfCycles();
 
@@ -102,6 +114,81 @@ final class ArchitectureTest {
                 events.add(new SimpleConditionEvent(javaClass, satisfied, javaClass.getName() + " maps " + paths));
             }
         };
+    }
+
+    private static ArchCondition<JavaClass> notExposeStoredRecords() {
+        return new ArchCondition<>("not expose a record stored in a document through the API") {
+
+            private final Set<Class<?>> storedRecords = new HashSet<>();
+
+            @Override
+            public void init(Collection<JavaClass> allClasses) {
+                allClasses.stream()
+                    .filter(javaClass -> javaClass.isAnnotatedWith(Document.class))
+                    .forEach(document -> collectStoredRecords(document.reflect(), storedRecords));
+                storedRecords.remove(LocalizedText.class);
+            }
+
+            @Override
+            public void check(JavaClass javaClass, ConditionEvents events) {
+                if (!isApiType(javaClass)) {
+                    return;
+                }
+                exposedTypes(javaClass.reflect()).stream()
+                    .filter(storedRecords::contains)
+                    .distinct()
+                    .forEach(
+                        stored -> events.add(
+                            SimpleConditionEvent.violated(
+                                javaClass,
+                                javaClass.getName() + " exposes the stored record " + stored.getName()
+                            )
+                        )
+                    );
+            }
+        };
+    }
+
+    private static List<Class<?>> exposedTypes(Class<?> apiType) {
+        if (apiType.isRecord()) {
+            return Arrays.stream(apiType.getRecordComponents())
+                .flatMap(component -> rawTypes(component.getGenericType()).stream())
+                .toList();
+        }
+        return Arrays.stream(apiType.getDeclaredMethods())
+            .flatMap(
+                method -> Stream
+                    .concat(Stream.of(method.getGenericReturnType()), Arrays.stream(method.getGenericParameterTypes()))
+            )
+            .flatMap(type -> rawTypes(type).stream())
+            .toList();
+    }
+
+    private static void collectStoredRecords(Class<?> record, Set<Class<?>> storedRecords) {
+        for (RecordComponent component : record.getRecordComponents()) {
+            for (Class<?> type : rawTypes(component.getGenericType())) {
+                if (type.isRecord() && type.getPackageName().startsWith(BASE_PACKAGE) && storedRecords.add(type)) {
+                    collectStoredRecords(type, storedRecords);
+                }
+            }
+        }
+    }
+
+    private static List<Class<?>> rawTypes(Type type) {
+        return switch (type) {
+            case Class<?> raw -> List.of(raw);
+            case ParameterizedType parameterized -> Stream
+                .concat(Stream.of(parameterized.getRawType()), Arrays.stream(parameterized.getActualTypeArguments()))
+                .flatMap(argument -> rawTypes(argument).stream())
+                .toList();
+            default -> List.of();
+        };
+    }
+
+    private static boolean isApiType(JavaClass javaClass) {
+        String name = javaClass.getSimpleName();
+        return javaClass.isAnnotatedWith(RestController.class) || name.endsWith("Request") || name.endsWith("Response")
+                || javaClass.getEnclosingClass().map(ArchitectureTest::isApiType).orElse(false);
     }
 
     private static List<String> handlerPaths(Class<?> controller) {

@@ -52,7 +52,7 @@ class OrderService {
             OrderDocument order = OrderDocument.place(
                 customerId,
                 cart.stream().map(CartLine::toOrderLine).toList(),
-                request.shipping(),
+                mapper.toShipping(request.shipping()),
                 settings.current().shippingPrice(),
                 properties.currency(),
                 clock.instant()

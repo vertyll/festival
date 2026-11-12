@@ -16,7 +16,7 @@ record ProductDetailsResponse(
     @Nullable LocalizedText description,
     BigDecimal price,
     List<String> images,
-    List<ProductOption> options,
+    List<ProductOptionResponse> options,
     List<VariantAvailability> variants,
     @Nullable Integer totalStock,
     List<Reference> categoryPath
@@ -25,7 +25,12 @@ record ProductDetailsResponse(
     record VariantAvailability(List<String> valueCodes, boolean available, @Nullable Integer stock) {
     }
 
-    static ProductDetailsResponse of(ProductDocument product, ShopSettings settings, List<Reference> categoryPath) {
+    static ProductDetailsResponse of(
+        ProductDocument product,
+        List<ProductOptionResponse> options,
+        ShopSettings settings,
+        List<Reference> categoryPath
+    ) {
         List<VariantAvailability> variants = product.variants()
             .stream()
             .map(
@@ -42,7 +47,7 @@ record ProductDetailsResponse(
             product.description(),
             product.price(),
             product.images(),
-            product.options(),
+            options,
             variants,
             settings.stockVisible() ? product.totalStock() : null,
             categoryPath
