@@ -25,8 +25,8 @@
 
         <lombok.version>1.18.48</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <aws-sdk.version>2.57.4</aws-sdk.version>
-        <mongodb.version>5.13.0</mongodb.version>
+        <aws-sdk.version>2.59.1</aws-sdk.version>
+        <mongodb.version>5.14.0</mongodb.version>
         <jspecify.version>1.0.1</jspecify.version>
         <archunit.version>1.5.1</archunit.version>
         <testcontainers.version>2.0.5</testcontainers.version>
@@ -43,11 +43,13 @@
         <spotless-maven-plugin.version>3.11.0</spotless-maven-plugin.version>
         <eclipse-jdt.version>4.41</eclipse-jdt.version>
 
+        <maven-enforcer-plugin.version>3.7.0</maven-enforcer-plugin.version>
+        <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.6.1</maven-failsafe-plugin.version>
         <jacoco-maven-plugin.version>0.8.16</jacoco-maven-plugin.version>
-        <sonar-maven-plugin.version>5.8.0.7211</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>5.9.0.7382</sonar-maven-plugin.version>
 
         <error-prone.common-flags>-XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/target/generated-(test-)?sources/.*</error-prone.common-flags>
 

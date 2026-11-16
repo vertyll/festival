@@ -11,15 +11,15 @@
   },
   "dependencies": {
     "@festival/shared": "workspace:*",
-    "@tailwindcss/postcss": "4.3.3",
-    "next": "16.4.3",
-    "postcss": "8.5.31",
+    "@tailwindcss/postcss": "4.3.5",
+    "next": "16.4.6",
+    "postcss": "8.5.33",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "react-sortablejs": "6.1.4",
     "sortablejs": "1.15.7",
-    "tailwindcss": "4.3.3",
-    "use-intl": "4.14.9"
+    "tailwindcss": "4.3.5",
+    "use-intl": "4.15.1"
   },
   "devDependencies": {
     "@types/sortablejs": "1.15.9"

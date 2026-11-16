@@ -8,7 +8,7 @@ FROM base AS prune
 ARG APP
 RUN test -n "$APP" || (echo "Pass --build-arg APP=page or APP=admin" >&2 && exit 1)
 COPY . .
-RUN pnpm dlx turbo@2.11.4 prune @festival/${APP} --docker
+RUN pnpm dlx turbo@2.11.11 prune @festival/${APP} --docker
 
 FROM base AS build
 ARG APP
