@@ -25,7 +25,7 @@
 
         <lombok.version>1.18.48</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <aws-sdk.version>2.59.1</aws-sdk.version>
+        <aws-sdk.version>2.59.4</aws-sdk.version>
         <mongodb.version>5.14.0</mongodb.version>
         <jspecify.version>1.0.1</jspecify.version>
         <archunit.version>1.5.1</archunit.version>
@@ -33,8 +33,8 @@
         <icu4j.version>79.1</icu4j.version>
         <poi.version>6.0.0</poi.version>
 
-        <error-prone.version>2.52.0</error-prone.version>
-        <nullaway.version>0.14.3</nullaway.version>
+        <error-prone.version>2.53.0</error-prone.version>
+        <nullaway.version>0.14.4</nullaway.version>
         <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
         <pmd.version>7.29.0</pmd.version>
         <spotbugs-maven-plugin.version>4.10.5.0</spotbugs-maven-plugin.version>
