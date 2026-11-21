@@ -22,6 +22,8 @@ replay_pid*.log
 
 ### SonarQube ###
 .scannerwork/
+.sonar/
+.sonarlint/
 
 ### Keycloak theme ###
 /keycloak/target/
