@@ -314,6 +314,7 @@ class SecurityConfig {
             .build();
     }
 
+    // The front end reads the CSRF token from this cookie, so it cannot be HttpOnly.
     @SuppressWarnings("java:S3330")
     private static CookieCsrfTokenRepository csrfTokenRepository(boolean secureCookies) {
         CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();

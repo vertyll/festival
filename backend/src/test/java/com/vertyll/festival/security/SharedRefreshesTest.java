@@ -15,15 +15,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.vertyll.festival.security.SharedRefreshes.TokenPair;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Testcontainers
 class SharedRefreshesTest {
-    // The @AfterAll method stops the container.
-    @SuppressWarnings("resource")
+    @Container
     private static final GenericContainer<?> REDIS =
             new GenericContainer<>("redis:8-alpine").withStartupTimeout(Duration.ofMinutes(2))
                 .withStartupAttempts(3)
@@ -33,8 +35,7 @@ class SharedRefreshesTest {
     private static StringRedisTemplate redis;
 
     @BeforeAll
-    static void startRedis() {
-        REDIS.start();
+    static void connect() {
         connections = new LettuceConnectionFactory(REDIS.getHost(), REDIS.getMappedPort(6379));
         connections.afterPropertiesSet();
         connections.start();
@@ -42,9 +43,8 @@ class SharedRefreshesTest {
     }
 
     @AfterAll
-    static void stopRedis() {
+    static void disconnect() {
         connections.destroy();
-        REDIS.stop();
     }
 
     @Test

@@ -284,6 +284,7 @@
                             <compilerArgs>
                                 <arg>-XDcompilePolicy=simple</arg>
                                 <arg>--should-stop=ifError=FLOW</arg>
+                                <!-- Tests carry no @NullMarked, so NullAway and explicit null marking cover the main code only. -->
                                 <arg>-Xplugin:ErrorProne ${error-prone.common-flags} -Xep:NullAway:OFF -Xep:RequireExplicitNullMarking:OFF</arg>
                             </compilerArgs>
                         </configuration>

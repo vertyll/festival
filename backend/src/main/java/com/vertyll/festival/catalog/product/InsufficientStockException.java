@@ -7,6 +7,7 @@ import com.vertyll.festival.common.ConflictException;
 import com.vertyll.festival.common.LocalizedText;
 import com.vertyll.festival.common.MessageKeys;
 
+// Four of the levels are Throwable's own; the API adds its error and conflict types above this one.
 @SuppressWarnings("java:S110")
 public final class InsufficientStockException extends ConflictException {
 
