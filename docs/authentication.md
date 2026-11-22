@@ -37,7 +37,7 @@ sequenceDiagram
     A->>K: code + that client's secret + PKCE verifier
     K-->>A: access, refresh and ID token
     A->>R: store the tokens in the session
-    A-->>B: 302 to /account (the panel: /), session and XSRF-TOKEN cookies
+    A-->>B: 302 to /account (the panel: /), session and CSRF cookies
     B->>N: /api/... + cookies
     N->>A: forwarded
     Note over A: the request is authorized by the session's access token
@@ -53,13 +53,13 @@ sequenceDiagram
    client's landing path. A page that needs a session, and an API call whose session has ended, send the reader to sign
    in with the page they are on; a failed sign-in stays on the page and says so.
 
-The browser holds only the session cookie and the `XSRF-TOKEN` cookie, both `Secure` and `SameSite=Lax` wherever
-`application.security.secure-cookies` is on, as in production and in the tests. The session cookie is then
-`__Host-FESTIVAL_SESSION` (`HttpOnly`, `Path=/`, no `Domain`), a name the browser accepts only from this host over
-HTTPS; the `local` profile, served over plain HTTP, turns secure cookies off and names it `FESTIVAL_SESSION`, as the
-prefix requires `Secure`. The session itself is kept in Redis as JSON written by Spring Security's Jackson modules
-(`SessionStoreConfig`), never as Java serialization. `GET /api/me` tells the application who is signed in and whether
-they are an administrator.
+The browser holds only the session cookie and the CSRF cookie, both `Secure`, `SameSite=Lax`, `Path=/` and without
+`Domain` wherever `server.servlet.session.cookie.secure` is on, as in production and in the tests. They are then
+`__Host-FESTIVAL_SESSION` (`HttpOnly`) and `__Host-XSRF-TOKEN`, names the browser accepts only from this host over
+HTTPS; the `local` profile, served over plain HTTP, turns that setting off and names them `FESTIVAL_SESSION` and
+`XSRF-TOKEN`, as the prefix requires `Secure`. The session itself is kept in Redis as JSON written by Spring Security's
+Jackson modules (`SessionStoreConfig`), never as Java serialization. `GET /api/me` tells the application who is signed
+in and whether they are an administrator.
 
 ## Account actions
 
@@ -101,7 +101,7 @@ to the application's home page.
 
 ## CSRF
 
-Every unsafe request repeats the `XSRF-TOKEN` cookie in a header: [CSRF](mechanisms/csrf.md).
+Every unsafe request repeats the CSRF cookie in a header: [CSRF](mechanisms/csrf.md).
 
 ## The sign-in pages
 

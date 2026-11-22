@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(TestcontainersConfiguration.class)
 class CsrfCookieIT {
 
-    private static final String CSRF_COOKIE = "XSRF-TOKEN";
+    private static final String CSRF_COOKIE = "__Host-XSRF-TOKEN";
     private static final String CSRF_HEADER = "X-XSRF-TOKEN";
     private static final String SESSION_COOKIE = "__Host-FESTIVAL_SESSION";
     private static final String SET_COOKIE = "Set-Cookie";
@@ -73,10 +73,11 @@ class CsrfCookieIT {
     }
 
     @Test
-    void theCsrfCookieIsSecure() throws IOException, InterruptedException {
+    void theCsrfCookieIsSecureAndBoundToThisHost() throws IOException, InterruptedException {
         HttpResponse<String> response = send(HttpRequest.newBuilder(uri("/api/me")).GET());
 
-        assertThat(setCookie(response, CSRF_COOKIE)).contains("; Secure", "; SameSite=Lax").doesNotContain("HttpOnly");
+        assertThat(setCookie(response, CSRF_COOKIE)).contains("; Path=/;", "; Secure", "; SameSite=Lax")
+            .doesNotContain("Domain=", "HttpOnly");
     }
 
     @Test

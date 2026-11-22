@@ -14,10 +14,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties("application.security")
-public record FestivalSecurityProperties(
-    @NotNull Boolean secureCookies,
-    @NotNull Map<LoginClient, @Valid @NotNull ClientSettings> login
-) {
+public record FestivalSecurityProperties(@NotNull Map<LoginClient, @Valid @NotNull ClientSettings> login) {
 
     public FestivalSecurityProperties {
         Set<LoginClient> missing = EnumSet.allOf(LoginClient.class);

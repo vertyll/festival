@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.boot.web.server.Cookie;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -73,6 +75,10 @@ class SecurityConfig {
 
     private static final String ACCESS_TOKEN_TYPE = "Bearer";
 
+    private static final String CSRF_COOKIE = "XSRF-TOKEN";
+
+    private static final String HOST_PREFIX = "__Host-";
+
     private static final String[] PUBLIC_READ_ENDPOINTS = {
         "/api/me",
         "/api/settings",
@@ -99,6 +105,7 @@ class SecurityConfig {
         KeycloakProperties keycloak,
         KeycloakAccounts keycloakAccounts,
         FestivalSecurityProperties properties,
+        ServerProperties server,
         ObjectMapper objectMapper
     ) {
         http.authorizeHttpRequests(
@@ -140,7 +147,7 @@ class SecurityConfig {
             )
             .csrf(
                 csrf -> csrf.spa()
-                    .csrfTokenRepository(csrfTokenRepository(properties.secureCookies()))
+                    .csrfTokenRepository(csrfTokenRepository(server.getServlet().getSession().getCookie()))
                     .ignoringRequestMatchers(new BearerTokenRequests())
             )
             .exceptionHandling(
@@ -316,9 +323,14 @@ class SecurityConfig {
 
     // The front end reads the CSRF token from this cookie, so it cannot be HttpOnly.
     @SuppressWarnings("java:S3330")
-    private static CookieCsrfTokenRepository csrfTokenRepository(boolean secureCookies) {
+    private static CookieCsrfTokenRepository csrfTokenRepository(Cookie sessionCookie) {
         CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        repository.setCookieCustomizer(cookie -> cookie.secure(secureCookies).sameSite("Lax"));
+        boolean secure = Boolean.TRUE.equals(sessionCookie.getSecure());
+        // The __Host- prefix keeps a sibling host from planting its own token, and requires Secure, which plain HTTP
+        // cannot have.
+        repository.setCookieName(secure ? HOST_PREFIX + CSRF_COOKIE : CSRF_COOKIE);
+        repository.setCookiePath("/");
+        repository.setCookieCustomizer(cookie -> cookie.secure(secure).sameSite("Lax"));
         return repository;
     }
 }

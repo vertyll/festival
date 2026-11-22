@@ -1,4 +1,5 @@
 import { getCookie } from "../browser/cookies";
+import { csrfCookieName } from "./csrfCookie";
 import type { Message, ProblemDetail } from "./types";
 
 export type QueryValue = string | number | boolean | readonly string[] | undefined;
@@ -46,7 +47,6 @@ export function whenUnauthorized(listener: () => void): () => void {
   return () => sessionEndListeners.delete(listener);
 }
 
-const CSRF_COOKIE = "XSRF-TOKEN";
 const CSRF_HEADER = "X-XSRF-TOKEN";
 
 export function createHttpClient(baseUrl: string): HttpClient {
@@ -120,12 +120,13 @@ async function readProblem(response: Response): Promise<ProblemDetail | null> {
 }
 
 async function csrfToken(): Promise<string> {
-  const existing = getCookie(CSRF_COOKIE);
+  const cookie = csrfCookieName(window.location.protocol);
+  const existing = getCookie(cookie);
   if (existing) {
     return existing;
   }
   await fetch("/api/me", { credentials: "same-origin" });
-  const token = getCookie(CSRF_COOKIE);
+  const token = getCookie(cookie);
   if (!token) {
     throw new Error("Back-end did not set the CSRF cookie");
   }
