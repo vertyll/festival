@@ -164,8 +164,8 @@ final class ArchitectureTest {
             .toList();
     }
 
-    private static void collectStoredRecords(Class<?> record, Set<Class<?>> storedRecords) {
-        for (RecordComponent component : record.getRecordComponents()) {
+    private static void collectStoredRecords(Class<?> recordType, Set<Class<?>> storedRecords) {
+        for (RecordComponent component : recordType.getRecordComponents()) {
             for (Class<?> type : rawTypes(component.getGenericType())) {
                 if (type.isRecord() && type.getPackageName().startsWith(BASE_PACKAGE) && storedRecords.add(type)) {
                     collectStoredRecords(type, storedRecords);
